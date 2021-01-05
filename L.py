@@ -283,15 +283,26 @@ def main():
     time.sleep(1)
 
     # 如果委托颜色为红色，返回主界面；否则 开始委托1、委托2、委托3
+    #   蓝色 未执行  0
+    #   红色 执行中  0.5
+    #   黄色 已执行完成 1
     pyautogui.moveTo(weiTuo1)
     if pyautogui.pixelMatchesColor(weiTuo1[0], weiTuo1[1], color_weiTuo1_red):
         pyautogui.click(fanHuiX)
-    else:
+    elif pyautogui.pixelMatchesColor(weiTuo1[0], weiTuo1[1], color_weiTuo1_blue):
         pyautogui.click(weiTuo1)
         autoZhuJiao(yingXiong1[0], yingXiong1[1])
         pyautogui.click(weiTuo2)
         autoZhuJiao(yingXiong2[0], yingXiong2[1])
         pyautogui.click(weiTuo3)
+        autoZhuJiao(yingXiong3[0], yingXiong3[1])
+        pyautogui.click(fanHuiX)
+    else:
+        pyautogui.click(weiTuo1,clicks=2)
+        autoZhuJiao(yingXiong1[0], yingXiong1[1])
+        pyautogui.click(weiTuo2,clicks=2)
+        autoZhuJiao(yingXiong2[0], yingXiong2[1])
+        pyautogui.click(weiTuo3,clicks=2)
         autoZhuJiao(yingXiong3[0], yingXiong3[1])
         pyautogui.click(fanHuiX)
 
