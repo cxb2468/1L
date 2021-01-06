@@ -95,9 +95,9 @@ def  is_color(x,y,color_x):
      pyautogui.moveTo(x, y)
      while not pyautogui.pixelMatchesColor(x, y,color_x):
         time.sleep(0.5)
-        # print(pyautogui.pixelMatchesColor(x, y,color_x))
-        # print(pyautogui.position())
-        # print(pyautogui.screenshot().getpixel((pyautogui.position())))
+        print(pyautogui.pixelMatchesColor(x, y,color_x))
+        print(pyautogui.position())
+        print(pyautogui.screenshot().getpixel((pyautogui.position())))
 
 def autoZhuJiao(x,y):
     pyautogui.click(xiaoShi)
