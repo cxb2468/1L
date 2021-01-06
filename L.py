@@ -269,10 +269,11 @@ def main():
     pyautogui.click(380, 970)
     pyautogui.click(700, 970)
     pyautogui.click(fanHuiX)
-    pyautogui.alert(text="程序已执行完成",title="Test")
+    time.sleep(2)
+
 
     # 练兵
-    is_color(lianBing[0], lianBing[1], color_lianBing)
+    # is_color(lianBing[0], lianBing[1], color_lianBing)
     pyautogui.click(lianBing)
     pyautogui.click(zhuJiao)
     time.sleep(1)
@@ -309,6 +310,8 @@ def main():
         pyautogui.click(weiTuo3)
         autoZhuJiao(yingXiong3[0], yingXiong3[1])
         pyautogui.click(fanHuiX)
+
+    pyautogui.alert(text="程序已执行完成", title="Test")
 
 main()
 
