@@ -79,13 +79,6 @@ color_weiTuo1_red = (174,70,95)
 color_weiTuo1_blue = (86,195,230)
 
 
-# 应用坐标=(807,1073)      # 应用图标位置
-# 数据输入坐标1=(560,332)   # 项目A
-# 数据输入坐标2=(930,331)   # 项目B
-# 数据输入坐标3=(556,456)   # 项目C
-# 数据输入坐标4=(932,539)   # 项目D
-# 按钮坐标=(1168,332)      # 按钮
-
 # --------------------------------------函数设置
 #
 # def 输入(数据输入坐标, 第几个数据, 一行数据):
@@ -93,6 +86,8 @@ color_weiTuo1_blue = (86,195,230)
 #     pyautogui.click(数据输入坐标)
 #     pyautogui.hotkey('ctrl', 'v')
 #     # print(一行数据[第几个数据])
+
+
 
 
 #while当颜色 非  match时 ，一直sleep 0.5s，match则执行下一步
@@ -256,19 +251,9 @@ def main():
     pyautogui.click(fanHuiX)
     pyautogui.click(fanHuiX)
 
-
+   # 判断下是否回到主界面
    #任务
     time.sleep(1)
-   #判断下是否回到主界面
-    pyautogui.moveTo(mianBao[0], mianBao[1])
-    while not pyautogui.pixelMatchesColor(mianBao[0], mianBao[1], color_mianBao):
-        #pyautogui.click(fanHuiX)
-        pyautogui.moveTo(mianBao[0], mianBao[1])
-        time.sleep(0.3)
-        print(pyautogui.pixelMatchesColor(mianBao[0], mianBao[1], color_mianBao))
-        print(pyautogui.position())
-        print(pyautogui.screenshot().getpixel((pyautogui.position())))
-
     pyautogui.click(1066,991)
     time.sleep(2)
     pyautogui.click(1700,925)
@@ -276,7 +261,17 @@ def main():
     pyautogui.click(fanHuiX)
     pyautogui.click(fanHuiX)
 
-    #练兵
+
+
+    #好友
+    pyautogui.click(60, 615)
+    time.sleep(1.5)
+    pyautogui.click(380, 970)
+    pyautogui.click(700, 970)
+    pyautogui.click(fanHuiX)
+    pyautogui.alert(text="程序已执行完成",title="Test")
+
+    # 练兵
     is_color(lianBing[0], lianBing[1], color_lianBing)
     pyautogui.click(lianBing)
     pyautogui.click(zhuJiao)
@@ -314,27 +309,6 @@ def main():
         pyautogui.click(weiTuo3)
         autoZhuJiao(yingXiong3[0], yingXiong3[1])
         pyautogui.click(fanHuiX)
-
-    #好友
-    pyautogui.click(60, 615)
-    time.sleep(1.5)
-    pyautogui.click(380, 970)
-    pyautogui.click(700, 970)
-    pyautogui.click(fanHuiX)
-    pyautogui.alert(text="程序已执行完成",title="Test")
-
-
-
-
-    # for i in range(0, m):
-    #     一行数据 = data.loc[i]  # 选择某一行数据
-    #     # print(一行数据)
-    #     输入(数据输入坐标1, 0, 一行数据)  # 选择第1个数据
-    #     输入(数据输入坐标2, 1, 一行数据)  # 选择第2个数据
-    #     输入(数据输入坐标3, 2, 一行数据)  # 选择第3个数据
-    #     输入(数据输入坐标4, 3, 一行数据)
-    #     pyautogui.click(按钮坐标)
-
 
 main()
 
