@@ -15,7 +15,18 @@ import pyperclip,re
 # )''',re.VERBOSE)
 
 
-phoneRegex =re.compile(r'''(\d{3})?(\n)(\d{4})?(\n)(\d{4})''')
+# phoneRegex =re.compile(r'''(\d{3})(\s)(\d{4})(\s)(\d{4})''')
+
+phoneRegex = re.compile(r'''(
+             (\d{3})?                             #前3位
+             (\s|\n|\.)                            #-
+             (\d{4})?                             #中3位
+             (\s|\n|\.)                            #-
+             (\d{4})                              #后四位
+
+)''',re.VERBOSE)
+
+# phoneRegex =re.compile(r'(\d\d\d\s\d\d\d\d\s\d\d\d\d)')
 
 
 
@@ -32,7 +43,7 @@ emailRegex = re.compile(r'''(
 )''',re.VERBOSE)
 
 #从剪切板上找到 match 规则的数据
-text ="162\n5649\n9991\n新号现卡\n贵阳电信网络\n低消：6/月\n¥500\n162\n5649\n9992\n新号现卡\n贵阳电信网络\n低消：6/月\n¥500\n162\n5649\n1414    123456123@qq.com   dadasd@qq.com"
+text ="162 5649 9991\n新号现卡\n贵阳电信网络\n低消：6/月\n¥500 162 5649 9992\n新号现卡\n贵阳电信网络\n低消：6/月\n¥500\n162\n5649\n1414    123456123@qq.com   dadasd@qq.com"
 
 # text = str(pyperclip.paste())
 matches =[]
@@ -53,8 +64,10 @@ print(mo)
 
 for groups in phoneRegex.findall(text):
     print(groups)
-    phoneNum = "".join([groups[0],groups[2],groups[4]])
-    # matches.apppend(phoneNum)
+    phoneNum = groups[0]+groups[2]+groups[4]
+    # phoneNum = "-".join([groups[0], groups[2], groups[4]])
+    print(phoneNum)
+    matches.append(phoneNum)
 
 for groups in emailRegex.findall(text):
     matches.append(groups[0])
