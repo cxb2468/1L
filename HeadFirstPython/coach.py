@@ -17,7 +17,7 @@
 # with open("sara.txt","r",encoding="utf-8") as saraFile:
 #     sara =saraFile.readline().strip().split(',')
 # print(sara)
-#将 上述 4个同类代码 抽取成get_coach_data()方法
+#将 上述 4个同类代码 抽取成get_coach_data()方法 返回字典{}
 def get_coach_data(fileName):
     try:
         with open(fileName,"r",encoding="utf-8") as fn:
