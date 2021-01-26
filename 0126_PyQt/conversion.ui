@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>665</width>
+    <height>201</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Conversion</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>240</width>
+      <height>65</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>36</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>汇率转换器</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_USD">
+    <property name="geometry">
+     <rect>
+      <x>206</x>
+      <y>92</y>
+      <width>63</width>
+      <height>47</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>26</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>USD</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>275</x>
+      <y>92</y>
+      <width>113</width>
+      <height>55</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>26</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>转换！</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_CNY">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>92</y>
+      <width>66</width>
+      <height>47</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>26</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>CNY</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_USD">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>181</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>26</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_CNY">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>90</y>
+      <width>191</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>26</pointsize>
+     </font>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>665</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
