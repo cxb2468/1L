@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import  QApplication,QMainWindow
 from weather import Ui_Form
 import requests
+from functools import partial
 
 
 class MainWindow(QMainWindow):
@@ -47,4 +48,11 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     main = MainWindow()
     main.show()
+    main.show()
+    print(main)
+    print(main.ui)
+    main.ui.pushButton_query.clicked.connect(main.query) # 按键事件 调用实例main中的query方法 来绑定方法；按键点击事件绑定到方法，实现页面 与后端方法的分离
+
+    main.ui.pushButton_clear.clicked.connect(main.clear)
+
     sys.exit(app.exec_())

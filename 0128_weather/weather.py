@@ -42,8 +42,8 @@ class Ui_Form(object):
         self.comboBox_w.addItem("")
 
         self.retranslateUi(Form)
-        self.pushButton_query.clicked.connect(Form.query)
-        self.pushButton_clear.clicked.connect(Form.clear)
+        # self.pushButton_query.clicked.connect(Form.query)
+        # self.pushButton_clear.clicked.connect(Form.clear)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):

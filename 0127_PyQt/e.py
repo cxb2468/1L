@@ -19,6 +19,7 @@ def jie(ui):
         qw.setText(text)
 
 
+
     a = float(a)
     print(a)
     b = float(b)
