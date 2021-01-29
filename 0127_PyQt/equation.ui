@@ -41,6 +41,9 @@
       <pointsize>28</pointsize>
      </font>
     </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_b">
     <property name="geometry">
@@ -69,6 +72,9 @@
       <pointsize>28</pointsize>
      </font>
     </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_c">
     <property name="geometry">
@@ -96,6 +102,12 @@
       <family>Adobe Devanagari</family>
       <pointsize>28</pointsize>
      </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -288,8 +300,39 @@
       <height>40</height>
      </size>
     </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>解方程</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_AC">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>110</y>
+      <width>101</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>60</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Adobe Devanagari</family>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>AC</string>
     </property>
    </widget>
   </widget>

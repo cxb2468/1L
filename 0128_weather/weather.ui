@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>440</width>
+    <height>377</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Weather</string>
+  </property>
+  <widget class="QPushButton" name="pushButton_query">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>300</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查询</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_clear">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>300</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>清空</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>421</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>171</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>查询城市天气</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>城市</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit_result">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>90</y>
+      <width>371</width>
+      <height>161</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_w">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>50</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>北京</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>上海</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>广州</string>
+     </property>
+    </item>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_query</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>query()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>107</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_clear</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>signal1()</signal>
+  <slot>query()</slot>
+  <slot>clear()</slot>
+ </slots>
+</ui>

@@ -1,4 +1,0 @@
-man:123456
-other man:789
-man:654321
-other man:987

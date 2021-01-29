@@ -4,6 +4,8 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/0126_PyQt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/0127_PyQt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/0128_weather" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/LibraryManageDesktopApp/venv" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
