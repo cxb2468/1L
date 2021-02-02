@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/0127_PyQt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/0128_weather" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/LibraryManageDesktopApp/venv" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/0202_daBaoImage" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/0202_daBaoImage/demo" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

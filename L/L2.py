@@ -112,6 +112,7 @@ def autoZhuJiao(x,y):
 
 
 def main():
+    starttime = datetime.datetime.now()
     time.sleep(2)
     pyautogui.PAUSE = 1.3
     pyautogui.doubleClick(app)
@@ -126,7 +127,7 @@ def main():
 
 
 
-    1多次点击 选中 正确区服后 再 点击头像
+    1需 先选中区服后 再 点击头像
     is_color(fu[0],fu[1],color_fu)
     pyautogui.click(touxiang)
 
@@ -145,7 +146,7 @@ def main():
         print(pyautogui.screenshot().getpixel((pyautogui.position())))
 
 
-    2勇气的旗帜像素点判定，直接对勇气的旗帜判定
+
     #判断 勇气的旗帜像素 ，确定有没有买月卡
     pyautogui.moveTo(qiZhi)
     #
@@ -273,12 +274,13 @@ def main():
         pyautogui.click(fanHuiX)
 
 
-    按ESC键退出 并确定
+    按ESC键退出 并确定；打印 运行时间
     pyautogui.press("esc")
     pyautogui.press("enter")
-    打印 运行时间
-    print("结束时间："+str(datetime.datetime.now()))
 
+    endtime = datetime.datetime.now()
+    print(endtime - starttime).seconds
+    print(text="程序已执行完成", title="Test")
     # pyautogui.alert(text="程序已执行完成", title="Test")
 
 # main()
@@ -292,10 +294,11 @@ def main():
 
 
 if __name__ == "__main__":
+    加入定时执行程序
     sch = BlockingScheduler()
     sch.add_job(main, 'cron', day_of_week='0-6', hour=14, minute=10, second=20)
     print("Ctrl+0  to exit".format(("Break" if os.name == "nt" else "C  ")))
-    print("开始时间： "+str(datetime.datetime.now()))
+
     try:
         sch.start()
     except (KeyboardInterrupt,SystemExit):
