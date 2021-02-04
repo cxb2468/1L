@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hqyj.dao.SaledrugDao">
+<!-- namespace必须与对应接口全类名一致 ；id必须与对应接口的某个方法名一致-->
+	
+	
+	<select id="querysaledrugAll" resultType="com.hqyj.bean.Saledrug">
+		select * from saledrug
+	</select>
+	<select id="saledrugadd" resultType="com.hqyj.bean.Saledrug">
+		 insert into saledrug(customer_id,drug_id,sale_number,date,price) values(#{customer_id},#{drug_id},#{sale_number},#{date},#{price})
+	</select>
+		<delete id="saledrugdelete" parameterType="int">
+		delete from saledrug where id=#{id}
+	</delete>
+	
+	<select id="querysaledrugById" resultType="com.hqyj.bean.Saledrug">
+		select * from saledrug where id=#{id}
+	</select>
+	<select id="querysaledrug" resultType="com.hqyj.bean.Saledrug">
+		select * from saledrug
+		<include refid="saledrug_where"></include>
+	</select>
+	
+	<sql id="saledrug_where">
+        <!-- where标签的作用：会自动向sql语句中添加where关键字; 会去掉第一个条件的and关键字-->
+        <where>
+            <if test="customer_id!=null and customer_id!=''">
+                and customer_id=#{customer_id}
+            </if>
+             <if test="drug_id!=null and drug_id!=''">
+                and drug_id=#{drug_id}
+            </if>
+             <if test="sale_number!=null and sale_number!=''">
+                and sale_number=#{sale_number}
+            </if>
+             <if test="date!=null and date!=''">
+                and date=#{date}
+            </if>
+             
+             <if test="price!=null and price!=''">
+                and price=#{price}
+            </if>
+        </where>
+     </sql>
+	
+	<select id="saledrugupdate" resultType="com.hqyj.bean.Saledrug">
+		update saledrug set customer_id=#{customer_id},drug_id=#{drug_id},sale_number=#{sale_number},date=#{date},price=#{price}  where id=#{id}
+	</select>
+	
+	
+	
+</mapper>

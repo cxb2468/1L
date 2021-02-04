@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="Drug administration system"
+  id="myeclipse.1539939077690"
+  context-root="/Drug administration system"
+  j2ee-spec="6.0"
+  archive="Drug administration system.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

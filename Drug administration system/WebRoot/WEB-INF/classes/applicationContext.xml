@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"  
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/mvc/spring-jdbc.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd  
+		">
+		
+	<!-- 启用mvc注解方式 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+	
+	<!-- 静态加载 -->
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/img/" mapping="/img/**"></mvc:resources>
+	<mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
+	<!-- 自动扫描包 -->
+	<context:component-scan base-package="com.hqyj"></context:component-scan>
+	
+	<!-- 配置视图解析器，定义跳转页面的前缀和后缀 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 设置数据源：连接mysql数据库 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql://localhost:3306/drugmanager"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="tiger"></property>
+	</bean>
+	
+	
+	<!-- mybatis的SqlSession的工厂:SqlSessionFactoryBean;引用数据源：dataSource；MyBatis加载配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+	
+	<!-- mybatis自动扫描加载sql映射文件/接口 ：MapperScannerConfigurer sqlSessionFactory  
+		basePackage:指定sql映射文件/接口所在的包（自动扫描-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hqyj.dao"></property>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- 事务管理： -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- 使用声明式事务 -->
+	<tx:annotation-driven transaction-manager="txManager"/>
+</beans>
