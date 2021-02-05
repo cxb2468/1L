@@ -2,7 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/0205_/WBTopicCheckTool" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/LibraryManageDesktopApp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/WBTopicCheckTool" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/health_parent" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/spring-boot-vue" vcs="Git" />
   </component>
