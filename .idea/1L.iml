@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/0202_daBaoImage/demo" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/LibraryManageDesktopApp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/WBTopicCheckTool" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/0225_PyQt5" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
