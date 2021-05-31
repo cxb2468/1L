@@ -311,6 +311,11 @@ def main():
         autoZhuJiao(yingXiong3[0], yingXiong3[1])
         pyautogui.click(fanHuiX)
 
+    #20210531   头像 用户中心 官方特权 领取
+    #20210531  邮件  一键领取
+
+
+
     pyautogui.alert(text="程序已执行完成", title="Test")
 
 main()
