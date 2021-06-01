@@ -13,6 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/0225_PyQt5" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/0427bilibili-kit" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/0426" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/0601" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
