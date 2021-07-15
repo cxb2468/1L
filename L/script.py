@@ -18,7 +18,7 @@ class script:
         def whatWindow():
             print('操作系统:', sys.platform)
         def readFile():
-            imgs = scriptDef.scriptDef.load_imgs()
+            imgs = scriptDef.load_imgs()
             # pyautogui.PAUSE = 0.05
             pyautogui.FAILSAFE = False
             return imgs
@@ -26,9 +26,20 @@ class script:
 
     def saoDang(self):
         starttime = datetime.datetime.now()
-        time.sleep(2)
+        time.sleep(4)
         pyautogui.PAUSE = 1.3
-        pyautogui.doubleClick(app)
+        # pyautogui.doubleClick(app)
+        want = self.imgs['logo']
+        im = numpy.array(mss.mss().grab(self.monitor))
+        screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+        pts = scriptDef.locate(screen, want, 0)
+        print("分隔线——————————————————————————————————————")
+        print(pts)
+        xy = pts[0]
+        print(xy)
+        time.sleep(1)
+        pyautogui.doubleClick(xy)
+
 
         # 1715,120点像素 不等于 该点像素时 sleep 0.5,如果等于，则跳出while 循环。
         scriptDef.is_color(gongGao[0], gongGao[1], color_gongGao)
@@ -211,6 +222,7 @@ class script:
         # 读取羁绊头像图片
         # imgs = scriptDef.load_imgs()
         # 根据头像位置，执行羁绊
+        pyautogui.click(1260, 1000)
         for i in ['omiga', 'jszg', 'lisi']:
             want = self.imgs[i]
             size = want[0].shape
@@ -233,6 +245,7 @@ class script:
                 pyautogui.dragTo(x=1860, y=258, duration=3, button='left')
                 pyautogui.click(1860, 258)
             pyautogui.click(xy)
+            scriptDef.mingYun()
 
         # 程序结束时间
         endtime = datetime.datetime.now()

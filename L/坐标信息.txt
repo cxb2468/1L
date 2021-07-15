@@ -37,4 +37,5 @@ weiTuo3 =  1475,900
 yingXiong3 =  1000,300
 chaoShiKong = 960,650
 shiLian = 1600,1000
+jiBanZhiDi=960,400
 
