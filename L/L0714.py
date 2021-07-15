@@ -135,20 +135,6 @@ def locate(target,want, show=bool(0), msg=bool(0)):
         print("Got it, guys!")
 
     return loc_pos
-#读取羁绊 目标头像   批量
-def load_imgs():
-    mubiao = {}
-    path = os.getcwd() + '\png'
-    file_list = os.listdir(path)
-    for file in file_list:
-        name = file.split('.')[0]
-        file_path = path + '\\' + file
-        print(file_path)
-        a = [cv2.imread(file_path), 0.95, name]
-        mubiao[name] = a
-    print(a)
-    return mubiao
-
 
 
 # 进入命运之斐  扫荡命运1至命运3
@@ -214,6 +200,8 @@ def main():
         print(pyautogui.position())
         print(pyautogui.screenshot().getpixel((pyautogui.position())))
 
+
+
     #判断 勇气的旗帜像素 ，确定有没有买月卡
     pyautogui.moveTo(qiZhi)
 
@@ -221,6 +209,7 @@ def main():
     # 判断是否在秘境像素的上
     # is_color(miJing[0], miJing[1], color_miJing)
     pyautogui.click(miJing)
+
     # 兄贵
     pyautogui.click(xiongGui)
     # 周1、4、7 andong  周2、5 luoji  周3、6 nimu
@@ -299,6 +288,8 @@ def main():
     pyautogui.click(fanHuiX)
     pyautogui.click(fanHuiX)
 
+
+
     #好友
     pyautogui.click(60, 615)
     time.sleep(1.5)
@@ -306,6 +297,7 @@ def main():
     pyautogui.click(700, 970)
     pyautogui.click(fanHuiX)
     time.sleep(2)
+
 
     # 练兵
     # is_color(lianBing[0], lianBing[1], color_lianBing)
@@ -346,6 +338,7 @@ def main():
         autoZhuJiao(yingXiong3[0], yingXiong3[1])
         pyautogui.click(fanHuiX)
 
+
    #官方特权
     pyautogui.click(88,95)
     pyautogui.click(1330, 760)
@@ -364,100 +357,103 @@ def main():
     pyautogui.click(1750, 120)
 
     #羁绊
-    # 读取羁绊头像图片
-    imgs = load_imgs()
-    # 根据头像位置，执行羁绊
+    time.sleep(3)
     pyautogui.click(1260, 1000)
-    for i in ['omiga','jszg','lisi']:
-        want = imgs[i]
-        print(want)
-        size = want[0].shape
-        h, w, ___ = size
-        print(h, w)
-        time.sleep(3)
-        for j in range(1, 12):
-            monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-            im = numpy.array(mss.mss().grab(monitor))
-            screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+    for i in range(1, 12):
+        a = [cv2.imread(r"D:\1L\L\png\omiga.png"), 0.95, 'omiga']
+        monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
+        im = numpy.array(mss.mss().grab(monitor))
+        screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
 
-            a = want
+        pts = locate(screen, a, 0)
+        print(pts)
+        if not len(pts) == 0:
+            xy = pts[0]
+            print(xy)
+            break
+        time.sleep(1)
+        pyautogui.click(1854, 775)
+        pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
+        pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
+    pyautogui.click(xy)
+    mingYun()
 
-            pts = locate(screen, a, 0)
-            print("分隔线——————————————————————————————————————")
-            print(pts)
-            if not len(pts) == 0:
-                xy = pts[0]
-                print(xy)
-                break
-            time.sleep(1)
-            pyautogui.click(1860, 800)
-            pyautogui.dragTo(x=1860, y=258, duration=3, button='left')
-            pyautogui.click(1860, 258)
-        pyautogui.click(xy)
-        mingYun()
-    # #羁绊
+    time.sleep(3)
+    pyautogui.click(1260, 1000)
+    for i in range(1, 12):
+        a = [cv2.imread(r"D:\1L\L\png\jszg.png"), 0.95, 'jszg']
+        monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
+        im = numpy.array(mss.mss().grab(monitor))
+        screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+
+        pts = locate(screen, a, 0)
+        print(pts)
+        if not len(pts) == 0:
+            xy = pts[0]
+            print(xy)
+            break
+        time.sleep(1)
+        pyautogui.click(1854, 775)
+        pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
+        pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
+    pyautogui.click(xy)
+    mingYun()
+
+    time.sleep(3)
+    pyautogui.click(1260, 1000)
+    for i in range(1, 12):
+        a = [cv2.imread(r"D:\1L\L\png\lisi.png"), 0.95, 'lisi']
+        monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
+        im = numpy.array(mss.mss().grab(monitor))
+        screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+
+        pts = locate(screen, a, 0)
+        print(pts)
+        if not len(pts) == 0:
+            xy = pts[0]
+            print(xy)
+            break
+        time.sleep(1)
+        pyautogui.click(1854, 775)
+        pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
+        pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
+    pyautogui.click(xy)
+    mingYun()
+
+    # 羁绊
+    # 读取羁绊头像图片
+    # imgs = load_imgs()
+    # # 根据头像位置，执行羁绊
     # time.sleep(3)
     # pyautogui.click(1260, 1000)
-    # for i in range(1, 12):
-    #     a = [cv2.imread(r"D:\1L\L\png\omiga.png"), 0.95, 'omiga']
-    #     monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-    #     im = numpy.array(mss.mss().grab(monitor))
-    #     screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+    # for i in ['omiga','jszg','lisi']:
+    #     want = imgs[i]
+    #     print(want)
+    #     size = want[0].shape
+    #     h, w, ___ = size
+    #     print(h, w)
+    #     time.sleep(3)
+    #     for j in range(1, 12):
+    #         monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
+    #         im = numpy.array(mss.mss().grab(monitor))
+    #         screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
     #
-    #     pts = locate(screen, a, 0)
-    #     print(pts)
-    #     if not len(pts) == 0:
-    #         xy = pts[0]
-    #         print(xy)
-    #         break
-    #     time.sleep(1)
-    #     pyautogui.click(1854, 775)
-    #     pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
-    #     pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
-    # pyautogui.click(xy)
-    # mingYun()
+    #         a = want
     #
-    # time.sleep(3)
-    # pyautogui.click(1260, 1000)
-    # for i in range(1, 12):
-    #     a = [cv2.imread(r"D:\1L\L\png\jszg.png"), 0.95, 'jszg']
-    #     monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-    #     im = numpy.array(mss.mss().grab(monitor))
-    #     screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-    #
-    #     pts = locate(screen, a, 0)
-    #     print(pts)
-    #     if not len(pts) == 0:
-    #         xy = pts[0]
-    #         print(xy)
-    #         break
-    #     time.sleep(1)
-    #     pyautogui.click(1854, 775)
-    #     pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
-    #     pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
-    # pyautogui.click(xy)
-    # mingYun()
-    #
-    # time.sleep(3)
-    # pyautogui.click(1260, 1000)
-    # for i in range(1, 12):
-    #     a = [cv2.imread(r"D:\1L\L\png\lisi.png"), 0.95, 'lisi']
-    #     monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-    #     im = numpy.array(mss.mss().grab(monitor))
-    #     screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-    #
-    #     pts = locate(screen, a, 0)
-    #     print(pts)
-    #     if not len(pts) == 0:
-    #         xy = pts[0]
-    #         print(xy)
-    #         break
-    #     time.sleep(1)
-    #     pyautogui.click(1854, 775)
-    #     pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
-    #     pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
-    # pyautogui.click(xy)
-    # mingYun()
+    #         pts = locate(screen, a, 0)
+    #         print("分隔线——————————————————————————————————————")
+    #         print(pts)
+    #         if not len(pts) == 0:
+    #             xy = pts[0]
+    #             print(xy)
+    #             break
+    #         time.sleep(1)
+    #         pyautogui.click(1860, 800)
+    #         pyautogui.dragTo(x=1860, y=258, duration=3, button='left')
+    #         pyautogui.click(1860, 258)
+    #     pyautogui.click(xy)
+    #     mingYun()
+    # 羁绊
 
     #程序结束时间
     endtime = datetime.datetime.now()
@@ -469,7 +465,7 @@ def main():
 # def tick():
 #     print("Tick! time is : "+ str(datetime.now()))
 #     print("Tick! time is : %s" % datetime.now())
-
+#     print()
 
 
 if __name__ == "__main__":
@@ -479,6 +475,7 @@ if __name__ == "__main__":
     # sch = BlockingScheduler()
     # sch.add_job(main, 'cron', day_of_week='0-6', hour=14, minute=10, second=20)
     # print("Ctrl+0  to exit".format(("Break" if os.name == "nt" else "C  ")))
+    #
     # try:
     #     sch.start()
     # except (KeyboardInterrupt,SystemExit):
