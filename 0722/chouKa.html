@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>10张卡9张白卡1张红卡，抽卡并点击按钮：</p>
+
+<input id="age" value="10000">
+
+<button onclick="tongji()">抽一下试试</button>
+
+<p id="demo"></p>
+
+<script>
+var list = [];
+var max =10;
+
+function rand(last){
+return Math.floor(Math.random() * (last));
+}
+
+function choujiangfanghui(){
+  var length = list.length;
+  return list[rand(length)];
+}
+
+function choujiangbufanghui(){
+  var length = list.length;
+  var index = rand(length);
+  var get = list[index];
+  list.splice(index,1);
+  return get;
+}
+
+function init(){
+  var index = rand(max);
+
+  list = [];
+
+  for (var i=0;i< index;i++){
+      list.push(0);
+  }
+  list.push(1);
+  for (var i = index; i<max-1;i++){
+     list.push(0);
+  }
+}
+
+function tongji(){
+    var fanghui = 0;
+	var bufanghui = 0;
+	var temp;
+
+	var max_try = 10000;
+	init();
+	//抽卡后放回 重置爆率
+	for(var i=0;i<max_try;i++){
+	    temp = choujiangfanghui();
+		if(temp == 1){
+		    fanghui++;
+			init();
+		}
+	}
+
+	//抽卡后不放回  保底爆率
+	init();
+	for (var i=0;i<max_try;i++){
+	    temp = choujiangbufanghui();
+		if(temp == 1){
+		    bufanghui++;
+			init();
+		}
+	}
+
+	//比较结果
+
+	console.log("SSR 爆率1%的情况下")
+	console.log("SSR无保底: "+fanghui);
+	console.log("SSR 100抽有保底: "+bufanghui);
+    console.log("    ")
+
+}
+
+
+
+
+</script>
+
+</body>
+</html>
