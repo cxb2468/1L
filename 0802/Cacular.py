@@ -1,8 +1,8 @@
-import Cacular_Form
+import Ui_Form
 import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
 
-class Cacular(QWidget, Cacular_Form):
+class Cacular(QWidget, Ui_Form):
     """docstring for Cacular"""
     def __init__(self):
         super(Cacular, self).__init__()
@@ -85,4 +85,5 @@ class Cacular(QWidget, Cacular_Form):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     Ca = Cacular()
+    Ca.show()
     sys.exit(app.exec_())

@@ -1,0 +1,11 @@
+venv
+*.pyc
+.vscode
+downloads
+dist
+build
+.eggs
+.DS_Store
+kindleHelper.build
+src/data
+src/config
