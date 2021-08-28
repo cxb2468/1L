@@ -198,14 +198,16 @@ def main():
     want = imgs['mhmnz']
     capture(want)
 
-    #世界
-    want = imgs['shiJie']
-    capture(want)
-
     #每日签到
     pyautogui.click(1830,75)
     time.sleep(1)
     pyautogui.click(1830,75)
+
+    #世界
+    want = imgs['shiJie']
+    capture(want)
+
+
 
     #秘境
     want = imgs['miJing']
