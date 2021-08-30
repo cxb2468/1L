@@ -199,9 +199,14 @@ def main():
     capture(want)
 
     #每日签到
+    time.sleep(4)
     pyautogui.click(1830,75)
     time.sleep(1)
     pyautogui.click(1830,75)
+    time.sleep(1)
+    pyautogui.click(1830,75)
+
+
 
     #世界
     want = imgs['shiJie']
@@ -396,10 +401,12 @@ def main():
         pyautogui.click(x=1870, y=230, interval=0.0, duration=0.0)
     pyautogui.click(xy)
     mingYun()
+    print("第二次羁绊结束")
 
     time.sleep(3)
     want = imgs['jiBan']
     capture(want)
+
     for i in range(1, 12):
         a = [cv2.imread(r"D:\1L\L\png\3.png"), 0.95, '3']
         monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
