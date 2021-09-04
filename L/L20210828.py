@@ -178,124 +178,124 @@ def main():
     # 读取png目录图片库
     imgs = readFile()
 
-    #开启程序 根据logo 定位 点击
-    want = imgs['logo']
-    monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-    im = numpy.array(mss.mss().grab(monitor))
-    screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-    pts = locate(screen, want, 0)
-    print(pts)
-    if not len(pts) == 0:
-        xy = pts[0]
-        print(xy)
-    pyautogui.doubleClick(xy)
-
-    # 循环截图  找到X 图片 点击
-    want = imgs['x']
-    capture(want)
-
-    #登录界面
-    want = imgs['mhmnz']
-    capture(want)
-
-    #每日签到
-    time.sleep(4)
-    pyautogui.click(1830,75)
-    time.sleep(1)
-    pyautogui.click(1830,75)
-    time.sleep(1)
-    pyautogui.click(1830,75)
-
-
-
-    #世界
-    want = imgs['shiJie']
-    capture(want)
-
-
-
-    #秘境
-    want = imgs['miJing']
-    capture(want)
-    #兄贵健身房
-    # 兄贵
-    pyautogui.click(xiongGui)
-    # 周1、4、7 andong  周2、5 luoji  周3、6 nimu
-    day = datetime.datetime.now().isoweekday()
-    if day == 2 or day == 5:
-        pyautogui.click(luoJi)
-    elif day == 3 or day == 6:
-        pyautogui.click(niMu)
-    else:
-        pyautogui.click(anDong)
-
-    time.sleep(1)
-    pyautogui.click(xgQiu)
-    pyautogui.click(saoDangX)
-    pyautogui.click(queRenX)  # 第一次扫荡
-    time.sleep(1)
-    pyautogui.click(saoDangXG)  # 第二次扫荡
-    time.sleep(1)
-    # pyautogui.click(800,690) #取消按钮
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-
-    # 女神
-    pyautogui.click(nvShen)
-    pyautogui.click(qiuX)
-    pyautogui.click(saoDangX)
-    pyautogui.click(queRenX)  # 第一次扫荡
-    time.sleep(1)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-
-    # 拖动秘境 进入羁绊
-    pyautogui.click(220, 1055)  # (返回后起点)
-    pyautogui.dragTo(x=220, y=100, duration=4, button='left')
-    # 羁绊
-    pyautogui.click(jiBan)
-    pyautogui.click(qiuX)
-    pyautogui.click(saoDangX)
-    pyautogui.click(queRenX)
-    time.sleep(2)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-
-    # 拖动秘境 进入神殿
-    pyautogui.click(220, 1055)  # (返回后起点)
-    pyautogui.dragTo(x=220, y=100, duration=4, button='left')
-    # 神殿
-    pyautogui.click(shenDian)
-    pyautogui.click(qiuSD)
-    pyautogui.click(saoDangX)
-    pyautogui.click(queRenX)
-    time.sleep(2)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-
-    # 神契
-    pyautogui.click(220, 1055)  # (返回后起点)
-    pyautogui.dragTo(x=220, y=100, duration=4, button='left')
-    pyautogui.click(220, 1055)  # (返回后起点)
-    pyautogui.dragTo(x=220, y=100, duration=2, button='left')
-    time.sleep(1)
-    pyautogui.click(900, 900)
-    pyautogui.click(1800, 950)
-    time.sleep(1.5)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
-
-    # 判断下是否回到主界面
-    # 任务
-    time.sleep(1)
-    want = imgs['renWu']
-    capture(want)
-    time.sleep(2)
-    pyautogui.click(1700, 925)
-    time.sleep(2)
-    pyautogui.click(fanHuiX)
-    pyautogui.click(fanHuiX)
+    # #开启程序 根据logo 定位 点击
+    # want = imgs['logo']
+    # monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
+    # im = numpy.array(mss.mss().grab(monitor))
+    # screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
+    # pts = locate(screen, want, 0)
+    # print(pts)
+    # if not len(pts) == 0:
+    #     xy = pts[0]
+    #     print(xy)
+    # pyautogui.doubleClick(xy)
+    #
+    # # 循环截图  找到X 图片 点击
+    # want = imgs['x']
+    # capture(want)
+    #
+    # #登录界面
+    # want = imgs['mhmnz']
+    # capture(want)
+    #
+    # #每日签到
+    # time.sleep(4)
+    # pyautogui.click(1830,75)
+    # time.sleep(1)
+    # pyautogui.click(1830,75)
+    # time.sleep(1)
+    # pyautogui.click(1830,75)
+    #
+    #
+    #
+    # #世界
+    # want = imgs['shiJie']
+    # capture(want)
+    #
+    #
+    #
+    # #秘境
+    # want = imgs['miJing']
+    # capture(want)
+    # #兄贵健身房
+    # # 兄贵
+    # pyautogui.click(xiongGui)
+    # # 周1、4、7 andong  周2、5 luoji  周3、6 nimu
+    # day = datetime.datetime.now().isoweekday()
+    # if day == 2 or day == 5:
+    #     pyautogui.click(luoJi)
+    # elif day == 3 or day == 6:
+    #     pyautogui.click(niMu)
+    # else:
+    #     pyautogui.click(anDong)
+    #
+    # time.sleep(1)
+    # pyautogui.click(xgQiu)
+    # pyautogui.click(saoDangX)
+    # pyautogui.click(queRenX)  # 第一次扫荡
+    # time.sleep(1)
+    # pyautogui.click(saoDangXG)  # 第二次扫荡
+    # time.sleep(1)
+    # # pyautogui.click(800,690) #取消按钮
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    #
+    # # 女神
+    # pyautogui.click(nvShen)
+    # pyautogui.click(qiuX)
+    # pyautogui.click(saoDangX)
+    # pyautogui.click(queRenX)  # 第一次扫荡
+    # time.sleep(1)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    #
+    # # 拖动秘境 进入羁绊
+    # pyautogui.click(220, 1055)  # (返回后起点)
+    # pyautogui.dragTo(x=220, y=100, duration=4, button='left')
+    # # 羁绊
+    # pyautogui.click(jiBan)
+    # pyautogui.click(qiuX)
+    # pyautogui.click(saoDangX)
+    # pyautogui.click(queRenX)
+    # time.sleep(2)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    #
+    # # 拖动秘境 进入神殿
+    # pyautogui.click(220, 1055)  # (返回后起点)
+    # pyautogui.dragTo(x=220, y=100, duration=4, button='left')
+    # # 神殿
+    # pyautogui.click(shenDian)
+    # pyautogui.click(qiuSD)
+    # pyautogui.click(saoDangX)
+    # pyautogui.click(queRenX)
+    # time.sleep(2)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    #
+    # # 神契
+    # pyautogui.click(220, 1055)  # (返回后起点)
+    # pyautogui.dragTo(x=220, y=100, duration=4, button='left')
+    # pyautogui.click(220, 1055)  # (返回后起点)
+    # pyautogui.dragTo(x=220, y=100, duration=2, button='left')
+    # time.sleep(1)
+    # pyautogui.click(900, 900)
+    # pyautogui.click(1800, 950)
+    # time.sleep(1.5)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
+    #
+    # # 判断下是否回到主界面
+    # # 任务
+    # time.sleep(1)
+    # want = imgs['renWu']
+    # capture(want)
+    # time.sleep(2)
+    # pyautogui.click(1700, 925)
+    # time.sleep(2)
+    # pyautogui.click(fanHuiX)
+    # pyautogui.click(fanHuiX)
 
     # 好友
     want = imgs['haoYou']
