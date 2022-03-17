@@ -1,10 +1,9 @@
-# -*- codeing =utf-8 -*-
-#  www.52pojie.com
 import requests
 import random
 from lxml import etree
 import time
 import re
+
 
 
 def test_cookie():
@@ -19,8 +18,7 @@ def test_cookie():
     if rep.status_code == 200:
         print("登录成功")
         # checkin()
-        for i in range(10):  # 想执行几次评分，评论，就改多少
-
+        for i in range(1):
             comment()
             time.sleep(7)
             score()
@@ -51,8 +49,7 @@ def comment():
         Referer: https://bbs.125.la/thread-14721307-1-1.html
         Accept-Encoding: gzip, deflate, br
         Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-        Cookie: 换成自己cookies
-
+        Cookie:lDlk_ecc9_lastvisit=1647405725; lDlk_ecc9_client_created=1647409343; lDlk_ecc9_client_token=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_connect_login=1; lDlk_ecc9_connect_is_bind=1; lDlk_ecc9_connect_uin=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_stats_qc_login=3; lDlk_ecc9_myrepeat_rr=R0; lDlk_ecc9_nofavfid=1; lDlk_ecc9_ulastactivity=abb4hl9Y2UfPFUWxdOgst2v28rqy1u0RqJfkWlNIvuRJqW74Hk47; Hm_lvt_fa32dadde3745af309b587b38d20ea1d=1647408605,1647478272; PHPSESSID=0tabgf7rli69ftcsrmvbm10gei; Hm_lpvt_c6927066ad2f2806b262f20b26fabff4=1647478293; Hm_lvt_c6927066ad2f2806b262f20b26fabff4=1647408661,1647478293; lDlk_ecc9_st_t=577977%7C1647478320%7C3ee35baa3a92ad2b200ae6946cd069d0; lDlk_ecc9_atarget=1; lDlk_ecc9_forum_lastvisit=D_125_1647478320; lDlk_ecc9_smile=4D1; lDlk_ecc9_sid=MwMaW6; lDlk_ecc9_lip=112.25.180.198%2C1647480525; lDlk_ecc9_st_p=577977%7C1647480526%7C50781de5407bc69a6c6c641d9118f4d0; lDlk_ecc9_visitedfid=16D125; lDlk_ecc9_viewid=tid_14716817; lDlk_ecc9_lastcheckfeed=577977%7C1647480527; lDlk_ecc9_sendmail=1; lDlk_ecc9_lastact=1647480543%09plugin.php%09vest; Hm_lpvt_fa32dadde3745af309b587b38d20ea1d=1647480527
         """
     dic = get_canshu()
     tid = dic['tid']
@@ -75,12 +72,13 @@ def trans_headers2(text):  # 格式化请求头
 def get_canshu():  # 获取formhash , tid , pid,以字典返回
     global page_number
     url = 'https://bbs.125.la/thread-' + get_page()[page_number] + '-1-1.html'
+    print(get_page()[page_number])
     text = '''
     accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
     accept-encoding: gzip, deflate, br
     accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
     cache-control: max-age=0
-    cookie: 换成自己cookies
+    Cookie:lDlk_ecc9_lastvisit=1647405725; lDlk_ecc9_client_created=1647409343; lDlk_ecc9_client_token=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_connect_login=1; lDlk_ecc9_connect_is_bind=1; lDlk_ecc9_connect_uin=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_stats_qc_login=3; lDlk_ecc9_myrepeat_rr=R0; lDlk_ecc9_nofavfid=1; lDlk_ecc9_ulastactivity=abb4hl9Y2UfPFUWxdOgst2v28rqy1u0RqJfkWlNIvuRJqW74Hk47; Hm_lvt_fa32dadde3745af309b587b38d20ea1d=1647408605,1647478272; PHPSESSID=0tabgf7rli69ftcsrmvbm10gei; Hm_lpvt_c6927066ad2f2806b262f20b26fabff4=1647478293; Hm_lvt_c6927066ad2f2806b262f20b26fabff4=1647408661,1647478293; lDlk_ecc9_st_t=577977%7C1647478320%7C3ee35baa3a92ad2b200ae6946cd069d0; lDlk_ecc9_atarget=1; lDlk_ecc9_forum_lastvisit=D_125_1647478320; lDlk_ecc9_smile=4D1; lDlk_ecc9_sid=MwMaW6; lDlk_ecc9_lip=112.25.180.198%2C1647480525; lDlk_ecc9_st_p=577977%7C1647480526%7C50781de5407bc69a6c6c641d9118f4d0; lDlk_ecc9_visitedfid=16D125; lDlk_ecc9_viewid=tid_14716817; lDlk_ecc9_lastcheckfeed=577977%7C1647480527; lDlk_ecc9_sendmail=1; lDlk_ecc9_lastact=1647480543%09plugin.php%09vest; Hm_lpvt_fa32dadde3745af309b587b38d20ea1d=1647480527
     sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="99", "Microsoft Edge";v="99"
     sec-ch-ua-mobile: ?0
     sec-ch-ua-platform: "Windows"
@@ -95,13 +93,13 @@ def get_canshu():  # 获取formhash , tid , pid,以字典返回
     rep = requests.get(url=url, headers=headers).text
     # pattern=re.compile(r'formhash=(.*?)\"')
     formhash_init = re.search(r'formhash=(?P<formhash>.*?)"', rep)
-    tid_init = re.search(r'&tid=(?P<tid>.*?)"', rep)
     pid_init = re.search(r'pid(?P<pid>.*?)"', rep)
 
     cansu = {}
     cansu['formhash'] = formhash_init.group("formhash")
-    cansu['tid'] = tid_init.group("tid")
+    cansu['tid'] = get_page()[page_number]
     cansu['pid'] = pid_init.group("pid")
+    print(cansu)
     return cansu
 
 
@@ -119,12 +117,13 @@ def score():  # 进行每日评分，注意，每日4分
         formhash = dic['formhash']
         url_page = 'https://bbs.125.la/thread-' + tid + '-1-1.html'
         rep = session.get(url=url_page, headers=headers)
+        print(url_page)
         print("获取pid={}与tid={}与formash={}成功，开始自动评分".format(pid, tid, formhash))
         # 开始评分
         url_score = 'https://bbs.125.la/forum.php?mod=misc&action=rate&ratesubmit=yes&infloat=yes&inajax=1'
         data = 'formhash=' + formhash + '&tid=' + tid + '&pid=' + pid + '&referer=https%3A%2F%2Fbbs.125.la%2Fforum.php%3Fmod%3Dviewthread%26tid%3D' + tid + '%26page%3D0%23pid' + pid + '&handlekey=rate&score4=%2B1&reason=%E6%84%9F%E8%B0%A2%E5%88%86%E4%BA%AB%EF%BC%8C%E5%BE%88%E7%BB%99%E5%8A%9B%EF%BC%81%7E'
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        headers['Referer'] = 'https://bbs.125.la/thread-' + tid + '1-1.html'
+        headers['Referer'] = 'https://bbs.125.la/thread-' + tid + '-1-1.html'
         rep_score = session.post(url=url_score, data=data, headers=headers)
         print(rep_score.text)
     except:
@@ -138,7 +137,7 @@ def get_page():
     accept-encoding: gzip, deflate, br
     accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
     cache-control: max-age=0
-    cookie: 换成自己cookies
+    Cookie:lDlk_ecc9_lastvisit=1647405725; lDlk_ecc9_client_created=1647409343; lDlk_ecc9_client_token=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_connect_login=1; lDlk_ecc9_connect_is_bind=1; lDlk_ecc9_connect_uin=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_stats_qc_login=3; lDlk_ecc9_myrepeat_rr=R0; lDlk_ecc9_nofavfid=1; lDlk_ecc9_ulastactivity=abb4hl9Y2UfPFUWxdOgst2v28rqy1u0RqJfkWlNIvuRJqW74Hk47; Hm_lvt_fa32dadde3745af309b587b38d20ea1d=1647408605,1647478272; PHPSESSID=0tabgf7rli69ftcsrmvbm10gei; Hm_lpvt_c6927066ad2f2806b262f20b26fabff4=1647478293; Hm_lvt_c6927066ad2f2806b262f20b26fabff4=1647408661,1647478293; lDlk_ecc9_st_t=577977%7C1647478320%7C3ee35baa3a92ad2b200ae6946cd069d0; lDlk_ecc9_atarget=1; lDlk_ecc9_forum_lastvisit=D_125_1647478320; lDlk_ecc9_smile=4D1; lDlk_ecc9_sid=MwMaW6; lDlk_ecc9_lip=112.25.180.198%2C1647480525; lDlk_ecc9_st_p=577977%7C1647480526%7C50781de5407bc69a6c6c641d9118f4d0; lDlk_ecc9_visitedfid=16D125; lDlk_ecc9_viewid=tid_14716817; lDlk_ecc9_lastcheckfeed=577977%7C1647480527; lDlk_ecc9_sendmail=1; lDlk_ecc9_lastact=1647480543%09plugin.php%09vest; Hm_lpvt_fa32dadde3745af309b587b38d20ea1d=1647480527
     referer: https://bbs.125.la/
     sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="99", "Microsoft Edge";v="99"
     sec-ch-ua-mobile: ?0
@@ -154,6 +153,7 @@ def get_page():
     url = 'https://bbs.125.la/forum-98-2.html'
     session = requests.session()
     rep = session.get(url=url, headers=headers)
+    print(rep)
     tree = etree.HTML(rep.text)
     tbody_list = tree.xpath('/html/body/div[7]/div[5]/div/div/div[5]/div[2]/form/table/tbody')
     id_list = []
@@ -189,6 +189,19 @@ def checkin():  # 签到
 
 
 if __name__ == "__main__":
-    cookies = 'lDlk_ecc9_saltkey=gylEwmBw; lDlk_ecc9_lastvisit=1647405725; Hm_lvt_fa32dadde3745af309b587b38d20ea1d=1647408605; PHPSESSID=jrep9hhiut0sa3epv6ucfk3lnh; lDlk_ecc9_con_request_uri=http%3A%2F%2Fbbs.125.la%2Fconnect.php%3Fmod%3Dlogin%26op%3Dcallback%26referer%3Dlogin.htm%253Fie%253Dtrue; lDlk_ecc9_sid=bQgkOo; lDlk_ecc9_client_created=1647409343; lDlk_ecc9_client_token=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_ulastactivity=2608thjHdHcVniyOJA4%2F0Ilw4apj6KmHG3JTGOKTv07vlP0EgyRj; lDlk_ecc9_auth=6abdMcN2zDfdYf%2BgpH2H%2FhTs815CdJMt3iyJd0Uc8u3BKkULrLaONXR9Dd%2BVp%2FcQF9hQQ9GVLt6X0aiw%2BO%2FHWnthV5Q; lDlk_ecc9_connect_login=1; lDlk_ecc9_connect_is_bind=1; lDlk_ecc9_connect_uin=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_stats_qc_login=3; lDlk_ecc9_myrepeat_rr=R0; lDlk_ecc9_nofavfid=1; lDlk_ecc9_lastcheckfeed=577977%7C1647410042; lDlk_ecc9_lastact=1647410043%09plugin.php%09vest; Hm_lpvt_fa32dadde3745af309b587b38d20ea1d=1647410027'
+    cookies = 'lDlk_ecc9_lastvisit=1647405725; lDlk_ecc9_client_created=1647409343; lDlk_ecc9_client_token=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_connect_login=1; lDlk_ecc9_connect_is_bind=1; lDlk_ecc9_connect_uin=E68E19C6A53BCAFB68D9EF859620A67B; lDlk_ecc9_stats_qc_login=3; lDlk_ecc9_myrepeat_rr=R0; lDlk_ecc9_nofavfid=1; lDlk_ecc9_ulastactivity=abb4hl9Y2UfPFUWxdOgst2v28rqy1u0RqJfkWlNIvuRJqW74Hk47; Hm_lvt_fa32dadde3745af309b587b38d20ea1d=1647408605,1647478272; PHPSESSID=0tabgf7rli69ftcsrmvbm10gei; Hm_lpvt_c6927066ad2f2806b262f20b26fabff4=1647478293; Hm_lvt_c6927066ad2f2806b262f20b26fabff4=1647408661,1647478293; lDlk_ecc9_st_t=577977%7C1647478320%7C3ee35baa3a92ad2b200ae6946cd069d0; lDlk_ecc9_atarget=1; lDlk_ecc9_forum_lastvisit=D_125_1647478320; lDlk_ecc9_smile=4D1; lDlk_ecc9_sid=MwMaW6; lDlk_ecc9_lip=112.25.180.198%2C1647480525; lDlk_ecc9_st_p=577977%7C1647480526%7C50781de5407bc69a6c6c641d9118f4d0; lDlk_ecc9_visitedfid=16D125; lDlk_ecc9_viewid=tid_14716817; lDlk_ecc9_lastcheckfeed=577977%7C1647480527; lDlk_ecc9_sendmail=1; lDlk_ecc9_lastact=1647480543%09plugin.php%09vest; Hm_lpvt_fa32dadde3745af309b587b38d20ea1d=1647480527'
     page_number = random.randint(0, 40)
+    print(page_number)
     test_cookie()
+
+# 腾讯云函数用这个
+# def main_handler(*args):  # 腾讯云函数
+#     main()
+#
+# def main():
+#     cookies = '换cookies'
+#     page_number = random.randint(0, 40)
+#     test_cookie()
+#
+# if __name__ == '__main__':
+#     main()
