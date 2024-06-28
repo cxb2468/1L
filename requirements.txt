@@ -1,0 +1,2 @@
+setuptools~=69.5.1
+xlsxwriter~=3.1.9
