@@ -1,0 +1,10 @@
+# 忽略构建内容
+out/
+test-build/
+release/
+# 忽略调试内容
+.vscode/
+__pycache__/
+*/__pycache__/
+# 忽略测试文件
+test*.py

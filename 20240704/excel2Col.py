@@ -7,6 +7,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 from tkinter import messagebox
+import os
 
 
 # 使用openpyxl进行保存并设置列宽
@@ -30,6 +31,8 @@ def save_df_to_excel_with_column_width(df, output_file_path, column_widths):
 
     try:
         wb.save(output_file_path)
+    except PermissionError:
+        print("文件正在被其他程序使用，请关闭后再试。")
     except Exception as e:
         print(f"An error occurred while saving the file: {e}")
 
@@ -37,6 +40,11 @@ def save_df_to_excel_with_column_width(df, output_file_path, column_widths):
 # Excel处理函数
 # Update process_excel to use the improved save function
 def process_excel(input_file_path, output_file_path):
+    if os.path.exists(output_file_path):
+        response = tk.messagebox.askyesno("警告", "输出文件已存在，是否覆盖？")
+        if not response:
+            return
+
     df = pd.read_excel(input_file_path)
     column_order = [
         '部门', '用户', '名称', '厂商',
@@ -49,6 +57,8 @@ def process_excel(input_file_path, output_file_path):
     column_widths = [10, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15]
     save_df_to_excel_with_column_width(df_reordered, output_file_path, column_widths)
 
+    print(f"Excel文件处理完成，保存路径为：{output_file_path}")
+
 
 # 选择文件对话框
 def select_input_file(entry):
@@ -60,8 +70,11 @@ def select_input_file(entry):
 # 选择输出目录对话框
 def select_output_directory(entry):
     directory = filedialog.askdirectory()
+    output_path = os.path.join(directory, "电脑管理台账.xlsx")
+    # Normalize the path or replace backslashes for display purposes
+    normalized_path = os.path.normpath(output_path).replace("\\", "/")
     entry.delete(0, tk.END)
-    entry.insert(0, directory)
+    entry.insert(0, normalized_path)
 
 
 # GUI提交处理逻辑
