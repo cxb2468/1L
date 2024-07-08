@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
 import threading
-from excel_read_write import load_workbook, Workbook
-from excel_read_write.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 
 def collect_data_and_style(sheet, key_column_index=0):

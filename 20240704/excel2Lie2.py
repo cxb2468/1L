@@ -3,7 +3,7 @@
 具体为保留前六列的前提下，把第六列以后的每一列都形成一个分表 ，并且不存在空元素
 """
 import excel_read_write
-from excel_read_write.utils import get_column_letter, column_index_from_string
+from openpyxl.utils import get_column_letter, column_index_from_string
 
 # openpyxl.load_workbook(需要打开的excel文件路径)
 wb = excel_read_write.load_workbook("D:\\1.xlsx")
