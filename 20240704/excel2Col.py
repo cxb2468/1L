@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 from openpyxl.utils import get_column_letter
 from tkinter import messagebox
 import os
@@ -28,6 +28,10 @@ def save_df_to_excel_with_column_width(df, output_file_path, column_widths):
     for row in ws.iter_rows():
         for cell in row:
             cell.alignment = Alignment(horizontal='left')
+
+    # Add bold font to header row
+    for cell in ws[1]:  # ws[1] refers to the first row
+        cell.font = Font(bold=True)
 
     try:
         wb.save(output_file_path)

@@ -1,5 +1,4 @@
 import pandas as pd
-import xlsxwriter
 import tkinter as tk
 from tkinter import filedialog
 
