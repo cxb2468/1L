@@ -100,7 +100,7 @@ def submit(input_entry, output_entry, submit_button):
 def setup_gui():
     global root
     root = tk.Tk()
-    root.title("Excel处理工具")
+    root.title("Excel处理工具(IT资产管理系统)")
     root.geometry("350x500")
     root.configure(bg="#F0F0F0")
     root.resizable(True, True)

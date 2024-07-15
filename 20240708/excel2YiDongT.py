@@ -86,8 +86,12 @@ def process_data(file_path1, file_path2, output_path):
         label_format = workbook.add_format({'bold': True, 'align': 'center'})
         worksheet.write(last_row, 2, '合计', label_format)
         worksheet.write(last_row + 1, 2, '优惠金额', label_format)
+        #折扣 1800元封顶
         discount = sum_value * 0.3
-        worksheet.write(last_row + 1, 3, discount, sum_format)
+        if discount <= 1800:
+            worksheet.write(last_row + 1, 3, discount, sum_format)
+        elif discount > 1800:
+            worksheet.write(last_row + 1, 3, 1800, sum_format)
         worksheet.write(last_row + 2, 2, '实际费用', label_format)
         worksheet.write(last_row + 2, 3, (sum_value - discount), sum_format)
 
@@ -124,7 +128,7 @@ def setup_gui():
               fg="white", activebackground="#45a049", relief=tk.FLAT, cursor="hand2").pack(pady=5, padx=10)
 
     # Output directory selection
-    tk.Label(root, text="选择输出目录:", font=("Arial", 12), bg="#F0F0F0").pack(pady=20)
+    tk.Label(root, text="选择输出目录并输入文件名:", font=("Arial", 12), bg="#F0F0F0").pack(pady=20)
     output_entry = tk.Entry(root, font=("Arial", 12), relief=tk.FLAT, bg="white")
     output_entry.pack(ipady=4, pady=10, padx=10)
     tk.Button(root, text="浏览", command=lambda: select_output_directory(output_entry), font=("Arial", 12), bg="#4CAF50",
