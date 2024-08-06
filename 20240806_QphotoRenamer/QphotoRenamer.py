@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import os
 import sys
 import datetime
@@ -14,6 +15,8 @@ import json
 import locale
 import subprocess
 
+
+
 # 获取当前脚本所在的目录路径
 base_path = os.path.dirname(os.path.abspath(__file__))
 icon_path = os.path.join(base_path, 'logo.ico')
@@ -27,18 +30,18 @@ unrenamed_files = 0
 current_renaming_file = None
 
 COMMON_DATE_FORMATS = [
-    "%Y%m%d_%H%M%S",    # 20230729_141530
+    "%Y%m%d_%H%M%S",  # 20230729_141530
     "%Y-%m-%d %H:%M:%S",  # 2023-07-29 14:15:30
     "%d-%m-%Y %H:%M:%S",  # 29-07-2023 14:15:30
-    "%Y%m%d",            # 20230729
-    "%H%M%S",            # 141530
-    "%Y-%m-%d",          # 2023-07-29
-    "%d-%m-%Y"           # 29-07-2023
+    "%Y%m%d",  # 20230729
+    "%H%M%S",  # 141530
+    "%Y-%m-%d",  # 2023-07-29
+    "%d-%m-%Y"  # 29-07-2023
 ]
 
 LANGUAGES = {
     "简体中文": {
-        "window_title": "照片批量重命名 QphotoRenamer 1.0.3 —— QwejayHuang",
+        "window_title": "照片批量重命名 QphotoRenamer 1.0",
         "description": "即将按照拍摄日期重命名照片。只需将照片拖入列表即可快速添加；点击“开始重命名”按钮批量重命名您的照片。",
         "start_renaming": "开始重命名",
         "undo_renaming": "撤销重命名",
@@ -87,6 +90,7 @@ LANGUAGES = {
     }
 }
 
+
 class PhotoRenamer:
     def __init__(self, root):
         self.root = root
@@ -108,7 +112,8 @@ class PhotoRenamer:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(fill=ttk.BOTH, expand=True)
 
-        self.label_description = ttk.Label(main_frame, text="只需将照片拖入列表即可快速添加；点击“开始”按钮批量重命名您的照片；双击查看文件；右键点击移除文件；单击文件显示EXIF信息。")
+        self.label_description = ttk.Label(main_frame,
+                                           text="只需将照片拖入列表即可快速添加；点击“开始”按钮批量重命名您的照片；双击查看文件；右键点击移除文件；单击文件显示EXIF信息。")
         self.label_description.pack(fill=ttk.X, padx=10, pady=10)
 
         scrollbar = ttk.Scrollbar(main_frame)
@@ -351,7 +356,8 @@ class PhotoRenamer:
             self.progress_var.set((current_index + 1) * 100 / self.files_listbox.size())
             return False
 
-        exif_data = self.get_heic_data(file_path) if filename.lower().endswith('.heic') else self.get_exif_data(file_path)
+        exif_data = self.get_heic_data(file_path) if filename.lower().endswith('.heic') else self.get_exif_data(
+            file_path)
         date_time = exif_data['DateTimeOriginalParsed'] if exif_data and 'DateTimeOriginalParsed' in exif_data else None
         if not date_time and self.use_modification_date_var.get():
             date_time = self.get_file_modification_date(file_path)
@@ -398,12 +404,14 @@ class PhotoRenamer:
                 for root, _, files in os.walk(path):
                     for file in files:
                         file_path = os.path.join(root, file)
-                        if (file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.heic', '.webp', '.raw')) and 
-                            file_path not in current_files):
+                        if (file_path.lower().endswith(
+                                ('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.heic', '.webp', '.raw')) and
+                                file_path not in current_files):
                             self.files_listbox.insert(ttk.END, file_path)
                             if self.auto_scroll_var.get():
                                 self.files_listbox.see(ttk.END)
-            elif (path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.heic', '.webp', '.raw')) and 
+            elif (path.lower().endswith(
+                    ('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.heic', '.webp', '.raw')) and
                   path not in current_files):
                 self.files_listbox.insert(ttk.END, path)
                 if self.auto_scroll_var.get():
@@ -427,20 +435,26 @@ class PhotoRenamer:
 
         ttk.Label(settings_frame, text=lang["rename_pattern"], anchor='w').grid(row=0, column=0, padx=10, pady=10)
         date_format_var = ttk.StringVar(value=DATE_FORMAT)
-        date_format_combobox = ttk.Combobox(settings_frame, textvariable=date_format_var, values=COMMON_DATE_FORMATS, state="readonly")
+        date_format_combobox = ttk.Combobox(settings_frame, textvariable=date_format_var, values=COMMON_DATE_FORMATS,
+                                            state="readonly")
         date_format_combobox.grid(row=0, column=1, padx=10, pady=10)
 
-        ttk.Label(settings_frame, text=lang["use_modification_date"], anchor='w').grid(row=1, column=0, padx=10, pady=10)
+        ttk.Label(settings_frame, text=lang["use_modification_date"], anchor='w').grid(row=1, column=0, padx=10,
+                                                                                       pady=10)
         use_modification_date_checkbox = Checkbutton(settings_frame, variable=self.use_modification_date_var)
         use_modification_date_checkbox.grid(row=1, column=1, padx=10, pady=10)
 
         ttk.Label(settings_frame, text=lang["language"], anchor='w').grid(row=2, column=0, padx=10, pady=10)
-        language_combobox = ttk.Combobox(settings_frame, textvariable=self.language_var, values=list(LANGUAGES.keys()), state="readonly")
+        language_combobox = ttk.Combobox(settings_frame, textvariable=self.language_var, values=list(LANGUAGES.keys()),
+                                         state="readonly")
         language_combobox.grid(row=2, column=1, padx=10, pady=10)
 
-        ttk.Label(settings_frame, text=lang["formats_explanation"], anchor='w').grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+        ttk.Label(settings_frame, text=lang["formats_explanation"], anchor='w').grid(row=3, column=0, columnspan=2,
+                                                                                     padx=10, pady=10)
 
-        save_button = ttk.Button(settings_frame, text=lang["save_settings"], command=lambda: self.save_settings(date_format_var.get(), self.language_var.get(), settings_window))
+        save_button = ttk.Button(settings_frame, text=lang["save_settings"],
+                                 command=lambda: self.save_settings(date_format_var.get(), self.language_var.get(),
+                                                                    settings_window))
         save_button.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
 
     def save_settings(self, date_format, language, settings_window):
@@ -458,7 +472,8 @@ class PhotoRenamer:
         settings_window.destroy()  # 关闭设置界面
 
     def select_files(self):
-        file_paths = filedialog.askopenfilenames(filetypes=[("Image files", "*.png *.jpg *.jpeg *.tiff *.bmp *.gif *.heic")])
+        file_paths = filedialog.askopenfilenames(
+            filetypes=[("Image files", "*.png *.jpg *.jpeg *.tiff *.bmp *.gif *.heic")])
         current_files = set(self.files_listbox.get(0, ttk.END))
         for file_path in file_paths:
             if file_path not in current_files:
@@ -475,12 +490,13 @@ class PhotoRenamer:
 
     def display_exif_info(self, widget, file_path):
         filename = os.path.basename(file_path)
-        exif_data = self.get_heic_data(file_path) if filename.lower().endswith('.heic') else self.get_exif_data(file_path)
+        exif_data = self.get_heic_data(file_path) if filename.lower().endswith('.heic') else self.get_exif_data(
+            file_path)
         date_time = exif_data['DateTimeOriginalParsed'] if exif_data and 'DateTimeOriginalParsed' in exif_data else None
         if not date_time:
             date_time = self.get_file_modification_date(file_path)
             exif_data = {'DateTimeOriginalParsed': date_time}
-        
+
         if date_time:
             base_name = date_time.strftime(DATE_FORMAT)
             ext = os.path.splitext(filename)[1]
@@ -506,7 +522,8 @@ class PhotoRenamer:
         x = widget.winfo_rootx() + x + 20
         y = widget.winfo_rooty() + y + 20
         widget.tooltip_window.geometry(f"+{x}+{y}")
-        Label(widget.tooltip_window, text=exif_info, background="lightyellow", relief="solid", borderwidth=1, anchor='w', justify='left').pack(fill='both', expand=True)
+        Label(widget.tooltip_window, text=exif_info, background="lightyellow", relief="solid", borderwidth=1,
+              anchor='w', justify='left').pack(fill='both', expand=True)
 
     def on_leave(self, event):
         widget = event.widget
@@ -543,6 +560,7 @@ class PhotoRenamer:
         help_text = lang["help_text"]
         help_label = Label(help_window, text=help_text, justify='left')
         help_label.pack(padx=10, pady=10)
+
 
 if __name__ == "__main__":
     root = TkinterDnD.Tk()
