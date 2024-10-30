@@ -53,12 +53,12 @@ def process_excel(input_file_path, output_file_path):
     column_order = [
         '部门', '用户', '名称', '厂商',
         'CPU型号', '主频', '内存(G)',
-        '操作系统', 'Office软件', '购入日期', '用途'
+        '操作系统', 'Office软件', '购入日期', '分类', '用途'
     ]
     df_reordered = df[column_order]
     df_reordered.insert(0, '序号', np.arange(1, len(df_reordered) + 1))
 
-    column_widths = [10, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15]
+    column_widths = [10, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15]
     save_df_to_excel_with_column_width(df_reordered, output_file_path, column_widths)
 
     print(f"Excel文件处理完成，保存路径为：{output_file_path}")
