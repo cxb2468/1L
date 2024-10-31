@@ -145,14 +145,14 @@ def toPDF(ip, username):
 
 
 # 写入CSV
-def toCsv(data):
-    global nowDate
-    # 判断文件夹是否存在不存在则创建
-    if not os.path.exists(reportPath):
-        os.makedirs(reportPath)
-    with open(f'{reportPath}{nowDate}_巡检报表.csv', 'a', encoding='utf-8-sig') as f:
-        f.write(data)
-        f.close()
+# def toCsv(data):
+#     global nowDate
+#     判断文件夹是否存在不存在则创建
+#     if not os.path.exists(reportPath):
+#         os.makedirs(reportPath)
+#     with open(f'{reportPath}{nowDate}_巡检报表.csv', 'a', encoding='utf-8-sig') as f:
+#         f.write(data)
+#         f.close()
 
 
 # 获取画面
@@ -165,12 +165,15 @@ def getImg(ip, port, username, password):
         noc = "65"
     else:
         noc = "17"
+    print('noc: '+ noc)
     for i in range(1, int(noc)):
         rtsp_url = f'rtsp://{username}:{password}@{ip}:554/Streaming/Channels/{i}01?transportmode=unicast'
         try:
             # 创建VideoCapture对象
             cap = cv2.VideoCapture(rtsp_url)
+            print('cap: ' + str(cap))
             # 检查是否成功打开视频流
+            print('cap.isOpened: ' + str(cap.isOpened()))
             if cap.isOpened():
                 # 判断文件夹是否存在,不存在则创建
                 if not os.path.exists(picPath):
@@ -197,9 +200,15 @@ def getImg(ip, port, username, password):
                 print(f'截图：{picPath}{nowDate}/{imgname}')
             else:
                 print(f'设备 {ip} 截图失败：Cannot open video stream or file')
+            # 释放资源
+            cap.release()
         except Exception as e:
             # print(f'抓取 {ip} 图片超时!\n')
+
             print(e)
+        # 增加延时，确保资源有足够的时间被释放
+        time.sleep(1)
+
         # imgurl=f'http://{ip}:{port}/ISAPI/Streaming/channels/{i}01/picture'
         # try:
         #     pic=requests.get(imgurl,auth=HTTPDigestAuth(username,password),headers=headers,timeout=5)
@@ -401,4 +410,3 @@ if __name__ == "__main__":
     # print(f'>>> 检测报告表： {reportPath}{nowDate}_巡检报表.csv\n')
     print('>>> 巡检完成!\n')
     x = input('回车键退出...\n')
-

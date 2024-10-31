@@ -1,0 +1,45 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="23">
+            <item index="0" class="java.lang.String" itemvalue="pywin32" />
+            <item index="1" class="java.lang.String" itemvalue="pyperclip" />
+            <item index="2" class="java.lang.String" itemvalue="pygame" />
+            <item index="3" class="java.lang.String" itemvalue="exifread" />
+            <item index="4" class="java.lang.String" itemvalue="opencv-python" />
+            <item index="5" class="java.lang.String" itemvalue="wxpython" />
+            <item index="6" class="java.lang.String" itemvalue="cryptography" />
+            <item index="7" class="java.lang.String" itemvalue="numpy" />
+            <item index="8" class="java.lang.String" itemvalue="pyqt5" />
+            <item index="9" class="java.lang.String" itemvalue="mss" />
+            <item index="10" class="java.lang.String" itemvalue="easygui" />
+            <item index="11" class="java.lang.String" itemvalue="pyscreenshot" />
+            <item index="12" class="java.lang.String" itemvalue="pynput" />
+            <item index="13" class="java.lang.String" itemvalue="pymysql" />
+            <item index="14" class="java.lang.String" itemvalue="pdfplumber" />
+            <item index="15" class="java.lang.String" itemvalue="lxml" />
+            <item index="16" class="java.lang.String" itemvalue="tkinterdnd2" />
+            <item index="17" class="java.lang.String" itemvalue="pyautogui" />
+            <item index="18" class="java.lang.String" itemvalue="ttkbootstrap" />
+            <item index="19" class="java.lang.String" itemvalue="rarfile" />
+            <item index="20" class="java.lang.String" itemvalue="pystray" />
+            <item index="21" class="java.lang.String" itemvalue="piexif" />
+            <item index="22" class="java.lang.String" itemvalue="pygetwindow" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N801" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
