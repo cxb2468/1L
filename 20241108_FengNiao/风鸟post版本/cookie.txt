@@ -1,0 +1,1 @@
+app-uuid=WEB-785688; app-device=WEB; token=eyJ0eXAiOiJKV1QiLC9.eyJwYXNzd29yZC0ZmYwNWpZCIYiIs3jOA; userinfo=%7B%222%2CAnull%2C13%2; first-authorization=1774742
