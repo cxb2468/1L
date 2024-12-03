@@ -1,0 +1,79 @@
+====内连接查询=（没有考试成绩的学生不在结果中）=查询结果为学号、姓名、民族、籍贯、高数分数、英语分数、两科分数之和==========
+SELECT 
+    t1.学号,
+    t1.姓名,
+    t1.民族,
+    t1.籍贯,
+    t2_math.分数 AS 高数,
+    t2_english.分数 AS 英语,
+    (COALESCE(t2_math.分数, 0) + COALESCE(t2_english.分数, 0)) AS 总分
+FROM 
+    table1 t1
+JOIN 
+    table2 t2_math ON t1.学号 = t2_math.学号 AND t2_math.科目 = '高数'
+JOIN 
+    table2 t2_english ON t1.学号 = t2_english.学号 AND t2_english.科目 = '英语'
+
+====左连接查询=（没有考试成绩的学生也在结果中）=查询结果为学号、姓名、民族、籍贯、高数分数、英语分数、两科分数之和==========
+SELECT 
+    t1.学号,
+    t1.姓名,
+    t1.民族,
+    t1.籍贯,
+    t2_math.分数 AS 高数,
+    t2_english.分数 AS 英语,
+    (COALESCE(t2_math.分数, 0) + COALESCE(t2_english.分数, 0)) AS 总分
+FROM 
+    table1 t1
+LEFT JOIN 
+    table2 t2_math ON t1.学号 = t2_math.学号 AND t2_math.科目 = '高数'
+LEFT JOIN 
+    table2 t2_english ON t1.学号 = t2_english.学号 AND t2_english.科目 = '英语'
+
+====左差连接查询（学生信息表中有，考试成绩表中没有的学生）===查询结果为学号、姓名、民族、籍贯==========
+SELECT 
+    t1.学号, 
+    t1.姓名, 
+    t1.民族, 
+    t1.籍贯,
+FROM 
+    table1 t1
+LEFT JOIN 
+    table2 t2 
+ON 
+    t1.学号 = t2.学号
+WHERE 
+    t2.学号 IS NULL;
+
+====全连接查询（学生信息表，考试成绩表全部显示）===查询结果为学号、姓名、民族、籍贯、高数分数、英语分数、两科分数之和==========
+SELECT 
+    t1.学号,
+    t1.姓名,
+    t1.民族,
+    t1.籍贯,
+    t2_math.分数 AS 高数,
+    t2_english.分数 AS 英语,
+    (COALESCE(t2_math.分数, 0) + COALESCE(t2_english.分数, 0)) AS 总分
+FROM 
+    table1 t1
+FULL JOIN 
+    table2 t2_math ON t1.学号 = t2_math.学号 AND t2_math.科目 = '高数'
+FULL JOIN 
+    table2 t2_english ON t1.学号 = t2_english.学号 AND t2_english.科目 = '英语'
+
+============================================
+SELECT 
+    t1.学号,
+    t1.姓名,
+    t1.民族,
+    t1.籍贯,
+    t2_math.分数 AS 高数,
+    t2_english.分数 AS 英语,
+FROM 
+    table1 t1
+FULL JOIN 
+    table2 t2_math ON t1.学号 = t2_math.学号 AND t2_math.科目 = '高数'
+FULL JOIN 
+    table2 t2_english ON t1.学号 = t2_english.学号 AND t2_english.科目 = '英语'
+WHERE 
+    t1.学号 IS NULL OR t2_math.科目 IS NULL OR t2_english.科目 IS NULL;
