@@ -1,0 +1,9 @@
+20.27.177.113 github.com
+182.43.124.6 raw.githubusercontent.com
+185.199.109.133 avatars.githubusercontent.com
+185.199.111.154 github.githubassets.com
+20.205.243.168 api.github.com
+20.27.177.113 gist.github.com
+20.27.177.114 codeload.github.com
+185.199.111.153 github.io
+185.199.108.153 githubstatus.com
