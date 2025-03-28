@@ -1,0 +1,12 @@
+{
+    "aliyun": {
+        "access_key_id": "",
+        "access_key_secret": "",
+        "app_key": "",
+        "region_id": "cn-shanghai"
+    },
+    "deepseek": {
+        "api_key": "",
+        "base_url": "https://api.deepseek.com"
+    }
+}

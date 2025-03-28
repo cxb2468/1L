@@ -1,0 +1,13 @@
+u {
+  text-decoration: none;
+  border-bottom: 1px solid blue;
+  margin: 0 1px;
+}
+strong {
+  font-weight: bold;
+  font-size: 180%;
+  color: #3692a4;
+}
+p {
+  line-height: 1.5em;
+}

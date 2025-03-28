@@ -1,0 +1,155 @@
+2025-03-07 23:59:51,676 - INFO - 正在初始化应用程序...
+2025-03-07 23:59:51,677 - INFO - 初始化VoiceRecorder应用...
+2025-03-07 23:59:51,713 - INFO - 主窗口初始化完成
+2025-03-07 23:59:51,928 - INFO - 数据库初始化成功
+2025-03-07 23:59:51,942 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:10:13,956 - INFO - 正在初始化应用程序...
+2025-03-08 00:10:13,956 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:10:13,996 - INFO - 主窗口初始化完成
+2025-03-08 00:10:14,238 - INFO - 数据库初始化成功
+2025-03-08 00:10:14,257 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:10:29,391 - INFO - 正在初始化应用程序...
+2025-03-08 00:10:29,391 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:10:29,429 - INFO - 主窗口初始化完成
+2025-03-08 00:10:29,678 - INFO - 数据库初始化成功
+2025-03-08 00:10:29,693 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:14:07,865 - INFO - 正在初始化应用程序...
+2025-03-08 00:14:07,865 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:14:07,903 - INFO - 主窗口初始化完成
+2025-03-08 00:14:08,121 - INFO - 数据库初始化成功
+2025-03-08 00:14:08,138 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:14:37,579 - INFO - 正在初始化应用程序...
+2025-03-08 00:14:37,580 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:14:37,611 - INFO - 主窗口初始化完成
+2025-03-08 00:14:37,824 - INFO - 数据库初始化成功
+2025-03-08 00:14:37,835 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:23:58,478 - INFO - 正在初始化应用程序...
+2025-03-08 00:23:58,478 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:23:58,512 - INFO - 主窗口初始化完成
+2025-03-08 00:23:58,714 - INFO - 数据库初始化成功
+2025-03-08 00:23:58,727 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:24:09,659 - INFO - 正在初始化应用程序...
+2025-03-08 00:24:09,660 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:24:09,699 - INFO - 主窗口初始化完成
+2025-03-08 00:24:09,888 - INFO - 数据库初始化成功
+2025-03-08 00:24:09,898 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 00:31:05,895 - INFO - 正在初始化应用程序...
+2025-03-08 00:31:05,896 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 00:31:05,929 - INFO - 主窗口初始化完成
+2025-03-08 00:31:06,183 - INFO - 数据库初始化成功
+2025-03-08 00:31:06,203 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 20:12:21,160 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:12:43,900 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:41:21,549 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:41:22,909 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:42:44,582 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:47:35,754 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:48:15,537 - ERROR - 导入模块失败: No module named 'pyaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+ModuleNotFoundError: No module named 'pyaudio'
+
+2025-03-08 20:52:32,980 - INFO - 正在初始化应用程序...
+2025-03-08 20:52:32,981 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 20:52:33,061 - INFO - 主窗口初始化完成
+2025-03-08 20:52:33,296 - INFO - 数据库初始化成功
+2025-03-08 20:52:33,368 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 20:56:51,213 - INFO - 正在初始化应用程序...
+2025-03-08 20:56:51,213 - INFO - 初始化VoiceRecorder应用...
+2025-03-08 20:56:51,248 - INFO - 主窗口初始化完成
+2025-03-08 20:56:51,453 - INFO - 数据库初始化成功
+2025-03-08 20:56:51,474 - INFO - 应用程序初始化完成，开始运行...
+2025-03-08 20:57:03,578 - INFO - 开始录音...
+2025-03-08 20:57:06,722 - INFO - 停止录音并开始处理...
+2025-03-08 20:57:07,044 - INFO - 语音识别结果: 
+2025-03-08 20:57:07,044 - WARNING - 未获取到有效的语音识别结果
+2025-03-08 22:11:38,941 - ERROR - 导入模块失败: No module named 'requests'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 14, in <module>
+    from v2v import SpeechRecognizer as AliyunRecognizer
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\v2v.py", line 6, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+
+2025-03-09 17:40:34,084 - ERROR - 导入模块失败: No module named 'requests'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 14, in <module>
+    from v2v import SpeechRecognizer as AliyunRecognizer
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\v2v.py", line 6, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+
+2025-03-09 17:40:44,672 - ERROR - 导入模块失败: No module named 'requests'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 14, in <module>
+    from v2v import SpeechRecognizer as AliyunRecognizer
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\v2v.py", line 6, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+
+2025-03-09 17:40:55,930 - ERROR - 导入模块失败: No module named 'pyaudio._portaudio'
+Traceback (most recent call last):
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\run.py", line 16, in main
+    from voice_recorder import VoiceRecorder
+  File "d:\PycharmProjects\python_codes\pythonProject3\tools\sannian\voice_recorder.py", line 7, in <module>
+    import pyaudio
+  File "E:\Program Files\Python313\Lib\site-packages\pyaudio\__init__.py", line 111, in <module>
+    import pyaudio._portaudio as pa
+ModuleNotFoundError: No module named 'pyaudio._portaudio'
+
+2025-03-09 17:41:04,197 - INFO - 正在初始化应用程序...
+2025-03-09 17:41:04,198 - INFO - 初始化VoiceRecorder应用...
+2025-03-09 17:41:04,282 - INFO - 主窗口初始化完成
+2025-03-09 17:41:04,529 - INFO - 数据库初始化成功
+2025-03-09 17:41:04,633 - INFO - 应用程序初始化完成，开始运行...
