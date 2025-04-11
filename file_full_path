@@ -1,0 +1,8 @@
+def set_number(self, number):
+    """设置当前选中单元格的数字"""
+    for row in range(9):
+        for col in range(9):
+            if self.cells[row][col].hasFocus():
+                if not self.cells[row][col].isReadOnly():  # 确保单元格不是只读的
+                    self.cells[row][col].setText(str(number))
+                    break
