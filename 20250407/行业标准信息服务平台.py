@@ -57,4 +57,4 @@ if __name__ == '__main__':
     sources = []
     file_list = os.listdir('./temp')
     sources = [pimg.open(f'./temp/{i}.png') for i in range(len(file_list))]
-    sources[0].save(f'./{filename}.pdf', 'pdf', save_all=True, append_images=sources[1:])
+    sources[0].save(f'./{filename}.pdf', 'pdf', save_all=True, append_images=sources[1:])7
