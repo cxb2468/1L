@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .table {
+        font-size: 0.875rem; /* 14px */
+    }
+    .table th {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    .table td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .btn-sm {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+<h3>人员管理</h3>
+<a href="/staff/add?return_url={{ request.url|urlencode }}" class="btn btn-success mb-2">添加人员</a>
+<div class="d-flex align-items-center mb-2">
+  <!-- 搜索表单 -->
+  <form class="form-inline mr-2" method="get" action="">
+    <select name="field" class="form-control mr-2">
+      {% for dynamic_field in dynamic_fields %}
+        {% if dynamic_field.searchable %}
+          <option value="{{ dynamic_field.name }}" {% if dynamic_field.name==field %}selected{% endif %}>{{ dynamic_field.label }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <input type="text" name="q" class="form-control mr-2" value="{{ q|default('') }}" placeholder="请输入关键词">
+    <button class="btn btn-info mr-2">搜索</button>
+  </form>
+  <!-- 导入表单 -->
+  <form class="form-inline mr-2" method="post" action="/staff/import" enctype="multipart/form-data" id="importForm">
+    <a href="/staff/export" class="btn btn-secondary mr-2" id="exportBtn">全部导出</a>
+    <button type="button" class="btn btn-outline-secondary mr-2" id="exportCurrentBtn">导出当前结果</button>
+    <a href="/staff/template" class="btn btn-outline-info mr-2">下载导入模板</a>
+    <input type="file" name="import_file" id="importFile" style="display:none;">
+    <button type="button" class="btn btn-primary mr-2" id="importBtn">导入</button>
+    <span id="importProgress" style="margin-left:10px;display:none;">正在导入，请稍候...</span>
+    <span id="exportProgress" style="margin-left:10px;display:none;">正在导出，请稍候...</span>
+  </form>
+</div>
+<script>
+    // 导入按钮事件
+    document.getElementById('importBtn').addEventListener('click', function() {
+        document.getElementById('importFile').click();
+    });
+    document.getElementById('importFile').addEventListener('change', function() {
+        if(this.files.length > 0){
+            document.getElementById('importProgress').style.display = 'inline';
+            document.getElementById('importForm').submit();
+        }
+    });
+    document.getElementById('exportBtn').onclick = function(){
+        var exportProgress = document.getElementById('exportProgress');
+        exportProgress.style.display = 'inline';
+        exportProgress.textContent = '正在导出，请稍候...';
+        
+        // 设置一个定时器，在导出完成后隐藏提示
+        setTimeout(function() {
+            exportProgress.style.display = 'none';
+        }, 3000); // 3秒后自动隐藏
+    };
+    // 新增：导出当前结果（前端表格导出）
+    document.getElementById('exportCurrentBtn').onclick = function(){
+        var table = document.querySelector('.table-responsive table');
+        var wb = XLSX.utils.table_to_book(table, {sheet: 'Sheet1'});
+        XLSX.writeFile(wb, '人员_当前结果.xlsx');
+    };
+</script>
+<div class="table-responsive">
+<table class="table table-bordered" style="min-width: 1000px;">
+    <thead>
+        <tr>
+            <th>序号</th>
+            {% for field in dynamic_fields %}
+                {% if field.is_visible %}
+                    <th>{{ field.label }}</th>
+                {% endif %}
+            {% endfor %}
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in staffs.items %}
+        <tr>
+            <td>{{ staffs.per_page*(staffs.page-1)+loop.index }}</td>
+            {% for field in dynamic_fields %}
+                {% if field.is_visible %}
+                    <td>{{ s.dynamic_fields.get(field.name, '') }}</td>
+                {% endif %}
+            {% endfor %}
+            <td>
+                <a href="/staff/edit/{{ s.id }}?return_url={{ request.url|urlencode }}" class="btn btn-sm btn-primary">编辑</a>
+                <form action="/staff/delete/{{ s.id }}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除该人员吗？');">
+                    <button class="btn btn-sm btn-danger">删除</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<div class="d-flex justify-content-between align-items-center mt-2">
+  <form method="get" class="form-inline">
+    <label class="mr-2">每页显示</label>
+    <select name="per_page" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+      <option value="10" {% if per_page==10 %}selected{% endif %}>10</option>
+      <option value="20" {% if per_page==20 %}selected{% endif %}>20</option>
+      <option value="50" {% if per_page==50 %}selected{% endif %}>50</option>
+      <option value="100" {% if per_page==100 %}selected{% endif %}>100</option>
+    </select>
+    <input type="hidden" name="page" value="{{ staffs.page }}">
+  </form>
+  <nav>
+    {{ smart_pagination(staffs, per_page, q, field) }}
+  </nav>
+</div>
+{% endblock %} 

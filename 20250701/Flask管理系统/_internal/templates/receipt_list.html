@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .table {
+        font-size: 0.875rem; /* 14px */
+    }
+    .table th {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    .table td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .btn-sm {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+<h3>收款跟踪 - {{ contract.name }}</h3>
+<div class="d-flex align-items-center mb-2">
+    <a href="{{ url_for('contract.receipt_add', contract_id=contract.id, return_url=request.args.get('return_url', '')) }}" class="btn btn-success mr-2">添加收款记录</a>
+    <a href="{{ url_for('contract.receipt_export', contract_id=contract.id) }}" class="btn btn-secondary" id="exportBtn">全部导出</a>
+    <button type="button" class="btn btn-outline-secondary mr-2" id="exportCurrentBtn">导出当前结果</button>
+    <span id="exportProgress" style="margin-left:10px;display:none;">正在导出，请稍候...</span>
+</div>
+<script>
+    document.getElementById('exportBtn').onclick = function(){
+        var exportProgress = document.getElementById('exportProgress');
+        exportProgress.style.display = 'inline';
+        exportProgress.textContent = '正在导出，请稍候...';
+        
+        // 设置一个定时器，在导出完成后隐藏提示
+        setTimeout(function() {
+            exportProgress.style.display = 'none';
+        }, 3000); // 3秒后自动隐藏
+    };
+    // 新增：导出当前结果（前端表格导出）
+    document.getElementById('exportCurrentBtn').onclick = function(){
+        var table = document.querySelector('.table-responsive table');
+        var wb = XLSX.utils.table_to_book(table, {sheet: 'Sheet1'});
+        XLSX.writeFile(wb, '收款_当前结果.xlsx');
+    };
+    // 导入按钮事件
+    document.getElementById('importBtn').addEventListener('click', function() {
+        document.getElementById('importFile').click();
+    });
+    document.getElementById('importFile').addEventListener('change', function() {
+        if(this.files.length > 0){
+            document.getElementById('importProgress').style.display = 'inline';
+            document.getElementById('importForm').submit();
+        }
+    });
+</script>
+<div class="table-responsive">
+<table class="table table-bordered" style="min-width: 1000px;">
+    <thead>
+        <tr>
+            <th>序号</th>
+            {% for field in dynamic_fields %}
+            <th>{{ field.label }}</th>
+            {% endfor %}
+            <th>附件</th>
+            <th>操作</th>
+            <th>修改人</th>
+            <th>修改时间</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in receipts %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            {% for field in dynamic_fields %}
+            <td>{{ r.dynamic_fields[field.name] or '' }}</td>
+            {% endfor %}
+            <td>
+                {% if r.attachment %}
+                <div class="btn-group btn-group-sm">
+                    <a href="/contract/receipt/download/{{ r.attachment|urlencode }}" target="_blank" class="btn btn-success btn-sm">
+                        <i class="fas fa-download"></i> 下载
+                    </a>
+                    <form action="/contract/receipt/delete_attachment/{{ r.id }}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除该附件吗？');">
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <span class="text-muted">无附件</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('contract.receipt_edit', id=r.id, return_url=request.args.get('return_url', '')) }}" class="btn btn-sm btn-primary">编辑</a>
+                <form action="{{ url_for('contract.receipt_delete', id=r.id) }}?return_url={{ request.args.get('return_url', '') }}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除该记录吗？');">
+                    <button class="btn btn-sm btn-danger">删除</button>
+                </form>
+            </td>
+            <td>{{ r.modified_by or '' }}</td>
+            <td data-time="{{ r.modified_at.isoformat() if r.modified_at else '' }}">{{ r.modified_at.strftime('%Y-%m-%d %H:%M') if r.modified_at else '' }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<a href="{{ request.args.get('return_url', url_for('contract.contract_list')) }}" class="btn btn-secondary">返回合同列表</a>
+{% endblock %} 

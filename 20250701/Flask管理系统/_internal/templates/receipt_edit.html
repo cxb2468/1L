@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>编辑收款记录</h3>
+<form method="post" enctype="multipart/form-data">
+    <!-- 动态字段 -->
+    {% if dynamic_fields %}
+    <div class="form-row">
+        {% for field in dynamic_fields %}
+            {% if field.type == 'text' %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="text" name="dynamic_{{ field.name }}" class="form-control" value="{{ current_values[field.name] or '' }}" {% if field.required %}required{% endif %}>
+            </div>
+            {% elif field.type == 'number' %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="number" name="dynamic_{{ field.name }}" class="form-control" value="{{ current_values[field.name] or '' }}" {% if field.required %}required{% endif %}>
+            </div>
+            {% elif field.type == 'date' %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="date" name="dynamic_{{ field.name }}" class="form-control" value="{{ current_values[field.name] or '' }}" {% if field.required %}required{% endif %}>
+            </div>
+            {% elif field.type == 'datetime' %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="datetime-local" name="dynamic_{{ field.name }}" class="form-control" value="{{ current_values[field.name] or '' }}" {% if field.required %}required{% endif %}>
+            </div>
+            {% elif field.type == 'select' %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <select name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+                    <option value="">请选择</option>
+                    {% for option in field.options %}
+                    <option value="{{ option }}" {% if current_values[field.name] == option %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% elif field.type == 'checkbox' %}
+            <div class="form-group col-md-6">
+                <div class="form-check">
+                    <input type="checkbox" name="dynamic_{{ field.name }}" class="form-check-input" value="true" {% if current_values[field.name] in ['true', 'True', '1', 1] %}checked{% endif %}>
+                    <label class="form-check-label">{{ field.label }}</label>
+                </div>
+            </div>
+            {% elif field.type == 'textarea' %}
+            <div class="form-group col-md-12">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <textarea name="dynamic_{{ field.name }}" class="form-control" rows="3" {% if field.required %}required{% endif %}>{{ current_values[field.name] or '' }}</textarea>
+            </div>
+            {% else %}
+            <div class="form-group col-md-6">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="text" name="dynamic_{{ field.name }}" class="form-control" value="{{ current_values[field.name] or '' }}" {% if field.required %}required{% endif %}>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="form-group">
+        <label>收款附件</label>
+        {% if receipt.attachment %}
+            <div class="mb-2">
+                <strong>当前附件：</strong>
+                <a href="/contract/receipt/download/{{ receipt.attachment|urlencode }}" target="_blank" class="btn btn-success btn-sm">
+                    <i class="fas fa-download"></i> {{ receipt.attachment }}
+                </a>
+            </div>
+        {% endif %}
+        <input type="file" name="attachment" class="form-control-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt">
+        <small class="form-text text-muted">
+            支持的文件类型：PDF、Word、Excel、图片(JPG/PNG)、文本文件。新文件将自动以收款记录重命名。
+        </small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">保存</button>
+    <a href="{{ return_url if return_url else url_for('contract.contract_list') }}" class="btn btn-secondary">返回</a>
+</form>
+{% endblock %} 

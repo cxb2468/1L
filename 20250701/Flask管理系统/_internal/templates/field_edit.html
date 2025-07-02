@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>编辑字段配置</h3>
+
+<form method="post">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>模块名称</label>
+            <input type="text" class="form-control" value="{{ field.module_name }}" readonly>
+        </div>
+        <div class="form-group col-md-6">
+            <label>字段名称</label>
+            <input type="text" class="form-control" value="{{ field.field_name }}" readonly>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>字段标签 *</label>
+            <input type="text" name="field_label" class="form-control" value="{{ field.field_label }}" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label>字段类型 *</label>
+            <select name="field_type" class="form-control" required>
+                <option value="text" {% if field.field_type == 'text' %}selected{% endif %}>文本</option>
+                <option value="number" {% if field.field_type == 'number' %}selected{% endif %}>数字</option>
+                <option value="date" {% if field.field_type == 'date' %}selected{% endif %}>日期</option>
+                <option value="datetime" {% if field.field_type == 'datetime' %}selected{% endif %}>日期时间</option>
+                <option value="select" {% if field.field_type == 'select' %}selected{% endif %}>下拉选择</option>
+                <option value="textarea" {% if field.field_type == 'textarea' %}selected{% endif %}>多行文本</option>
+                <option value="boolean" {% if field.field_type == 'boolean' %}selected{% endif %}>布尔值</option>
+                <option value="file" {% if field.field_type == 'file' %}selected{% endif %}>文件</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>字段宽度</label>
+            <input type="number" name="field_width" class="form-control" value="{{ field.field_width }}" min="50" max="500">
+        </div>
+        <div class="form-group col-md-6">
+            <label>显示顺序</label>
+            <input type="number" name="field_order" class="form-control" value="{{ field.field_order }}" min="0">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>字段选项（JSON格式，用于下拉选择类型）</label>
+        <textarea name="field_options" class="form-control" rows="3" placeholder='["选项1", "选项2", "选项3"]'>{{ field.field_options or '' }}</textarea>
+        <small class="form-text text-muted">仅在选择类型为"下拉选择"时有效</small>
+    </div>
+    
+    <div class="form-group">
+        <label>验证规则（JSON格式）</label>
+        <textarea name="validation_rules" class="form-control" rows="3" placeholder='{"min_length": 3, "max_length": 50}'>{{ field.validation_rules or '' }}</textarea>
+        <small class="form-text text-muted">可选的验证规则，如最小长度、最大长度等</small>
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" name="is_required" class="form-check-input" id="is_required" {% if field.is_required %}checked{% endif %}>
+            <label class="form-check-label" for="is_required">必填字段</label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" name="is_searchable" class="form-check-input" id="is_searchable" {% if field.is_searchable %}checked{% endif %}>
+            <label class="form-check-label" for="is_searchable">可搜索</label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" name="is_exportable" class="form-check-input" id="is_exportable" {% if field.is_exportable %}checked{% endif %}>
+            <label class="form-check-label" for="is_exportable">可导出</label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" name="is_importable" class="form-check-input" id="is_importable" {% if field.is_importable %}checked{% endif %}>
+            <label class="form-check-label" for="is_importable">可导入</label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="form-check">
+            <input type="checkbox" name="is_visible" class="form-check-input" id="is_visible" {% if field.is_visible %}checked{% endif %}>
+            <label class="form-check-label" for="is_visible">可见</label>
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">保存</button>
+    <a href="/field/" class="btn btn-secondary">返回</a>
+</form>
+
+<script>
+// 动态显示/隐藏字段选项
+document.querySelector('select[name="field_type"]').addEventListener('change', function() {
+    const optionsField = document.querySelector('textarea[name="field_options"]');
+    const optionsLabel = optionsField.previousElementSibling;
+    const optionsHelp = optionsField.nextElementSibling;
+    
+    if (this.value === 'select') {
+        optionsLabel.style.display = 'block';
+        optionsField.style.display = 'block';
+        optionsHelp.style.display = 'block';
+    } else {
+        optionsLabel.style.display = 'none';
+        optionsField.style.display = 'none';
+        optionsHelp.style.display = 'none';
+    }
+});
+
+// 页面加载时检查字段类型
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldType = document.querySelector('select[name="field_type"]').value;
+    const optionsField = document.querySelector('textarea[name="field_options"]');
+    const optionsLabel = optionsField.previousElementSibling;
+    const optionsHelp = optionsField.nextElementSibling;
+    
+    if (fieldType !== 'select') {
+        optionsLabel.style.display = 'none';
+        optionsField.style.display = 'none';
+        optionsHelp.style.display = 'none';
+    }
+});
+</script>
+
+{% endblock %} 

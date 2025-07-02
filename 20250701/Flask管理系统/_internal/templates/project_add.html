@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>添加项目</h3>
+<form method="post" enctype="multipart/form-data">
+    {% for field in dynamic_fields %}
+        {% if field.type == 'text' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="text" name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+            </div>
+        {% elif field.type == 'number' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="number" name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+            </div>
+        {% elif field.type == 'date' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="date" name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+            </div>
+        {% elif field.type == 'datetime' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="datetime-local" name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+            </div>
+        {% elif field.type == 'select' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <select name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+                    <option value="">请选择</option>
+                    {% for option in field.options %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% elif field.type == 'textarea' %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <textarea name="dynamic_{{ field.name }}" class="form-control" rows="3" {% if field.required %}required{% endif %}></textarea>
+            </div>
+        {% elif field.type == 'boolean' %}
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" name="dynamic_{{ field.name }}" class="form-check-input">
+                    <label class="form-check-label">{{ field.label }}</label>
+                </div>
+            </div>
+        {% else %}
+            <div class="form-group">
+                <label>{{ field.label }}{% if field.required %} *{% endif %}</label>
+                <input type="text" name="dynamic_{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+            </div>
+        {% endif %}
+    {% endfor %}
+    
+    <div class="form-group">
+        <label>项目附件</label>
+        <input type="file" name="attachments" class="form-control-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt" multiple>
+        <small class="form-text text-muted">
+            支持的文件类型：PDF、Word、Excel、图片(JPG/PNG)、文本文件。可以同时选择多个文件。文件将自动以项目名称重命名。
+        </small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">提交</button>
+    <a href="/project/" class="btn btn-secondary">返回</a>
+</form>
+{% endblock %} 

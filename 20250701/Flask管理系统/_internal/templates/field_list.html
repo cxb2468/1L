@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .table {
+        font-size: 0.875rem; /* 14px */
+    }
+    .table th {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    .table td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .btn-sm {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+<h3>字段配置管理</h3>
+
+<!-- 模块选择 -->
+<div class="mb-3">
+    <form method="get" class="form-inline">
+        <label class="mr-2">选择模块：</label>
+        <select name="module" class="form-control mr-2" onchange="this.form.submit()">
+            <option value="">全部模块</option>
+            {% for module in modules %}
+            <option value="{{ module }}" {% if current_module == module %}selected{% endif %}>{{ module }}</option>
+            {% endfor %}
+        </select>
+        <a href="/field/add" class="btn btn-success">添加字段配置</a>
+    </form>
+</div>
+
+<!-- 字段配置表格 -->
+<div class="table-responsive">
+    <table class="table table-bordered" style="min-width: 1000px;">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>模块名称</th>
+                <th>字段名称</th>
+                <th>字段标签</th>
+                <th>字段类型</th>
+                <th>必填</th>
+                <th>可搜索</th>
+                <th>可导出</th>
+                <th>可导入</th>
+                <th>可见</th>
+                <th>宽度</th>
+                <th>顺序</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for field in fields %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ field.module_name }}</td>
+                <td>{{ field.field_name }}</td>
+                <td>{{ field.field_label }}</td>
+                <td>{{ field.field_type }}</td>
+                <td>{{ '是' if field.is_required else '否' }}</td>
+                <td>{{ '是' if field.is_searchable else '否' }}</td>
+                <td>{{ '是' if field.is_exportable else '否' }}</td>
+                <td>{{ '是' if field.is_importable else '否' }}</td>
+                <td>{{ '是' if field.is_visible else '否' }}</td>
+                <td>{{ field.field_width }}</td>
+                <td>{{ field.field_order }}</td>
+                <td>
+                    <a href="/field/edit/{{ field.id }}" class="btn btn-sm btn-primary">编辑</a>
+                    <form action="/field/delete/{{ field.id }}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除该字段配置吗？');">
+                        <button class="btn btn-sm btn-danger">删除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if not fields %}
+<div class="alert alert-info">
+    暂无字段配置数据。请点击"添加字段配置"按钮开始配置。
+</div>
+{% endif %}
+
+{% endblock %} 

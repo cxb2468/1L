@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .table {
+        font-size: 0.875rem; /* 14px */
+    }
+    .table th {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    .table td {
+        font-size: 0.875rem;
+        vertical-align: middle;
+    }
+    .btn-sm {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+<h3>用户管理</h3>
+<a href="/user/register" class="btn btn-success mb-2">添加用户</a>
+<div class="table-responsive">
+<table class="table table-bordered" style="min-width: 1000px;">
+    <thead>
+        <tr><th>序号</th><th>用户名</th><th>管理员</th><th>权限</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ '是' if user.is_admin else '否' }}</td>
+            <td>{{ user.permissions }}</td>
+            <td>
+                <a href="/user/edit/{{ user.id }}" class="btn btn-sm btn-primary">编辑</a>
+                <form action="/user/delete/{{ user.id }}" method="post" style="display:inline;" onsubmit="return confirm('确定要删除该用户吗？');">
+                    <button class="btn btn-sm btn-danger">删除</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %} 

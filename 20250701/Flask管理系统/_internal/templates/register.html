@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width:400px;margin-top:50px;">
+    <h3 class="mb-4">添加用户</h3>
+    <form method="post">
+        <div class="form-group">
+            <label>用户名</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>密码</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="form-check mb-2">
+            <input type="checkbox" name="is_admin" class="form-check-input" id="is_admin">
+            <label class="form-check-label" for="is_admin">管理员</label>
+        </div>
+        <div class="form-group">
+            <label>模块权限</label><br>
+            <input type="checkbox" name="permissions" value="contract"> 合同管理
+            <input type="checkbox" name="permissions" value="project"> 项目管理
+            <input type="checkbox" name="permissions" value="staff"> 人员管理
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">添加</button>
+    </form>
+</div>
+{% endblock %} 

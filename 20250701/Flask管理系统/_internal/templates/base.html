@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { min-height: 100vh; }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            background: #343a40;
+            color: #fff;
+            padding-top: 20px;
+        }
+        .sidebar a { color: #fff; display: block; padding: 10px 20px; }
+        .sidebar a.active, .sidebar a:hover { background: #495057; text-decoration: none; }
+        .content { margin-left: 220px; padding: 30px; }
+        .sidebar .submenu { display: none; margin-left: 18px; }
+        .sidebar .menu-group.active .submenu { display: block; }
+        .sidebar .menu-title { cursor: pointer; font-weight: bold; padding: 10px 20px; display: flex; align-items: center; }
+        .sidebar .menu-title:hover, .sidebar a.active, .sidebar a:hover { background: #495057; text-decoration: none; }
+        .sidebar .menu-icon { margin-right: 8px; font-size: 18px; }
+        
+        /* 表格样式 */
+        .table {
+            white-space: nowrap !important;
+        }
+        .table th,
+        .table td {
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 70vh; /* 设置最大高度为视口高度的70% */
+            overflow-y: auto; /* 添加垂直滚动条 */
+        }
+        /* 固定表头样式 */
+        .table-responsive thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 1;
+            border-bottom: 2px solid #dee2e6;
+        }
+        /* 表格行悬停效果 */
+        .table-responsive tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        /* 自定义滚动条样式 */
+        .table-responsive::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* 分页样式优化 */
+        .pagination .page-link {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+{% set perms = (current_user.permissions.split(',') if current_user.is_authenticated and current_user.permissions else []) %}
+{% set path = request.path %}
+
+<!-- 智能分页宏 -->
+{% macro smart_pagination(pagination, per_page, q='', field='') %}
+    {% set current_page = pagination.page %}
+    {% set total_pages = pagination.pages %}
+    {% set has_prev = pagination.has_prev %}
+    {% set has_next = pagination.has_next %}
+    {% set prev_num = pagination.prev_num %}
+    {% set next_num = pagination.next_num %}
+    {% set total = pagination.total %}
+    
+    {% if total_pages > 1 %}
+    <div class="d-flex align-items-center">
+        <!-- 分页信息 -->
+        <div class="mr-3 text-muted small">
+            第 {{ current_page }} 页，共 {{ total_pages }} 页
+            {% if total %}
+            （共 {{ total }} 条记录）
+            {% endif %}
+        </div>
+        
+        <!-- 分页按钮 -->
+        <nav>
+            <ul class="pagination mb-0">
+                <!-- 首页 -->
+                <li class="page-item {% if not has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="?page=1&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">首页</a>
+                </li>
+                
+                <!-- 上一页 -->
+                <li class="page-item {% if not has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ prev_num }}&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">上一页</a>
+                </li>
+                
+                <!-- 页码按钮 -->
+                {% set start_page = [1, current_page - 2] | max %}
+                {% set end_page = [total_pages, current_page + 2] | min %}
+                
+                <!-- 如果开始页码不是第1页，显示省略号 -->
+                {% if start_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">1</a>
+                    </li>
+                    {% if start_page > 2 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endif %}
+                
+                <!-- 显示当前页附近的页码 -->
+                {% for p in range(start_page, end_page + 1) %}
+                    <li class="page-item {% if current_page == p %}active{% endif %}">
+                        <a class="page-link" href="?page={{ p }}&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">{{ p }}</a>
+                    </li>
+                {% endfor %}
+                
+                <!-- 如果结束页码不是最后一页，显示省略号 -->
+                {% if end_page < total_pages %}
+                    {% if end_page < total_pages - 1 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ total_pages }}&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">{{ total_pages }}</a>
+                    </li>
+                {% endif %}
+                
+                <!-- 下一页 -->
+                <li class="page-item {% if not has_next %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ next_num }}&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">下一页</a>
+                </li>
+                
+                <!-- 末页 -->
+                <li class="page-item {% if not has_next %}disabled{% endif %}">
+                    <a class="page-link" href="?page={{ total_pages }}&per_page={{ per_page }}{% if q %}&q={{ q }}{% endif %}{% if field %}&field={{ field }}{% endif %}">末页</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+<!-- 自定义Jinja2过滤器 -->
+<script>
+// 北京时间格式化函数
+function formatBeijingTime(datetimeStr) {
+    if (!datetimeStr) return '';
+    
+    try {
+        // 如果是UTC时间，转换为北京时间
+        let dt = new Date(datetimeStr);
+        
+        // 检查是否是UTC时间（没有时区信息）
+        if (datetimeStr.includes('+00:00') || datetimeStr.endsWith('Z') || 
+            (datetimeStr.includes('T') && !datetimeStr.includes('+'))) {
+            // UTC时间，加8小时转换为北京时间
+            dt = new Date(dt.getTime() + 8 * 60 * 60 * 1000);
+        }
+        
+        // 格式化输出
+        const year = dt.getFullYear();
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, '0');
+        const hours = String(dt.getHours()).padStart(2, '0');
+        const minutes = String(dt.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    } catch (e) {
+        console.error('时间格式化错误:', e);
+        return datetimeStr;
+    }
+}
+
+// 页面加载完成后处理所有时间显示
+document.addEventListener('DOMContentLoaded', function() {
+    // 查找所有包含时间的元素
+    const timeElements = document.querySelectorAll('[data-time]');
+    timeElements.forEach(function(element) {
+        const timeStr = element.getAttribute('data-time');
+        if (timeStr) {
+            element.textContent = formatBeijingTime(timeStr);
+        }
+    });
+});
+</script>
+
+<div class="sidebar">
+    <h4 class="text-center">管理系统</h4>
+    {% if current_user.is_authenticated %}
+    <a href="/" class="menu-title{% if path == '/' %} active{% endif %}"><span class="menu-icon">🏠</span>首页</a>
+    {% endif %}
+    {% if current_user.is_authenticated and (current_user.is_admin or 'contract' in perms) %}
+    <a href="/contract/" class="menu-title{% if path.startswith('/contract/') %} active{% endif %}"><span class="menu-icon">📄</span>合同管理</a>
+    {% endif %}
+    {% if current_user.is_authenticated and (current_user.is_admin or 'project' in perms) %}
+    <a href="/project/" class="menu-title{% if path.startswith('/project/') %} active{% endif %}"><span class="menu-icon">📁</span>项目管理</a>
+    {% endif %}
+    {% if current_user.is_authenticated and (current_user.is_admin or 'staff' in perms) %}
+    <a href="/staff/" class="menu-title{% if path.startswith('/staff/') %} active{% endif %}"><span class="menu-icon">👤</span>人员管理</a>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="/field/" class="menu-title{% if path.startswith('/field/') %} active{% endif %}"><span class="menu-icon">⚙️</span>字段配置</a>
+    <a href="/user/list" class="menu-title{% if path.startswith('/user/') %} active{% endif %}"><span class="menu-icon">👥</span>用户管理</a>
+    {% endif %}
+    {% if current_user.is_authenticated %}
+    <a href="/user/logout" class="menu-title"><span class="menu-icon">🚪</span>退出登录</a>
+    {% endif %}
+</div>
+<div class="content">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+    function toggleMenu(id) {
+        var el = document.getElementById(id);
+        el.classList.toggle('active');
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tablesort@5.2.1/dist/tablesort.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tables = document.querySelectorAll('.table');
+    tables.forEach(function(table) {
+        var tableId = table.getAttribute('id') || 'table_' + Math.random().toString(36).substr(2, 9);
+        table.setAttribute('id', tableId);
+        
+        var tablesort = new Tablesort(table);
+        
+        // 排序后自动更新序号
+        table.addEventListener('afterSort', function() {
+            var rows = table.querySelectorAll('tbody tr');
+            rows.forEach(function(row, idx) {
+                var firstCell = row.querySelector('td:first-child');
+                if(firstCell && firstCell.textContent.trim().match(/^\d+$/)) {
+                    firstCell.textContent = idx + 1;
+                }
+            });
+            
+            // 保存排序状态到localStorage
+            var sortInfo = {
+                column: tablesort.currentSort[0].index,
+                direction: tablesort.currentSort[0].direction
+            };
+            localStorage.setItem('tableSort_' + tableId, JSON.stringify(sortInfo));
+        });
+        
+        // 页面加载时恢复排序状态
+        var savedSort = localStorage.getItem('tableSort_' + tableId);
+        if(savedSort) {
+            try {
+                var sortInfo = JSON.parse(savedSort);
+                var header = table.querySelector('thead th:nth-child(' + (sortInfo.column + 1) + ')');
+                if(header) {
+                    setTimeout(function() {
+                        header.click();
+                        if(sortInfo.direction === 'desc') {
+                            header.click(); // 再点一次变成降序
+                        }
+                    }, 100);
+                }
+            } catch(e) {
+                console.log('恢复排序状态失败:', e);
+            }
+        }
+    });
+});
+</script>
+</body>
+</html> 

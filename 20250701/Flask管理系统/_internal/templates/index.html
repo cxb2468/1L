@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">欢迎使用合同/项目/人员管理系统</h2>
+    
+    <!-- 财务概览卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">应收账款</h6>
+                            <h4 class="mb-0">¥{{ "{:,.2f}".format(stats.accounts_receivable) }}</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-hand-holding-usd fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">已收款金额</h6>
+                            <h4 class="mb-0">¥{{ "{:,.2f}".format(stats.total_received_amount) }}</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-money-bill-wave fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">应付账款</h6>
+                            <h4 class="mb-0">¥{{ "{:,.2f}".format(stats.accounts_payable) }}</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-credit-card fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">已支付金额</h6>
+                            <h4 class="mb-0">¥{{ "{:,.2f}".format(stats.total_paid_amount) }}</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-coins fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 业务统计卡片 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">合同数量</h5>
+                    <h2 class="text-primary">{{ stats.contract_count }}</h2>
+                    <p class="card-text">个合同</p>
+                    <a href="/contract/" class="btn btn-outline-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">项目数量</h5>
+                    <h2 class="text-success">{{ stats.project_count }}</h2>
+                    <p class="card-text">个项目</p>
+                    <a href="/project/" class="btn btn-outline-success">查看详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">人员数量</h5>
+                    <h2 class="text-warning">{{ stats.staff_count }}</h2>
+                    <p class="card-text">个人员</p>
+                    <a href="/staff/" class="btn btn-outline-warning">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 快速操作 -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">快速操作</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/contract/add" class="btn btn-primary btn-block">
+                                <i class="fas fa-plus"></i> 新增合同
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/contract/" class="btn btn-success btn-block">
+                                <i class="fas fa-list"></i> 合同管理
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/project/add" class="btn btn-info btn-block">
+                                <i class="fas fa-plus"></i> 新增项目
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/staff/add" class="btn btn-warning btn-block">
+                                <i class="fas fa-plus"></i> 新增人员
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
