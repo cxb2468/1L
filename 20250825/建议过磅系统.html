@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>简易过磅系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#52C41A',
+                        danger: '#FF4D4F',
+                        warning: '#FAAD14'
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        [url=home.php?mod=space&uid=1688376]@layer[/url] utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .input-focus {
+                [url=home.php?mod=space&uid=101791]@apply[/url] focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+            }
+            .btn-primary {
+                @apply bg-primary text-white py-3 px-4 rounded-lg font-medium hover:bg-primary/90 transition-all active:scale-95;
+            }
+            .btn-secondary {
+                @apply bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-200 transition-all active:scale-95;
+            }
+            .tab-active {
+                @apply text-primary border-primary;
+            }
+            .status-pending {
+                @apply bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full;
+            }
+            .status-complete {
+                @apply bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="bg-primary text-white py-4 px-5 shadow-md">
+        <h1 class="text-xl font-bold flex items-center">
+            <i class="fa fa-balance-scale mr-2"></i>简易过磅系统
+        </h1>
+    </header>
+
+    <!-- 标签切换 -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="flex">
+            <button id="entry-tab" class="flex-1 py-3 text-center font-medium tab-active border-b-2 transition-all">
+                <i class="fa fa-pencil mr-1"></i>录入
+            </button>
+            <button id="records-tab" class="flex-1 py-3 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-all">
+                <i class="fa fa-history mr-1"></i>记录
+            </button>
+            <button id="stats-tab" class="flex-1 py-3 text-center font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-all">
+                <i class="fa fa-bar-chart mr-1"></i>统计
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-5">
+        <!-- 信息录入表单 -->
+        <div id="entry-panel">
+            <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+                <!-- 状态提示 -->
+                <div id="recordStatus" class="mb-4 py-2 px-3 rounded-lg hidden">
+                    <span id="statusText" class="text-sm"></span>
+                </div>
+
+                <h2 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-100">车辆与货物信息</h2>
+
+                <div class="space-y-5 mb-5">
+                    <div>
+                        <label for="vehicleNumber" class="block text-sm font-medium text-gray-700 mb-1">车牌号 <span class="text-danger">*</span></label>
+                        <input type="text" id="vehicleNumber" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus text-lg" placeholder="">
+                    </div>
+
+                    <div>
+                        <label for="goodsName" class="block text-sm font-medium text-gray-700 mb-1">货物名称 <span class="text-danger">*</span></label>
+                        <input type="text" id="goodsName" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus text-lg" placeholder="">
+                    </div>
+                </div>
+
+                <h2 class="text-lg font-semibold mb-4 pb-2 border-b border-gray-100">过磅数据 (t)</h2>
+
+                <div class="space-y-5 mb-6">
+                    <div>
+                        <label for="tareWeight" class="block text-sm font-medium text-gray-700 mb-1">皮重</label>
+                        <input type="number" id="tareWeight" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus text-lg" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label for="grossWeight" class="block text-sm font-medium text-gray-700 mb-1">毛重</label>
+                        <input type="number" id="grossWeight" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus text-lg" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label for="netWeight" class="block text-sm font-medium text-gray-700 mb-1">净重</label>
+                        <input type="number" id="netWeight" step="0.01" readonly class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg input-focus text-lg text-primary font-medium" placeholder="自动计算">
+                    </div>
+                </div>
+
+                <div class="text-sm text-gray-500 mb-4">
+                    <i class="fa fa-info-circle mr-1"></i> 提示：皮重和毛重至少填写一项，可后续补充完善
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="resetForm" class="flex-1 btn-secondary">
+                        <i class="fa fa-refresh mr-1"></i>重置
+                    </button>
+                    <button id="saveRecord" class="flex-1 btn-primary">
+                        <i class="fa fa-save mr-1"></i>保存
+                    </button>
+                    <button id="printTicket" class="w-12 flex items-center justify-center bg-success text-white rounded-lg hover:bg-success/90 transition-all active:scale-95">
+                        <i class="fa fa-print"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div id="records-panel" class="hidden">
+            <div class="bg-white rounded-xl p-5 shadow-sm">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold">历史记录</h2>
+                    <div class="flex gap-2">
+                        <button id="exportExcel" class="text-primary text-sm hover:underline flex items-center">
+                            <i class="fa fa-download mr-1"></i>导出Excel
+                        </button>
+                        <button id="clearAll" class="text-danger text-sm hover:underline">
+                            <i class="fa fa-trash-o mr-1"></i>清空
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase">
+                                <th class="pb-3">状态</th>
+                                <th class="pb-3">车牌号</th>
+                                <th class="pb-3">货物名称</th>
+                                <th class="pb-3">毛重(t)</th>
+                                <th class="pb-3">皮重(t)</th>
+                                <th class="pb-3">净重(t)</th>
+                                <th class="pb-3">时间</th>
+                                <th class="pb-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTable" class="divide-y divide-gray-100">
+                            <!-- 记录将通过JavaScript动态生成 -->
+                            <tr class="text-center">
+                                <td colspan="8" class="py-8 text-gray-500">
+                                    <i class="fa fa-folder-open-o text-2xl mb-2 block opacity-30"></i>
+                                    暂无记录
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div id="stats-panel" class="hidden">
+            <!-- 统计卡片 -->
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-1">总记录数</p>
+                    <p class="text-2xl font-bold text-primary" id="totalRecords">0</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-1">总净重(t)</p>
+                    <p class="text-2xl font-bold text-success" id="totalNetWeight">0.00</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-1">今日记录</p>
+                    <p class="text-2xl font-bold text-warning" id="todayRecords">0</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-1">今日净重(t)</p>
+                    <p class="text-2xl font-bold text-warning" id="todayNetWeight">0.00</p>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="bg-white rounded-xl p-5 shadow-sm mb-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-base font-semibold">近7天过磅趋势</h3>
+                    <div class="flex border rounded-md overflow-hidden">
+                        <button id="byDayChart" class="px-3 py-1 bg-primary text-white text-sm">按天统计</button>
+                        <button id="byGoodsChart" class="px-3 py-1 bg-gray-100 text-gray-700 text-sm hover:bg-gray-200">按货物统计</button>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="statisticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 车辆统计 -->
+            <div class="bg-white rounded-xl p-5 shadow-sm">
+                <h3 class="text-base font-semibold mb-4">主要车辆统计</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase">
+                                <th class="pb-3">车牌号</th>
+                                <th class="pb-3">次数</th>
+                                <th class="pb-3">总净重(t)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehicleStatsTable" class="divide-y divide-gray-100">
+                            <!-- 统计数据将通过JavaScript动态生成 -->
+                            <tr class="text-center">
+                                <td colspan="3" class="py-6 text-gray-500">
+                                    <i class="fa fa-car text-2xl mb-2 block opacity-30"></i>
+                                    暂无数据
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 提示框 -->
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 px-4 py-3 rounded-lg shadow-lg translate-y-20 opacity-0 transition-all duration-300 flex items-center z-50 max-w-[80%]">
+        <i id="toastIcon" class="mr-2"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- 打印预览弹窗 -->
+    <div id="printModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl w-[90%] max-w-md p-6 transform transition-all scale-95 opacity-0" id="modalContent">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">磅单预览</h3>
+                <button id="closePrintModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div id="ticketPreview" class="border border-gray-200 p-4 mb-4">
+                <!-- 磅单内容将通过JavaScript动态生成 -->
+            </div>
+            <div class="flex gap-3">
+                <button id="cancelPrint" class="flex-1 btn-secondary">取消</button>
+                <button id="confirmPrint" class="flex-1 btn-primary">
+                    <i class="fa fa-print mr-1"></i>打印
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前编辑的记录ID
+        let currentRecordId = null;
+        // 图表实例
+        let statisticsChart = null;
+        // 当前图表类型
+        let currentChartType = 'byDay';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化图表
+            initCharts();
+
+            // 计算净重
+            const grossWeight = document.getElementById('grossWeight');
+            const tareWeight = document.getElementById('tareWeight');
+            const netWeight = document.getElementById('netWeight');
+
+            function calculateNetWeight() {
+                const gross = parseFloat(grossWeight.value) || 0;
+                const tare = parseFloat(tareWeight.value) || 0;
+                if (gross > 0 && tare > 0) {
+                    netWeight.value = (gross - tare).toFixed(2);
+                } else {
+                    netWeight.value = '';
+                }
+            }
+
+            grossWeight.addEventListener('input', calculateNetWeight);
+            tareWeight.addEventListener('input', calculateNetWeight);
+
+            // 标签切换
+            document.getElementById('entry-tab').addEventListener('click', function() {
+                switchTab('entry');
+            });
+
+            document.getElementById('records-tab').addEventListener('click', function() {
+                switchTab('records');
+            });
+
+            document.getElementById('stats-tab').addEventListener('click', function() {
+                switchTab('stats');
+                // 更新统计数据
+                updateStatistics();
+            });
+
+            // 图表类型切换
+            document.getElementById('byDayChart').addEventListener('click', function() {
+                if (currentChartType!== 'byDay') {
+                    currentChartType = 'byDay';
+                    updateChartButtons();
+                    updateStatistics();
+                }
+            });
+
+            document.getElementById('byGoodsChart').addEventListener('click', function() {
+                if (currentChartType!== 'byGoods') {
+                    currentChartType = 'byGoods';
+                    updateChartButtons();
+                    updateStatistics();
+                }
+            });
+
+            // 保存记录
+            document.getElementById('saveRecord').addEventListener('click', saveRecord);
+
+            // 重置表单
+            document.getElementById('resetForm').addEventListener('click', resetForm);
+
+            // 打印磅单
+            document.getElementById('printTicket').addEventListener('click', previewPrintTicket);
+
+            // 关闭打印预览
+            document.getElementById('closePrintModal').addEventListener('click', closePrintModal);
+            document.getElementById('cancelPrint').addEventListener('click', closePrintModal);
+
+            // 确认打印
+            document.getElementById('confirmPrint').addEventListener('click', confirmPrint);
+
+            // 清空所有记录
+            document.getElementById('clearAll').addEventListener('click', clearAllRecords);
+
+            // 导出Excel
+            document.getElementById('exportExcel').addEventListener('click', exportToExcel);
+
+            // 加载本地存储的记录
+            loadRecords();
+        });
+
+        // 更新图表按钮样式
+        function updateChartButtons() {
+            if (currentChartType === 'byDay') {
+                document.getElementById('byDayChart').classList.remove('bg-gray-100', 'text-gray-700');
+                document.getElementById('byDayChart').classList.add('bg-primary', 'text-white');
+
+                document.getElementById('byGoodsChart').classList.remove('bg-primary', 'text-white');
+                document.getElementById('byGoodsChart').classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                document.getElementById('byGoodsChart').classList.remove('bg-gray-100', 'text-gray-700');
+                document.getElementById('byGoodsChart').classList.add('bg-primary', 'text-white');
+
+                document.getElementById('byDayChart').classList.remove('bg-primary', 'text-white');
+                document.getElementById('byDayChart').classList.add('bg-gray-100', 'text-gray-700');
+            }
+        }
+
+        // 切换标签
+        function switchTab(tabName) {
+            // 隐藏所有面板
+            document.getElementById('entry-panel').classList.add('hidden');
+            document.getElementById('records-panel').classList.add('hidden');
+            document.getElementById('stats-panel').classList.add('hidden');
+
+            // 显示选中的面板
+            document.getElementById(`${tabName}-panel`).classList.remove('hidden');
+
+            // 更新标签样式
+            document.getElementById('entry-tab').classList.remove('tab-active');
+            document.getElementById('records-tab').classList.remove('tab-active');
+            document.getElementById('stats-tab').classList.remove('tab-active');
+
+            document.getElementById(`${tabName}-tab`).classList.add('tab-active');
+        }
+
+        // 初始化图表
+        function initCharts() {
+            const ctx = document.getElementById('statisticsChart').getContext('2d');
+            statisticsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: getLast7Days(),
+                    datasets: [{
+                        label: '过磅净重(t)',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: '#165DFF',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 获取过去7天的日期
+        function getLast7Days() {
+            const days = [];
+            const today = new Date();
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                days.push(`${date.getMonth() + 1}月${date.getDate()}日`);
+            }
+
+            return days;
+        }
+
+        // 生成格式化编号 (YYMMDD-XXX)
+        function generateFormattedId() {
+            const date = new Date();
+            const year = date.getFullYear().toString().slice(-2); // 取年份后两位
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+
+            // 获取当天的记录数
+            const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+            const today = `${year}${month}${day}`;
+            const todayRecords = records.filter(record => {
+                return record.formattedId && record.formattedId.startsWith(today);
+            });
+
+            // 生成序号 (001开始)
+            const sequence = (todayRecords.length + 1).toString().padStart(3, '0');
+
+            return `${year}${month}${day}-${sequence}`;
+        }
+
+        // 保存记录
+        function saveRecord() {
+            // 获取表单数据
+            const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+            const goodsName = document.getElementById('goodsName').value.trim();
+            const tareWeight = parseFloat(document.getElementById('tareWeight').value) || 0;
+            const grossWeight = parseFloat(document.getElementById('grossWeight').value) || 0;
+            const netWeight = parseFloat(document.getElementById('netWeight').value) || 0;
+
+            // 验证必填字段
+            if (!vehicleNumber) {
+                showToast('请输入车牌号', 'error');
+                document.getElementById('vehicleNumber').focus();
+                return;
+            }
+
+            if (!goodsName) {
+                showToast('请输入货物名称', 'error');
+                document.getElementById('goodsName').focus();
+                return;
+            }
+
+            // 验证皮重和毛重至少填写一项
+            if (tareWeight <= 0 && grossWeight <= 0) {
+                showToast('皮重和毛重至少需要填写一项', 'error');
+                return;
+            }
+
+            // 确定记录状态
+            const status = (tareWeight > 0 && grossWeight > 0)? 'complete' : 'pending';
+
+            // 创建记录对象
+            let record;
+
+            if (currentRecordId) {
+                // 更新现有记录
+                const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+                const existingRecord = records.find(r => r.id === currentRecordId);
+
+                record = {
+                    ...existingRecord,
+                    vehicleNumber,
+                    goodsName,
+                    tareWeight,
+                    grossWeight,
+                    netWeight,
+                    status,
+                    updatedAt: new Date().toISOString()
+                };
+            } else {
+                // 创建新记录
+                record = {
+                    id: Date.now().toString(), // 使用时间戳作为唯一ID
+                    formattedId: generateFormattedId(), // 格式化编号
+                    vehicleNumber,
+                    goodsName,
+                    tareWeight,
+                    grossWeight,
+                    netWeight,
+                    status,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+            }
+
+            // 保存到本地存储
+            let records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+
+            if (currentRecordId) {
+                // 更新现有记录
+                const index = records.findIndex(r => r.id === currentRecordId);
+                if (index!== -1) {
+                    records[index] = record;
+                }
+                showToast(`记录已更新 (${status === 'complete'? '已完成' : '待完善'})`, 'success');
+            } else {
+                // 添加新记录
+                records.unshift(record); // 添加到数组开头
+                showToast(`记录已保存 (${status === 'complete'? '已完成' : '待完善'})`, 'success');
+            }
+
+            localStorage.setItem('weighingRecords', JSON.stringify(records));
+
+            // 刷新记录列表
+            loadRecords();
+
+            // 如果统计面板可见，更新统计数据
+            if (!document.getElementById('stats-panel').classList.contains('hidden')) {
+                updateStatistics();
+            }
+
+            // 如果是新记录且状态为待完善，不清空表单，方便后续补充
+            if (!currentRecordId && status === 'pending') {
+                // 保留已填写的信息
+                if (tareWeight <= 0) {
+                    document.getElementById('tareWeight').value = '';
+                }
+                if (grossWeight <= 0) {
+                    document.getElementById('grossWeight').value = '';
+                }
+                document.getElementById('netWeight').value = '';
+
+                // 设置当前记录ID，方便后续更新
+                currentRecordId = record.id;
+
+                // 显示状态提示
+                showRecordStatus(status);
+            } else {
+                // 重置表单
+                resetForm();
+                currentRecordId = null;
+                hideRecordStatus();
+            }
+        }
+
+        // 显示记录状态
+        function showRecordStatus(status) {
+            const statusElement = document.getElementById('recordStatus');
+            const statusText = document.getElementById('statusText');
+
+            statusElement.classList.remove('hidden', 'bg-yellow-100', 'bg-green-100');
+            statusText.classList.remove('text-yellow-800', 'text-green-800');
+
+            if (status === 'pending') {
+                statusElement.classList.add('bg-yellow-100');
+                statusText.classList.add('text-yellow-800');
+                statusText.textContent = '记录状态：待完善（请后续补充缺失的重量信息）';
+            } else {
+                statusElement.classList.add('bg-green-100');
+                statusText.classList.add('text-green-800');
+                statusText.textContent = '记录状态：已完成';
+            }
+        }
+
+        // 隐藏记录状态
+        function hideRecordStatus() {
+            document.getElementById('recordStatus').classList.add('hidden');
+        }
+
+        // 加载记录
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+            const tableBody = document.getElementById('recordsTable');
+
+            if (records.length === 0) {
+                tableBody.innerHTML = `
+                    <tr class="text-center">
+                        <td colspan="8" class="py-8 text-gray-500">
+                            <i class="fa fa-folder-open-o text-2xl mb-2 block opacity-30"></i>
+                            暂无记录
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // 显示记录
+            let html = '';
+            records.forEach((record, index) => {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3">
+                            <span class="${record.status === 'complete'? 'status-complete' : 'status-pending'}">
+                                ${record.status === 'complete'? '已完成' : '待完善'}
+                            </span>
+                        </td>
+                        <td class="py-3">${record.vehicleNumber}</td>
+                        <td class="py-3">${record.goodsName}</td>
+                        <td class="py-3">${record.grossWeight > 0? record.grossWeight.toFixed(2) : '-'}</td>
+                        <td class="py-3">${record.tareWeight > 0? record.tareWeight.toFixed(2) : '-'}</td>
+                        <td class="py-3 ${record.status === 'complete'? 'font-medium text-primary' : 'text-gray-400'}">
+                            ${record.status === 'complete'? record.netWeight.toFixed(2) : '-'}
+                        </td>
+                        <td class="py-3 text-sm text-gray-500">${formatDateTime(record.updatedAt)}</td>
+                        <td class="py-3">
+                            <div class="flex space-x-1">
+                                <button class="p-1.5 text-primary hover:bg-blue-50 rounded" title="编辑">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                ${record.status === 'complete'? `
+                                <button class="p-1.5 text-success hover:bg-green-50 rounded" title="打印">
+                                    <i class="fa fa-print"></i>
+                                </button>
+                                ` : ''}
+                                <button class="p-1.5 text-danger hover:bg-red-50 rounded" title="删除">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        }
+
+        // 更新统计数据
+        function updateStatistics() {
+            const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+            // 只统计已完成的记录
+            const completedRecords = records.filter(r => r.status === 'complete');
+
+            // 基础统计
+            const totalRecords = completedRecords.length;
+            const totalNetWeight = completedRecords.reduce((sum, record) => sum + parseFloat(record.netWeight), 0).toFixed(2);
+
+            // 今日统计
+            const today = new Date().toISOString().split('T')[0];
+            const todayRecords = completedRecords.filter(record => {
+                return new Date(record.createdAt).toISOString().split('T')[0] === today;
+            });
+
+            const todayNetWeight = todayRecords.reduce((sum, record) => sum + parseFloat(record.netWeight), 0).toFixed(2);
+
+            // 更新统计卡片
+            document.getElementById('totalRecords').textContent = totalRecords;
+            document.getElementById('totalNetWeight').textContent = totalNetWeight;
+            document.getElementById('todayRecords').textContent = todayRecords.length;
+            document.getElementById('todayNetWeight').textContent = todayNetWeight;
+
+            // 更新图表数据
+            if (currentChartType === 'byDay') {
+                updateDayChart(completedRecords);
+            } else {
+                updateGoodsChart(completedRecords);
+            }
+
+            // 更新车辆统计
+            const vehicleStats = {};
+
+            completedRecords.forEach(record => {
+                if (!vehicleStats[record.vehicleNumber]) {
+                    vehicleStats[record.vehicleNumber] = {
+                        count: 0,
+                        totalNetWeight: 0
+                    };
+                }
+
+                vehicleStats[record.vehicleNumber].count++;
+                vehicleStats[record.vehicleNumber].totalNetWeight += parseFloat(record.netWeight);
+            });
+
+            // 转换为数组并排序
+            const vehicleArray = Object.entries(vehicleStats)
+               .map(([number, stats]) => ({
+                    number,
+                    count: stats.count,
+                    totalNetWeight: stats.totalNetWeight.toFixed(2)
+                }))
+               .sort((a, b) => b.count - a.count) // 按次数排序
+               .slice(0, 10); // 只显示前10名
+
+            const vehicleTable = document.getElementById('vehicleStatsTable');
+
+            if (vehicleArray.length === 0) {
+                vehicleTable.innerHTML = `
+                    <tr class="text-center">
+                        <td colspan="3" class="py-6 text-gray-500">
+                            <i class="fa fa-car text-2xl mb-2 block opacity-30"></i>
+                            暂无数据
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let html = '';
+                vehicleArray.forEach(vehicle => {
+                    html += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 font-medium">${vehicle.number}</td>
+                            <td class="py-3">${vehicle.count}</td>
+                            <td class="py-3">${vehicle.totalNetWeight}</td>
+                        </tr>
+                    `;
+                });
+                vehicleTable.innerHTML = html;
+            }
+        }
+
+        // 更新按天统计图表
+        function updateDayChart(completedRecords) {
+            const dailyData = Array(7).fill(0); // 过去7天的数据
+            const dayLabels = getLast7Days();
+
+            completedRecords.forEach(record => {
+                const recordDate = new Date(record.createdAt);
+                const recordDay = `${recordDate.getMonth() + 1}月${recordDate.getDate()}日`;
+                const index = dayLabels.indexOf(recordDay);
+
+                if (index!== -1) {
+                    dailyData[index] += parseFloat(record.netWeight);
+                }
+            });
+
+            // 格式化数据保留两位小数
+            const formattedData = dailyData.map(value => parseFloat(value.toFixed(2)));
+
+            // 更新图表
+            statisticsChart.data.labels = dayLabels;
+            statisticsChart.data.datasets = [{
+                label: '过磅净重(t)',
+                data: formattedData,
+                backgroundColor: '#165DFF',
+                borderRadius: 4
+            }];
+            statisticsChart.options.plugins.legend.display = false;
+            statisticsChart.update();
+        }
+
+        // 更新按货物统计图表
+        function updateGoodsChart(completedRecords) {
+            // 按货物名称统计
+            const goodsStats = {};
+
+            completedRecords.forEach(record => {
+                if (!goodsStats[record.goodsName]) {
+                    goodsStats[record.goodsName] = 0;
+                }
+                goodsStats[record.goodsName] += parseFloat(record.netWeight);
+            });
+
+            // 转换为数组并排序
+            const goodsArray = Object.entries(goodsStats)
+               .map(([name, weight]) => ({
+                    name,
+                    weight: parseFloat(weight.toFixed(2))
+                }))
+               .sort((a, b) => b.weight - a.weight) // 按重量排序
+               .slice(0, 7); // 最多显示7种货物
+
+            // 准备图表数据
+            const labels = goodsArray.map(item => item.name);
+            const data = goodsArray.map(item => item.weight);
+
+            // 生成不同颜色
+            const colors = [
+                '#165DFF', '#52C41A', '#FAAD14', '#FF4D4F', '#722ED1', '#13C2C2', '#EB2F96'
+            ];
+
+            // 更新图表
+            statisticsChart.data.labels = labels;
+            statisticsChart.data.datasets = [{
+                label: '货物净重(t)',
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderRadius: 4
+            }];
+            statisticsChart.options.plugins.legend.display = true;
+            statisticsChart.update();
+        }
+
+        // 编辑记录
+        function editRecord(id) {
+            const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+            const record = records.find(r => r.id === id);
+
+            if (!record) return;
+
+            // 切换到录入标签
+            switchTab('entry');
+
+            // 填充表单
+            document.getElementById('vehicleNumber').value = record.vehicleNumber;
+            document.getElementById('goodsName').value = record.goodsName;
+            document.getElementById('tareWeight').value = record.tareWeight > 0? record.tareWeight.toFixed(2) : '';
+            document.getElementById('grossWeight').value = record.grossWeight > 0? record.grossWeight.toFixed(2) : '';
+            document.getElementById('netWeight').value = record.netWeight > 0? record.netWeight.toFixed(2) : '';
+
+            currentRecordId = id;
+
+            // 显示状态提示
+            showRecordStatus(record.status);
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            showToast(`编辑模式：${record.status === 'complete'? '可修改所有信息' : '请补充缺失的重量信息'}`, 'info');
+        }
+
+        // 删除记录
+        function deleteRecord(id) {
+            if (!confirm('确定要删除这条记录吗？')) {
+                return;
+            }
+
+            let records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+            records = records.filter(record => record.id!== id);
+            localStorage.setItem('weighingRecords', JSON.stringify(records));
+
+            // 刷新记录列表
+            loadRecords();
+
+            // 如果统计面板可见，更新统计数据
+            if (!document.getElementById('stats-panel').classList.contains('hidden')) {
+                updateStatistics();
+            }
+
+            // 如果正在编辑的记录被删除，重置表单
+            if (currentRecordId === id) {
+                resetForm();
+                currentRecordId = null;
+                hideRecordStatus();
+            }
+
+            showToast('记录已删除', 'success');
+        }
+
+        // 清空所有记录
+        function clearAllRecords() {
+            if (!confirm('确定要清空所有记录吗？此操作不可恢复！')) {
+                return;
+            }
+
+            localStorage.removeItem('weighingRecords');
+            loadRecords();
+
+            // 如果统计面板可见，更新统计数据
+            if (!document.getElementById('stats-panel').classList.contains('hidden')) {
+                updateStatistics();
+            }
+
+            // 重置表单
+            resetForm();
+            currentRecordId = null;
+            hideRecordStatus();
+
+            showToast('所有记录已清空', 'success');
+        }
+
+        // 导出为Excel
+        function exportToExcel() {
+            const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+
+            if (records.length === 0) {
+                showToast('没有记录可导出', 'error');
+                return;
+            }
+
+            // 准备导出数据
+            const exportData = records.map(record => {
+                return {
+                    '编号': record.formattedId,
+                    '车牌号': record.vehicleNumber,
+                    '货物名称': record.goodsName,
+                    '毛重(t)': record.grossWeight > 0? record.grossWeight.toFixed(2) : '',
+                    '皮重(t)': record.tareWeight > 0? record.tareWeight.toFixed(2) : '',
+                    '净重(t)': record.status === 'complete'? record.netWeight.toFixed(2) : '',
+                    '状态': record.status === 'complete'? '已完成' : '待完善',
+                    '创建时间': formatDateTime(record.createdAt),
+                    '更新时间': formatDateTime(record.updatedAt)
+                };
+            });
+
+            // 创建工作簿和工作表
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "过磅记录");
+
+            // 生成文件名（当前日期）
+            const date = new Date();
+            const fileName = `过磅记录_${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.xlsx`;
+
+            // 导出文件
+            XLSX.writeFile(wb, fileName);
+
+            showToast(`记录已导出为Excel: ${fileName}`, 'success');
+        }
+
+        // 重置表单
+        function resetForm() {
+            document.getElementById('vehicleNumber').value = '';
+            document.getElementById('goodsName').value = '';
+            document.getElementById('tareWeight').value = '';
+            document.getElementById('grossWeight').value = '';
+            document.getElementById('netWeight').value = '';
+            hideRecordStatus();
+        }
+
+        // 显示提示框
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastMessage = document.getElementById('toastMessage');
+
+            // 设置提示类型
+            toast.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 px-4 py-3 rounded-lg shadow-lg translate-y-20 opacity-0 transition-all duration-300 flex items-center z-50 max-w-[80%]';
+
+            if (type === 'success') {
+                toast.classList.add('bg-success', 'text-white');
+                toastIcon.className = 'fa fa-check-circle mr-2';
+            } else if (type === 'error') {
+                toast.classList.add('bg-danger', 'text-white');
+                toastIcon.className = 'fa fa-exclamation-circle mr-2';
+            } else {
+                toast.classList.add('bg-primary', 'text-white');
+                toastIcon.className = 'fa fa-info-circle mr-2';
+            }
+
+            // 设置消息内容
+            toastMessage.textContent = message;
+
+            // 显示提示框
+            setTimeout(() => {
+                toast.classList.remove('translate-y-20', 'opacity-0');
+            }, 10);
+
+            // 3秒后隐藏
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 格式化日期时间（带月字）
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        // 格式化日期为编号格式 (YYMMDD)
+        function formatDateForId(date) {
+            const year = date.getFullYear().toString().slice(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}${month}${day}`;
+        }
+
+        // 预览打印磅单
+        function previewPrintTicket(id = null) {
+            let record;
+
+            if (id) {
+                // 打印指定记录
+                const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+                record = records.find(r => r.id === id);
+
+                if (!record || record.status!== 'complete') {
+                    showToast('只能打印已完成的记录', 'error');
+                    return;
+                }
+            } else {
+                // 打印当前表单记录
+                const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+                const goodsName = document.getElementById('goodsName').value.trim();
+                const tareWeight = parseFloat(document.getElementById('tareWeight').value) || 0;
+                const grossWeight = parseFloat(document.getElementById('grossWeight').value) || 0;
+
+                if (!vehicleNumber ||!goodsName || tareWeight <= 0 || grossWeight <= 0) {
+                    showToast('请先填写完整的过磅信息', 'error');
+                    return;
+                }
+
+                // 构建临时记录
+                const tempId = 'temp-' + Date.now();
+                const date = new Date();
+                const formattedId = `${formatDateForId(date)}-temp`;
+
+                record = {
+                    id: tempId,
+                    formattedId,
+                    vehicleNumber,
+                    goodsName,
+                    tareWeight,
+                    grossWeight,
+                    netWeight: (grossWeight - tareWeight).toFixed(2),
+                    status: 'complete',
+                    createdAt: date.toISOString()
+                };
+            }
+
+            // 保存当前要打印的记录ID
+            currentPrintId = id || record.id;
+
+            // 构建磅单预览内容
+            const ticketPreview = document.getElementById('ticketPreview');
+            ticketPreview.innerHTML = `
+                <div class="text-center mb-4">
+                    <h3 class="text-lg font-bold mb-2">货物过磅单</h3>
+                    <p class="text-sm text-gray-500">编号: ${record.formattedId}</p>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 text-center">货物名称</p>
+                    <p class="font-medium text-center">${record.goodsName}</p>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 text-center">车牌号</p>
+                    <p class="font-medium text-center">${record.vehicleNumber}</p>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 text-center">过磅时间</p>
+                    <p class="font-medium text-center">${formatDateTime(record.createdAt)}</p>
+                </div>
+
+                <div class="my-4">
+                    <table class="w-full text-center border-collapse">
+                        <tr class="border-b border-gray-200">
+                            <td class="py-2 text-sm text-gray-500">毛重(t)</td>
+                            <td class="py-2 text-sm text-gray-500">皮重(t)</td>
+                            <td class="py-2 text-sm text-gray-500">净重(t)</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-medium">${parseFloat(record.grossWeight).toFixed(2)}</td>
+                            <td class="py-3 font-medium">${parseFloat(record.tareWeight).toFixed(2)}</td>
+                            <td class="py-3 font-medium text-primary">${parseFloat(record.netWeight).toFixed(2)}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="text-center text-xs text-gray-500 mt-4">
+                    <p>打印时间: ${formatDateTime(new Date().toISOString())}</p>
+                </div>
+            `;
+
+            // 显示打印预览弹窗
+            const modal = document.getElementById('printModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modal.classList.remove('hidden');
+            // 触发动画
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // 关闭打印预览
+        function closePrintModal() {
+            const modal = document.getElementById('printModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentPrintId = null;
+            }, 300);
+        }
+
+        // 确认打印
+        let currentPrintId = null;
+        function confirmPrint() {
+            if (!currentPrintId) return;
+
+            let record;
+
+            if (currentPrintId.startsWith('temp-')) {
+                // 使用临时记录
+                const vehicleNumber = document.getElementById('vehicleNumber').value.trim();
+                const goodsName = document.getElementById('goodsName').value.trim();
+                const tareWeight = parseFloat(document.getElementById('tareWeight').value) || 0;
+                const grossWeight = parseFloat(document.getElementById('grossWeight').value) || 0;
+                const date = new Date();
+
+                record = {
+                    formattedId: `${formatDateForId(date)}-print`,
+                    vehicleNumber,
+                    goodsName,
+                    tareWeight,
+                    grossWeight,
+                    netWeight: (grossWeight - tareWeight).toFixed(2),
+                    createdAt: date.toISOString()
+                };
+            } else {
+                // 获取保存的记录
+                const records = JSON.parse(localStorage.getItem('weighingRecords') || '[]');
+                record = records.find(r => r.id === currentPrintId);
+            }
+
+            if (!record) {
+                showToast('打印失败，未找到记录', 'error');
+                closePrintModal();
+                return;
+            }
+
+            // 创建打印窗口
+            const printWindow = window.open('', '_blank');
+
+            // 构建打印内容
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>磅单 - ${record.vehicleNumber}</title>
+                    <style>
+                        body { font-family: SimHei, Arial, sans-serif; padding: 20px; }
+                       .ticket { max-width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; }
+                       .header { text-align: center; margin-bottom: 15px; }
+                       .header h1 { margin: 0 0 5px 0; font-size: 18px; }
+                       .info { margin-bottom: 10px; text-align: center; }
+                       .info p { margin: 3px 0; }
+                       .info.label { font-size: 12px; color: #666; }
+                       .weight-table { width: 100%; border-collapse: collapse; margin: 15px 0; text-align: center; }
+                       .weight-table td { padding: 8px; border: 1px solid #eee; }
+                       .weight-table.total { font-weight: bold; color: #165DFF; }
+                       .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <div class="ticket">
+                        <div class="header">
+                            <h1>货物过磅单</h1>
+                            <p style="font-size: 12px; color: #666;">编号: ${record.formattedId}</p>
+                        </div>
+
+                        <div class="info">
+                            <p class="label">货物名称</p>
+                            <p>${record.goodsName}</p>
+                        </div>
+
+                        <div class="info">
+                            <p class="label">车牌号</p>
+                            <p>${record.vehicleNumber}</p>
+                        </div>
+
+                        <div class="info">
+                            <p class="label">过磅时间</p>
+                            <p>${formatDateTime(record.createdAt)}</p>
+                        </div>
+
+                        <table class="weight-table">
+                            <tr>
+                                <td>毛重(t)</td>
+                                <td>皮重(t)</td>
+                                <td>净重(t)</td>
+                            </tr>
+                            <tr class="total">
+                                <td>${parseFloat(record.grossWeight).toFixed(2)}</td>
+                                <td>${parseFloat(record.tareWeight).toFixed(2)}</td>
+                                <td>${parseFloat(record.netWeight).toFixed(2)}</td>
+                            </tr>
+                        </table>
+
+                        <div class="footer">
+                            <p>打印时间: ${formatDateTime(new Date().toISOString())}</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+
+            printWindow.document.close();
+            printWindow.focus();
+
+            // 延迟打印，确保内容加载完成
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+                closePrintModal();
+            }, 500);
+        }
+
+        // 暴露函数到全局，供HTML调用
+        window.editRecord = editRecord;
+        window.previewPrintTicket = previewPrintTicket;
+        window.deleteRecord = deleteRecord;
+    </script>
+</body>
+</html>

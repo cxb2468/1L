@@ -2,14 +2,8 @@ import pyautogui
 import cv2,time,random,os, datetime
 import numpy
 import mss
-import sys
-import importlib.util
 
-# 检查OCR模块是否可用
-ocr_available = importlib.util.find_spec("pytesseract") is not None
-if ocr_available:
-    import pytesseract
-    from ocr_utils import recognize_text_in_region, find_text_and_click, get_text_coordinates
+
 
 pyautogui.FAILSAFE = True  # 如果出错，将鼠标移至屏幕左上角可停止程序
 
@@ -142,32 +136,6 @@ def locate(target,want, show=bool(0), msg=bool(0)):
 
     return loc_pos
 
-# 使用OCR查找文本的替代方法
-def locate_text(target_text, search_area=(0, 0, 1920, 1080)):
-    """
-    使用OCR在屏幕上查找指定文本
-    
-    Args:
-        target_text (str): 要查找的文本
-        search_area (tuple): 搜索区域 (left, top, width, height)
-    
-    Returns:
-        list: 包含文本位置的列表 [(x, y), ...]
-    """
-    if not ocr_available:
-        print("OCR功能不可用，请安装pytesseract")
-        return []
-    
-    try:
-        coords = get_text_coordinates(target_text, search_area)
-        if coords:
-            x, y, w, h = coords
-            # 返回文本中心点坐标
-            return [[x + w // 2, y + h // 2]]
-    except Exception as e:
-        print(f"OCR识别出错: {e}")
-    
-    return []
 
 # 进入命运之斐  扫荡命运1至命运3
 def mingYun():
@@ -485,42 +453,6 @@ def main():
     #     pyautogui.click(xy)
     #     mingYun()
     # 羁绊
-
-    # 使用OCR替代部分图像识别的示例
-    # 比如在羁绊任务中，可以使用OCR来查找角色名，而不是依赖图片模板
-    # 这样即使游戏更新了界面，只要文字没变，程序仍然可以正常工作
-    
-    # 羁绊 - 使用OCR识别的示例
-    if ocr_available:
-        print("使用OCR功能查找羁绊角色...")
-        # 示例：查找"命运"文本并点击
-        # fate_coords = locate_text("命运")
-        # if fate_coords:
-        #     pyautogui.click(fate_coords[0][0], fate_coords[0][1])
-        #     mingYun()
-        pass
-    else:
-        print("OCR功能不可用，继续使用图像识别")
-        # 原有的图像识别逻辑
-        time.sleep(3)
-        pyautogui.click(1260, 1000)
-        for i in range(1, 12):
-            a = [cv2.imread(r"D:\1L\L\png\1.png"), 0.95, '1']
-            monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
-            im = numpy.array(mss.mss().grab(monitor))
-            screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-            pts = locate(screen, a, 0)
-            print(pts)
-            if not len(pts) == 0:
-                xy = pts[0]
-                print(xy)
-                break
-            time.sleep(1)
-            pyautogui.click(1854, 775)
-            pyautogui.dragTo(x=1854, y=250, duration=2, button='left')
-            pyautogui.click(x=1854, y=250, interval=0.0, duration=0.0)
-        pyautogui.click(xy)
-        mingYun()
 
     #程序结束时间
     endtime = datetime.datetime.now()

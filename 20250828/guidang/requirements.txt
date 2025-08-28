@@ -1,0 +1,18 @@
+# 桌面文件自动归档工具依赖包
+
+# 任务调度
+schedule==1.2.0
+
+# GUI相关（tkinter是Python内置的，无需安装）
+# tkinter - 内置
+
+# 系统托盘支持
+pystray==0.19.4
+Pillow==10.0.1
+
+# 打包工具
+PyInstaller==6.1.0
+
+# 其他工具
+psutil==5.9.6
+pathlib2==2.3.7
