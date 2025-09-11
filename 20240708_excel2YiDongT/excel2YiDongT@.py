@@ -1,17 +1,11 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
-import os
-import re
 
 # Define file paths initially as empty strings
 file_path1 = ""
+file_path2 = ""
 output_path = ""
-
-# Get the directory where the script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# Define the fixed file path for 人员手机号.xlsx
-fixed_file_path = os.path.join(script_dir, "人员手机号.xlsx")
 
 
 # Function to select the first input file
@@ -20,72 +14,28 @@ def select_input_file(entry):
     file_path1 = filedialog.askopenfilename()
     entry.delete(0, tk.END)
     entry.insert(0, file_path1)
-    
-    # Automatically generate output filename based on input filename
-    generate_output_filename()
 
 
-# Function to automatically generate output filename based on input filename
-def generate_output_filename():
-    global file_path1, output_path
-    if file_path1:
-        # Extract filename without extension
-        filename = os.path.basename(file_path1)
-        name_without_ext = os.path.splitext(filename)[0]
-        
-        # Search for YYYYMM pattern in the filename
-        match = re.search(r'(20\d{4})', name_without_ext)
-        if match:
-            yyyymm = match.group(1)
-            year = yyyymm[:4]
-            month = yyyymm[4:]
-            # Generate output filename
-            output_filename = f"电话费{year}年{month}月.xlsx"
-            # Set default output path to the same directory as input file
-            input_dir = os.path.dirname(file_path1)
-            output_path = os.path.join(input_dir, output_filename)
-            
-            # Update the output entry field
-            for widget in root.winfo_children():
-                if isinstance(widget, tk.Entry) and widget not in [input_entry1_ref]:
-                    output_entry = widget
-                    output_entry.delete(0, tk.END)
-                    output_entry.insert(0, output_path)
-                    break
+# Function to select the second input file
+def select_second_input_file(entry):
+    global file_path2
+    file_path2 = filedialog.askopenfilename()
+    entry.delete(0, tk.END)
+    entry.insert(0, file_path2)
 
 
 # Function to select the output directory
 def select_output_directory(entry):
     global output_path
-    output_path = filedialog.asksaveasfilename(defaultextension=".xlsx", 
-                                               initialfile=os.path.basename(output_path) if output_path else "电话费.xlsx")
+    output_path = filedialog.asksaveasfilename(defaultextension=".xlsx")
     entry.delete(0, tk.END)
     entry.insert(0, output_path)
 
 
 # Function to handle the submit button click
-def submit(input_entry1, output_entry, submit_button):
-    process_data(file_path1, fixed_file_path, output_path)
+def submit(input_entry1, input_entry2, output_entry, submit_button):
+    process_data(file_path1, file_path2, output_path)
     submit_button.config(text="处理完成")
-
-
-# Function to reset the application state
-def reset_application(input_entry1, output_entry, submit_button):
-    global file_path1, output_path
-    
-    # Reset global variables
-    file_path1 = ""
-    output_path = ""
-    
-    # Clear entry fields
-    input_entry1.delete(0, tk.END)
-    output_entry.delete(0, tk.END)
-    
-    # Reset submit button text
-    submit_button.config(text="开始处理")
-    
-    # Clear the generated output filename
-    generate_output_filename()
 
 
 # Your data processing function
@@ -97,10 +47,6 @@ def process_data(file_path1, file_path2, output_path):
 
         df1.rename(columns={'df1_成员账号': '成员账号'}, inplace=True)
         df2.rename(columns={'df2_成员账号': '成员账号'}, inplace=True)
-        
-        # Ensure the '成员账号' columns have the same data type (convert to string)
-        df1['成员账号'] = df1['成员账号'].astype(str)
-        df2['成员账号'] = df2['成员账号'].astype(str)
 
         # ... rest of your data processing code ...
         # Merge DataFrames
@@ -111,12 +57,6 @@ def process_data(file_path1, file_path2, output_path):
 
         # Reorder the columns in df_result
         df_result = df_result[new_column_order]
-        
-        # Remove the row with member account "1100000000000017"
-        df_result = df_result[df_result['成员账号'] != '1100000000000017']
-        
-        # Remove rows where member account length is greater than or equal to 12
-        df_result = df_result[df_result['成员账号'].str.len() < 12]
 
         # Create a Pandas Excel writer using xlsxwriter as the engine.
         writer = pd.ExcelWriter(output_path, engine='xlsxwriter')
@@ -166,7 +106,7 @@ def process_data(file_path1, file_path2, output_path):
 
 # GUI setup
 def setup_gui():
-    global root, input_entry1_ref
+    global root
     root = tk.Tk()
     root.title("Excel处理工具(移动话费)")
     root.geometry("350x550")
@@ -177,18 +117,15 @@ def setup_gui():
     tk.Label(root, text="选择第一个输入文件:", font=("Arial", 12), bg="#F0F0F0").pack(pady=20)
     input_entry1 = tk.Entry(root, font=("Arial", 12), relief=tk.FLAT, bg="white")
     input_entry1.pack(ipady=4, pady=10, padx=10)
-    input_entry1_ref = input_entry1  # Keep a reference for later use
     tk.Button(root, text="浏览", command=lambda: select_input_file(input_entry1), font=("Arial", 12), bg="#4CAF50",
               fg="white", activebackground="#45a049", relief=tk.FLAT, cursor="hand2").pack(pady=5, padx=10)
 
-    # Show fixed file path
-    tk.Label(root, text="使用固定文件:", font=("Arial", 12), bg="#F0F0F0").pack(pady=(20, 5))
-    tk.Entry(root, font=("Arial", 10), relief=tk.FLAT, bg="white", 
-             fg="gray").pack(ipady=4, pady=(5, 10), padx=10)
-    # Insert the fixed file path into the entry widget
-    fixed_file_entry = root.winfo_children()[-1]  # Get the last created entry widget
-    fixed_file_entry.insert(0, "人员手机号.xlsx")
-    fixed_file_entry.config(state="readonly")
+    # Second input file selection
+    tk.Label(root, text="选择第二个输入文件:", font=("Arial", 12), bg="#F0F0F0").pack(pady=20)
+    input_entry2 = tk.Entry(root, font=("Arial", 12), relief=tk.FLAT, bg="white")
+    input_entry2.pack(ipady=4, pady=10, padx=10)
+    tk.Button(root, text="浏览", command=lambda: select_second_input_file(input_entry2), font=("Arial", 12), bg="#4CAF50",
+              fg="white", activebackground="#45a049", relief=tk.FLAT, cursor="hand2").pack(pady=5, padx=10)
 
     # Output directory selection
     tk.Label(root, text="选择输出目录并输入文件名:", font=("Arial", 12), bg="#F0F0F0").pack(pady=20)
@@ -197,23 +134,12 @@ def setup_gui():
     tk.Button(root, text="浏览", command=lambda: select_output_directory(output_entry), font=("Arial", 12), bg="#4CAF50",
               fg="white", activebackground="#45a049", relief=tk.FLAT, cursor="hand2").pack(pady=5, padx=10)
 
-    # Buttons frame
-    buttons_frame = tk.Frame(root, bg="#F0F0F0")
-    buttons_frame.pack(pady=20, padx=10)
-
     # Submit button
-    submit_button = tk.Button(buttons_frame, text="开始处理",
-                              command=lambda: submit(input_entry1, output_entry, submit_button),
+    submit_button = tk.Button(root, text="开始处理",
+                              command=lambda: submit(input_entry1, input_entry2, output_entry, submit_button),
                               font=("Arial", 12), bg="#4CAF50", fg="white", activebackground="#45a049", relief=tk.FLAT,
                               cursor="hand2")
-    submit_button.pack(side=tk.LEFT, padx=5)
-
-    # Reset button
-    reset_button = tk.Button(buttons_frame, text="重置",
-                             command=lambda: reset_application(input_entry1, output_entry, submit_button),
-                             font=("Arial", 12), bg="#f44336", fg="white", activebackground="#d32f2f", relief=tk.FLAT,
-                             cursor="hand2")
-    reset_button.pack(side=tk.LEFT, padx=5)
+    submit_button.pack(pady=20, padx=10)
 
     root.mainloop()
 

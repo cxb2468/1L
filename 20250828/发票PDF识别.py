@@ -27,24 +27,25 @@ class ExtraInfo():
                     # print(pattern_product)
                     pattern_invoice_kind = re.compile(r"\w+发票\x20?(\(\w+发票\))?").search(text)
                     pattern_name_1 = re.compile(r"(名\x20?称:\x20?)(\w{2,})").findall(text)
-                    pattern_name_2 = re.compile(r"(\b[\u4e00-\u9fa5]+公司?)").findall(text)
-                    pattern_invoice_code = re.compile(r"[发票|票据|开票代码\s?:\s?(\d+)").search(text)
-                    pattern_invoice_number = re.compile(r"[发票|票据|开票号码\s?:\s?(\d+)?").search(text)
+                    pattern_name_2 = re.compile(r"(\b[\u4e00-\u9fa5+公司]\b)").findall(text)
+                    pattern_invoice_code = re.compile(r"[发票|票据|开票代码]\s?:\s?(\d+)").search(text)
+                    pattern_invoice_number = re.compile(r"[发票|票据|开票号码]\s?:\s?(\d+)?").search(text)
                     pattern_all_number = re.compile(r"\d{5,}").findall(text)
                     pattern_invoice_date = re.compile(
-                        r"[开票|订单日期：\x20?(20\d{2})\x20?年\x20?(\d{2})\x20?月\x20?(\d{2})\x20?日")
+                        r"[开票|订单日期：\x20?(20\d{2})\x20?年\x20?(\d{2})\x20?月\x20?(\d{2})\x20?日]")
                     pattern_invoice_date_1 = re.compile(r"(20\d{2})\x20?年\x20?(\d{2})\x20?月\x20?(\d{2})\x20?日")
                     pattern_invoice_date_2 = re.compile(r"(20\d{2})\x20(\d{2})\x20(\d{2})")
-                    pattern_taxpayer_number_1 = re.compile(r"(纳税人识别号:\x20?)([0-9A-Z{18})").findall(text)
-                    pattern_taxpayer_number_2 = re.compile(r"\b([0-9A-Z{18})\b").findall(text)
-                    pattern_money = re.compile(r"合\x20?计\x20&#165;(\d+\.\d{2})\x20(\**|(&#165;\d+\.\d{2}))\n").search(
-                        text)
-                    pattern_money_2 = re.compile(r"(&#165;\x20?)(\d+\.\d{2})").findall(text)
-                    pattern_total_money = re.compile(r"\(小写\)\x20&#165;(\d+\.\d{2})").search(text)
-                    pattern_tax_rate = re.compile(r"\d+%|不征税").search(text)
+                    pattern_taxpayer_number_1 = re.compile(r"(纳税人识别号:\x20?)([0-9A-Z]{18})").findall(text)
+                    pattern_taxpayer_number_2 = re.compile(r"\b([0-9A-Z]{18})\b").findall(text)
+                    # 优化金额和税额的正则表达式，增加更多匹配模式
+                    pattern_money = re.compile(r"(?:合\s*计|金\s*额)\s*[:：]?\s*&#165;?\s*(\d+\.\d{2})").search(text)
+                    pattern_tax = re.compile(r"(?:税\s*额|税\s*额\s*合计)\s*[:：]?\s*&#165;?\s*(\d+\.\d{2})").search(text)
+                    pattern_total_money = re.compile(r"(?:价税合计|小写金额|总金额)\s*[:：]?\s*&#165;?\s*(\d+\.\d{2})").search(text)
+                    # 改进税率提取正则表达式
+                    pattern_tax_rate = re.compile(r"(?:税率|税\s*率)\s*[:：]?\s*(\d+%)|不征税").search(text)
                     # invoice_stuff = re.compile(r"(\*[\u4e00-\u9fa5]+\*[\s\S]*)(合\s?计\s?[￥&#165;]\d+\.\d{2})").findall(text)
                     invoice_stuff = re.compile(
-                        r"(\*[\u4e00-\u9fa5+\*[\s\S*)((合\x20?计\x20)?&#165;(\d+\.\d{2}))").findall(text)
+                        r"(\*[\u4e00-\u9fa5+\*[\s\S]*)((合\x20?计\x20)?&#165;(\d+\.\d{2}))").findall(text)
                     if pattern_invoice_kind:
                         invoice_kind = pattern_invoice_kind.group()
                     else:
@@ -72,7 +73,7 @@ class ExtraInfo():
                         customer = ""
                     if pattern_invoice_code:
                         invoice_code = pattern_invoice_code.group(1)
-                    elif re.search(r"[开票|发票|票据代码", text):
+                    elif re.search(r"[开票|发票|票据代码]", text):
                         try:
                             invoice_code = pattern_all_number[0]
                         except IndexError:
@@ -81,7 +82,7 @@ class ExtraInfo():
                         invoice_code = ""
                     if pattern_invoice_number:
                         invoice_number = pattern_invoice_number.group(1)
-                    elif re.search(r"[开票|发票|票据号码", text):
+                    elif re.search(r"[开票|发票|票据号码]", text):
                         try:
                             invoice_number = pattern_all_number[1]
                         except IndexError:
@@ -98,7 +99,15 @@ class ExtraInfo():
                     else:
                         match_date = None
                     if match_date:
-                        invoice_date = match_date.group(1) + "年" + match_date.group(2) + "月" + match_date.group(3) + "日"
+                        try:
+                            # 安全地提取日期组，防止IndexError
+                            groups = match_date.groups()
+                            if len(groups) >= 3:
+                                invoice_date = groups[0] + "年" + groups[1] + "月" + groups[2] + "日"
+                            else:
+                                invoice_date = ""
+                        except (IndexError, AttributeError):
+                            invoice_date = ""
                     else:
                         invoice_date = ""
                     if pattern_taxpayer_number_1:
@@ -122,31 +131,40 @@ class ExtraInfo():
                     else:
                         supplier_number = ""
                         customer_number = ""
+                    
+                    # 优化金额和税额提取逻辑
                     if pattern_money:
-                        try:
-                            money = pattern_money.group(1)
-                        except IndexError:
-                            money = ""
-                        try:
-                            tax = pattern_money.group(2).replace("&#165;", "")
-                        except IndexError:
-                            tax = ""
+                        money = pattern_money.group(1)
                     else:
-                        money = ""
-                        tax = ""
+                        # 尝试其他方式提取金额合计
+                        money_match = re.search(r"(?:合\s*计|金\s*额)[:：]?\s*￥?\s*(\d+\.?\d*)", text)
+                        money = money_match.group(1) if money_match else ""
+                        
+                    if pattern_tax:
+                        tax = pattern_tax.group(1)
+                    else:
+                        # 尝试其他方式提取税额
+                        tax_match = re.search(r"(?:税\s*额|税\s*额\s*合计)[:：]?\s*￥?\s*(\d+\.?\d*)", text)
+                        tax = tax_match.group(1) if tax_match else ""
+                        
+                    # 如果没有单独提取到税额，尝试从pattern_money中提取
+                    if not tax and pattern_money:
+                        tax = pattern_money.group(1)
+                        
                     if pattern_tax_rate:
-                        tax_rate = pattern_tax_rate.group()
+                        tax_rate = pattern_tax_rate.group(1) if pattern_tax_rate.group(1) else pattern_tax_rate.group()
                     else:
-                        tax_rate = ""
+                        # 尝试其他方式提取税率
+                        tax_rate_match = re.search(r"(?:税率|税\s*率)[:：]?\s*(\d+(?:\.\d+)?%)", text)
+                        tax_rate = tax_rate_match.group(1) if tax_rate_match else ""
+                        
                     if pattern_total_money:
                         total_money = pattern_total_money.group(1)
-                    elif pattern_money_2:
-                        try:
-                            total_money = pattern_money_2[-1][1]
-                        except IndexError:
-                            total_money = ""
                     else:
-                        total_money = ""
+                        # 尝试其他方式提取价税合计
+                        total_money_match = re.search(r"(?:价税合计|小写金额|总金额)[:：]?\s*￥?\s*(\d+\.?\d*)", text)
+                        total_money = total_money_match.group(1) if total_money_match else ""
+                        
                     if pattern_product:
                         product = pattern_product.group(1)
                     else:

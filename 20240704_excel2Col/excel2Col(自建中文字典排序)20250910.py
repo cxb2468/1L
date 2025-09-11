@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from openpyxl import Workbook,load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, Border, Side
 from openpyxl.utils import get_column_letter
 from tkinter import messagebox
 import os
@@ -31,13 +31,22 @@ def save_df_to_excel_with_column_width(df, output_file_path, column_widths=None)
             ws.column_dimensions[col_letter].width = width
 
     # Set cell alignment to left
+    thin_border = Border(
+        left=Side(style='thin'), 
+        right=Side(style='thin'), 
+        top=Side(style='thin'), 
+        bottom=Side(style='thin')
+    )
+    
     for row in ws.iter_rows():
         for cell in row:
             cell.alignment = Alignment(horizontal='left')
+            cell.border = thin_border
 
     # Add bold font to header row
     for cell in ws[1]:  # ws[1] refers to the first row
         cell.font = Font(bold=True)
+
 
     try:
         wb.save(output_file_path)
@@ -121,7 +130,7 @@ def process_excel(input_file_path, output_file_path):
     # 在排序后的 DataFrame 上插入序号列
     df_sorted.insert(0, '序号', np.arange(1, len(df_sorted) + 1))
 
-    column_widths = [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+    column_widths = [6, 12, 12, 15, 12, 17, 12, 12, 12, 12, 12, 12, 12, 15, 15]
     # 使用排序后的 DataFrame 保存文件
     save_df_to_excel_with_column_width(df_sorted, output_file_path, column_widths)
 

@@ -139,12 +139,17 @@ def select_input_file(entry):
 
 # 选择输出目录对话框
 def select_output_directory(entry):
-    directory = filedialog.askdirectory()
-    output_path = os.path.join(directory, "9.2.1 U8用户管理.xlsx")
-    # Normalize the path or replace backslashes for display purposes
-    normalized_path = os.path.normpath(output_path).replace("\\", "/")
-    entry.delete(0, tk.END)
-    entry.insert(0, normalized_path)
+    # 让用户选择保存文件的位置和文件名
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".xlsx",
+        filetypes=[("Excel文件", "*.xlsx"), ("所有文件", "*.*")],
+        initialfile="9.2.1 U8用户管理.xlsx",
+        title="选择保存位置"
+    )
+    
+    if file_path:  # 如果用户选择了文件路径
+        entry.delete(0, tk.END)
+        entry.insert(0, file_path)
 
 # GUI提交处理逻辑
 def submit(input_entry, output_entry, submit_button):

@@ -103,9 +103,9 @@ def process_excel(input_file_path, output_file_path):
 
     df = pd.read_excel(input_file_path)
     column_order = [
-        '部门', '用户', '名称', '厂商','型号',
+        '部门', '用户', '名称', '厂商',
         'CPU型号', '主频', '内存(G)',
-        '操作系统', 'Office软件', '购入日期', '分类', '用途', '固定资产编号'
+        '操作系统', 'Office软件', '购入日期', '分类', '用途'
     ]
     df_reordered = df[column_order].copy()  # 创建一个副本以避免潜在的SettingWithCopyWarning
 
@@ -121,7 +121,7 @@ def process_excel(input_file_path, output_file_path):
     # 在排序后的 DataFrame 上插入序号列
     df_sorted.insert(0, '序号', np.arange(1, len(df_sorted) + 1))
 
-    column_widths = [10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+    column_widths = [10, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15]
     # 使用排序后的 DataFrame 保存文件
     save_df_to_excel_with_column_width(df_sorted, output_file_path, column_widths)
 
