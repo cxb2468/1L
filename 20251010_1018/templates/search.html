@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 - 大塚常用中日用语对照</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .search-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .search-box input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .search-box button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            background-color: #45a049;
+        }
+        .home-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .home-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .category-filter {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+        .category-filter a {
+            color: #2196F3;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .category-filter a:hover {
+            text-decoration: underline;
+        }
+        .results-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .results-info {
+            color: #666;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .results-table th, .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .results-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        .results-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .action-buttons a, .action-buttons button {
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+        .edit-btn:hover {
+            background-color: #0b7dda;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 5px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+        .pagination .current {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .add-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .add-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .flash-messages {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .smart-search-results {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: calc(100% - 2rem);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .smart-search-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .smart-search-item:hover {
+            background-color: #f9f9f9;
+        }
+        .smart-search-item:last-child {
+            border-bottom: none;
+        }
+        .user-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .user-info a {
+            color: #4CAF50;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        /* 添加播放按钮样式 */
+        .speaker-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .speaker-button:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        {% if user_role == 'admin' %}
+            <span>管理员</span>
+        {% elif user_role == 'user' %}
+            <span>普通用户</span>
+        {% else %}
+            <span>访客</span>
+        {% endif %}
+        {% if user_role %}
+            <a href="{{ url_for('logout') }}">登出</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">登录</a>
+        {% endif %}
+    </div>
+    
+    <div class="header">
+        <div class="search-box">
+            <form action="{{ url_for('search') }}" method="GET">
+                <input type="text" name="query" id="search-input" placeholder="请输入中文、日语或其他关键词..." 
+                       value="{{ query }}" autocomplete="off">
+                <button type="submit">搜索</button>
+            </form>
+        </div>
+        <div class="home-link">
+            <a href="{{ url_for('index') }}">返回首页</a>
+        </div>
+        {% if category %}
+            <div class="category-filter">
+                当前分类: <strong>{{ category }}</strong> | 
+                <a href="{{ url_for('search') }}">查看所有单词</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="results-container">
+        <div class="results-header">
+            <div class="results-info">
+                找到 {{ total }} 条记录
+            </div>
+            {% if user_role == 'admin' %}
+            <div class="add-link">
+                <a href="{{ url_for('add') }}">添加新记录</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if results %}
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>词汇分类</th>
+                        <th>中文</th>
+                        <th>日语</th>
+                        <th>发音</th>
+                        <th>备注</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            <td>{{ start_index + loop.index0 }}</td>
+                            <td>{{ row.词汇分类 or "" }}</td>
+                            <td>{{ row.中文 or "" }}</td>
+                            <td>{{ row.日语 or "" }}</td>
+                            <td>
+                                {{ row.发音 or "" }}
+                                {% if row.发音 %}
+                                <button class="speaker-button" onclick="playPronunciation('{{ row.发音 }}')" title="播放发音">
+                                    🔊
+                                </button>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.备注 or "" }}</td>
+                            <td>
+                                {% if user_role == 'admin' %}
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('edit', id=row.序号) }}" class="edit-btn">编辑</a>
+                                    <form action="{{ url_for('delete', id=row.序号) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="delete-btn" onclick="return confirm('确定要删除这条记录吗？')">删除</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if total_pages > 1 %}
+                <div class="pagination">
+                    {% if page > 1 %}
+                        <a href="{{ url_for('search', query=query, category=category, page=1) }}">首页</a>
+                        <a href="{{ url_for('search', query=query, category=category, page=page-1) }}">上一页</a>
+                    {% endif %}
+
+                    {% for p in range([1, page-2]|max, [total_pages+1, page+3]|min) %}
+                        {% if p == page %}
+                            <span class="current">{{ p }}</span>
+                        {% else %}
+                            <a href="{{ url_for('search', query=query, category=category, page=p) }}">{{ p }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page < total_pages %}
+                        <a href="{{ url_for('search', query=query, category=category, page=page+1) }}">下一页</a>
+                        <a href="{{ url_for('search', query=query, category=category, page=total_pages) }}">末页</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p>没有找到匹配的记录。</p>
+        {% endif %}
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        let smartSearchResults = null;
+        
+        // 创建智能搜索结果容器
+        if (!document.getElementById('smart-search-results')) {
+            smartSearchResults = document.createElement('div');
+            smartSearchResults.id = 'smart-search-results';
+            smartSearchResults.className = 'smart-search-results';
+            searchInput.parentNode.appendChild(smartSearchResults);
+        } else {
+            smartSearchResults = document.getElementById('smart-search-results');
+        }
+        
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            if (query.length === 0) {
+                smartSearchResults.style.display = 'none';
+                return;
+            }
+            
+            // 发送智能搜索请求
+            fetch(`/api/smart_search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let html = '';
+                        data.forEach(item => {
+                            html += `
+                                <div class="smart-search-item" onclick="selectItem('${item.中文}')">
+                                    <strong>${item.中文 || ''}</strong> - ${item.日语 || ''} (${item.词汇分类 || ''})
+                                </div>
+                            `;
+                        });
+                        smartSearchResults.innerHTML = html;
+                        smartSearchResults.style.display = 'block';
+                    } else {
+                        smartSearchResults.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('智能搜索出错:', error);
+                    smartSearchResults.style.display = 'none';
+                });
+        });
+        
+        function selectItem(text) {
+            searchInput.value = text;
+            smartSearchResults.style.display = 'none';
+            // 自动提交表单
+            searchInput.form.submit();
+        }
+        
+        // 点击其他地方隐藏智能搜索结果
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !smartSearchResults.contains(event.target)) {
+                smartSearchResults.style.display = 'none';
+            }
+        });
+        
+        // 播放发音功能
+        function playPronunciation(pronunciation) {
+            // 使用Web Speech API播放日语发音
+            if ('speechSynthesis' in window) {
+                // 取消之前的语音播放
+                speechSynthesis.cancel();
+                
+                // 创建新的语音对象
+                const utterance = new SpeechSynthesisUtterance(pronunciation);
+                
+                // 设置语言为日语
+                utterance.lang = 'ja-JP';
+                
+                // 设置语速
+                utterance.rate = 0.8;
+                
+                // 播放语音
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('您的浏览器不支持语音播放功能，请使用最新版本的Chrome、Firefox或Edge浏览器。');
+            }
+        }
+    </script>
+</body>
+</html>

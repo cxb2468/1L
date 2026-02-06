@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情 - 网上书店</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">网上书店</a>
+            <div class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                    <a class="nav-link" href="{{ url_for('auth.profile') }}">欢迎, {{ current_user.username }}</a>
+                    {% if current_user.is_admin %}
+                        <a class="nav-link" href="{{ url_for('admin.admin_dashboard') }}">管理员面板</a>
+                    {% endif %}
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">退出</a>
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">登录</a>
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">注册</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>订单详情</h1>
+            <a href="{{ url_for('admin.manage_orders') }}" class="btn btn-secondary">返回</a>
+        </div>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>订单信息</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>订单号:</strong> {{ order.id }}</p>
+                        <p><strong>用户:</strong> {{ order.user.username }}</p>
+                        <p><strong>下单时间:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>订单状态:</strong> {{ order.status }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>总金额:</strong> ¥{{ "%.2f"|format(order.total_amount) }}</p>
+                        <p><strong>礼品包装:</strong> {{ '是' if order.gift_wrapping else '否' }}</p>
+                        {% if order.gift_message %}
+                            <p><strong>礼品留言:</strong> {{ order.gift_message }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <h5 class="mt-4">订单项目</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>图书</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>小计</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.order_items %}
+                                <tr>
+                                    <td>{{ item.book.title }}</td>
+                                    <td>¥{{ "%.2f"|format(item.price) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>¥{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>账单地址</h5>
+                        <p>{{ order.billing_address }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>配送地址</h5>
+                        <p>{{ order.shipping_address }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "BC5718": {
+    "name": "\u5f20\u4e09",
+    "phone": "13915721111",
+    "balance": 76.0,
+    "status": "active",
+    "join_date": "2025-12-30",
+    "last_visit": "2025-12-30 10:14:46"
+  },
+  "BC8430": {
+    "name": "\u674e\u56db",
+    "phone": "13915722222",
+    "balance": 100.0,
+    "status": "active",
+    "join_date": "2025-12-30",
+    "last_visit": null
+  },
+  "BC4554": {
+    "name": "\u738b\u4e94",
+    "phone": "13915723333",
+    "balance": 77.0,
+    "status": "active",
+    "join_date": "2025-12-30",
+    "last_visit": "2025-12-30 10:15:39"
+  },
+  "BC7231": {
+    "name": "\u5f20\u4e09",
+    "phone": "18911111234",
+    "balance": 100.0,
+    "status": "active",
+    "join_date": "2025-12-30",
+    "last_visit": null
+  }
+}

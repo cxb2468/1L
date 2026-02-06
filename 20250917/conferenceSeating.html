@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会议座次图生成器</title>
+    <!-- 引入html2canvas和jsPDF库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- 引入xlsx库用于解析Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+        .controls {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .seating-and-recording {
+            flex: 3;
+            display: flex;
+            gap: 20px;
+        }
+        .seating-area {
+            flex: 2;
+        }
+        .recording-area {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .button-secondary {
+            background-color: #2196F3;
+        }
+        .button-secondary:hover {
+            background-color: #0b7dda;
+        }
+        .button-danger {
+            background-color: #f44336;
+        }
+        .button-danger:hover {
+            background-color: #d32f2f;
+        }
+        .participants-list {
+            margin-top: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .participant-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: move;
+        }
+        .participant-info {
+            font-size: 12px;
+            color: #666;
+        }
+        .seating-chart {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        td {
+            min-width: 100px;
+            height: 60px;
+            border: 1px solid #ddd;
+            text-align: center;
+            position: relative;
+            background-color: #f9f9f9;
+        }
+        .aisle {
+            background-color: #e0f7fa !important;
+            width: 40px;
+        }
+        .aisle-label {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 10px;
+            color: #999;
+        }
+        .seat-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            color: #999;
+        }
+        .occupied {
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+        .row-label, .col-label {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+        }
+        .input-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .assignment-list {
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .assignment-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            background-color: white;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .export-btn {
+            width: 100%;
+        }
+
+        /* 响应式设计 */
+        [url=home.php?mod=space&uid=945662]@media[/url] (max-width: 1200px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            .seating-and-recording {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>会议座次图生成器</h1>
+
+    <div class="container">
+        <div class="content-wrapper">
+            <div class="controls">
+                <div class="form-group">
+                    <label for="rows">行数:</label>
+                    <input type="number" id="rows", min="1", max="20", value="5">
+                </div>
+                <div class="form-group">
+                    <label for="cols">列数:</label>
+                    <input type="number" id="cols", min="1", max="20", value="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="aisles">过道位置 (在第几列后添加过道，用逗号分隔):</label>
+                    <input type="text" id="aisles", placeholder="例如: 2,4" value="2,4">
+                    <div class="input-hint">请输入要在其后添加过道的列号，用逗号分隔。例如："2,4" 表示在第2列和第4列后添加过道</div>
+                </div>
+
+                <button id="generate-btn">生成座次表</button>
+
+
+            </div>
+
+            <div class="seating-and-recording">
+                <div class="seating-area">
+                    <div class="seating-chart" id="seating-chart-container">
+                        <table id="seating-table">
+                            <!-- 座次表将通过JavaScript动态生成 -->
+                        </table>
+                    </div>
+
+                    <div class="export-options">
+                        <button id="export-png" class="export-btn button-secondary">导出为PNG图片</button>
+                        <button id="export-pdf" class="export-btn button-secondary">导出为PDF</button>
+                    </div>
+
+                    <div class="instructions">
+                        <h3>使用说明:</h3>
+                        <p>1. 设置行数、列数和过道位置后点击"生成座次表"</p>
+                        <p>2. 过道位置可以使用逗号分隔输入多个列号，例如："2,4"表示在第2列和第4列后添加过道</p>
+                        <p>3. 上传Excel文件导入参会人员名单（第一列为姓名，第二列为单位）</p>
+                        <p>4. 从左侧名单区域拖拽人员到座位上进行安排</p>
+                        <p>5. 右侧区域实时显示座位分配记录</p>
+                        <p>6. 可以随时调整布局并重新生成座次表</p>
+                        <p>7. 使用下方按钮导出座次图为PNG图片或PDF文件</p>
+                    </div>
+                </div>
+
+                <div class="recording-area">
+                    <h2>座位分配记录</h2>
+                    <div class="assignment-list" id="assignment-container">
+                        <p>尚未进行座位分配</p>
+                    </div>
+
+                    <div class="export-options">
+                        <button id="export-json" class="export-btn button-secondary">导出为JSON</button>
+                        <button id="export-csv" class="export-btn button-secondary">导出为CSV</button>
+                        <button id="clear-assignments" class="export-btn button-danger">清空分配记录</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="excel-file">导入参会人员Excel文件:</label>
+                        <input type="file" id="excel-file" accept=".xlsx, .xls">
+                        <div class="input-hint">请上传Excel文件，第一列为姓名，第二列为单位</div>
+                    </div>
+
+                    <div class="participants-list" id="participants-container">
+                        <p>拖拽人员到座位上进行安排</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量定义
+        let participants = []; // 存储参会人员信息，格式: {name: "姓名", unit: "单位"}
+        let draggedParticipant = null;
+        let seatAssignments = {}; // 存储座位分配信息，格式: {seatId: {name: "姓名", unit: "单位"}}
+
+        // DOM元素引用
+        const generateBtn = document.getElementById('generate-btn');
+        const excelFileInput = document.getElementById('excel-file');
+        const exportJsonBtn = document.getElementById('export-json');
+        const exportCsvBtn = document.getElementById('export-csv');
+        const clearAssignmentsBtn = document.getElementById('clear-assignments');
+        const exportPngBtn = document.getElementById('export-png');
+        const exportPdfBtn = document.getElementById('export-pdf');
+        const participantsContainer = document.getElementById('participants-container');
+        const seatingTable = document.getElementById('seating-table');
+        const assignmentContainer = document.getElementById('assignment-container');
+        const seatingChartContainer = document.getElementById('seating-chart-container');
+
+        // 事件监听器设置
+        function setupEventListeners() {
+            generateBtn.addEventListener('click', generateSeatingChart);
+            excelFileInput.addEventListener('change', handleExcelFile);
+            exportJsonBtn.addEventListener('click', exportToJson);
+            exportCsvBtn.addEventListener('click', exportToCsv);
+            clearAssignmentsBtn.addEventListener('click', clearAssignments);
+            exportPngBtn.addEventListener('click', exportToPng);
+            exportPdfBtn.addEventListener('click', exportToPdf);
+        }
+
+        // 处理Excel文件
+        function handleExcelFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+
+                // 获取第一个工作表
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // 将工作表转换为JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: ['name', 'unit'], range: 1});
+
+                // 处理导入的数据
+                participants = jsonData.filter(item => item.name && item.name.trim() !== '');
+
+                // 更新参会人员列表显示
+                updateParticipantsDisplay();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 更新参会人员列表显示
+        function updateParticipantsDisplay() {
+            participantsContainer.innerHTML = '';
+
+            if (participants.length === 0) {
+                participantsContainer.innerHTML = '<p>暂无参会人员</p>';
+                return;
+            }
+
+            // 添加参会人员到可拖拽列表
+            participants.forEach(person => {
+                // 检查该人员是否已被分配座位
+                let isAssigned = false;
+                for (const seatId in seatAssignments) {
+                    if (seatAssignments[seatId].name === person.name &&
+                        seatAssignments[seatId].unit === person.unit) {
+                        isAssigned = true;
+                        break;
+                    }
+                }
+
+                // 如果未被分配，添加到可拖拽列表
+                if (!isAssigned) {
+                    const participantItem = document.createElement('div');
+                    participantItem.classList.add('participant-item');
+
+                    // 显示姓名和单位
+                    participantItem.innerHTML = `
+                        <div>${person.name}</div>
+                        <div class="participant-info">${person.unit || '无单位信息'}</div>
+                    `;
+
+                    participantItem.draggable = true;
+
+                    participantItem.addEventListener('dragstart', function() {
+                        draggedParticipant = {
+                            name: person.name,
+                            unit: person.unit
+                        };
+                    });
+
+                    participantsContainer.appendChild(participantItem);
+                }
+            });
+
+            if (participantsContainer.children.length === 0) {
+                participantsContainer.innerHTML = '<p>所有人员已分配座位</p>';
+            }
+        }
+
+        // 生成座次表
+        function generateSeatingChart() {
+            console.log("生成座次表按钮被点击");
+
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const aislesInput = document.getElementById('aisles').value;
+
+            // 解析过道位置
+            const aislePositions = [];
+            if (aislesInput.trim() !== '') {
+                aislesInput.split(',').forEach(pos => {
+                    const num = parseInt(pos.trim());
+                    if (!isNaN(num) && num > 0 && num <= cols) {
+                        aislePositions.push(num);
+                    }
+                });
+            }
+
+            // 排序过道位置
+            aislePositions.sort((a, b) => a - b);
+
+            // 清空现有表格
+            seatingTable.innerHTML = '';
+
+            // 计算总列数（包括过道）
+            const totalCols = cols + aislePositions.length;
+
+            // 创建表头行（列标签）
+            const headerRow = document.createElement('tr');
+            const cornerCell = document.createElement('td');
+            cornerCell.classList.add('col-label');
+            headerRow.appendChild(cornerCell);
+
+            let colCounter = 1;
+            for (let j = 1; j <= cols + aislePositions.length; j++) {
+                // 检查这个位置是否需要放置过道
+                const isAislePosition = aislePositions.length > 0 &&
+                                      aislePositions[0] === colCounter;
+
+                const colHeader = document.createElement('td');
+                colHeader.classList.add('col-label');
+
+                if (isAislePosition) {
+                    colHeader.textContent = '过道';
+                    colHeader.classList.add('aisle');
+                    aislePositions.shift(); // 移除已处理的过道
+                } else {
+                    //colHeader.textContent = `列 ${colCounter}`;
+                    colHeader.textContent = `${colCounter}`;
+                    colCounter++;
+                }
+
+                headerRow.appendChild(colHeader);
+            }
+            seatingTable.appendChild(headerRow);
+
+            // 创建座位行
+            for (let i = 0; i < rows; i++) {
+                const row = document.createElement('tr');
+
+                // 添加行标签
+                const rowLabel = document.createElement('td');
+                rowLabel.classList.add('row-label');
+                //rowLabel.textContent = `行 ${i + 1}`;
+                rowLabel.textContent = `${i + 1}`;
+                row.appendChild(rowLabel);
+
+                // 重置过道位置数组
+                const currentAislePositions = [];
+                if (document.getElementById('aisles').value.trim() !== '') {
+                    document.getElementById('aisles').value.split(',').forEach(pos => {
+                        const num = parseInt(pos.trim());
+                        if (!isNaN(num) && num > 0 && num <= cols) {
+                            currentAislePositions.push(num);
+                        }
+                    });
+                }
+                currentAislePositions.sort((a, b) => a - b);
+
+                let colCounter = 1;
+                for (let j = 1; j <= cols + currentAislePositions.length; j++) {
+                    // 检查这个位置是否需要放置过道
+                    const isAislePosition = currentAislePositions.length > 0 &&
+                                          currentAislePositions[0] === colCounter;
+
+                    if (isAislePosition) {
+                        const aisle = document.createElement('td');
+                        aisle.classList.add('aisle');
+
+                        const aisleLabel = document.createElement('div');
+                        aisleLabel.classList.add('aisle-label');
+                        aisleLabel.textContent = '过道';
+                        aisle.appendChild(aisleLabel);
+
+                        row.appendChild(aisle);
+                        currentAislePositions.shift(); // 移除已处理的过道
+                    } else {
+                        const seat = document.createElement('td');
+                        const seatId = `${i+1}行${colCounter}列`;
+                        seat.dataset.row = i;
+                        seat.dataset.col = colCounter;
+                        seat.dataset.seatId = seatId;
+
+                        // 添加座位编号
+                        const seatNumber = document.createElement('div');
+                        seatNumber.classList.add('seat-number');
+                        seatNumber.textContent = seatId;
+                        seat.appendChild(seatNumber);
+
+                        // 检查此座位是否已有分配
+                        if (seatAssignments[seatId]) {
+                            seat.textContent = seatAssignments[seatId].name;
+                            seat.classList.add('occupied');
+                            seat.appendChild(seatNumber);
+                        }
+
+                        // 添加拖放事件监听
+                        seat.addEventListener('dragover', function(e) {
+                            e.preventDefault();
+                        });
+
+                        seat.addEventListener('drop', function(e) {
+                            e.preventDefault();
+                            if (draggedParticipant) {
+                                const seatId = this.dataset.seatId;
+                                this.textContent = draggedParticipant.name;
+                                this.classList.add('occupied');
+
+                                // 保留座位编号
+                                const seatNum = this.querySelector('.seat-number');
+                                if (seatNum) {
+                                    this.appendChild(seatNum);
+                                }
+
+                                // 记录座位分配
+                                seatAssignments[seatId] = {
+                                    name: draggedParticipant.name,
+                                    unit: draggedParticipant.unit
+                                };
+
+                                // 更新分配记录显示
+                                updateAssignmentDisplay();
+
+                                // 从参会人员列表中移除已安排的人员
+                                updateParticipantsDisplay();
+
+                                draggedParticipant = null;
+                            }
+                        });
+
+                        row.appendChild(seat);
+                        colCounter++;
+                    }
+                }
+
+                seatingTable.appendChild(row);
+            }
+
+            // 更新分配记录显示
+            updateAssignmentDisplay();
+        }
+
+        // 更新分配记录显示
+        function updateAssignmentDisplay() {
+            assignmentContainer.innerHTML = '';
+
+            if (Object.keys(seatAssignments).length === 0) {
+                assignmentContainer.innerHTML = '<p>尚未进行座位分配</p>';
+                return;
+            }
+
+            // 按座位编号排序
+            const sortedSeats = Object.keys(seatAssignments).sort((a, b) => {
+                const [aRow, aCol] = a.split('-').map(Number);
+                const [bRow, bCol] = b.split('-').map(Number);
+                return aRow - bRow || aCol - bCol;
+            });
+
+            sortedSeats.forEach(seatId => {
+                const assignmentItem = document.createElement('div');
+                assignmentItem.classList.add('assignment-item');
+                assignmentItem.innerHTML = `
+                    <div><strong>座位 ${seatId}:</strong> ${seatAssignments[seatId].name}</div>
+                    <div class="participant-info">${seatAssignments[seatId].unit || '无单位信息'}</div>
+                `;
+                assignmentContainer.appendChild(assignmentItem);
+            });
+        }
+
+        // 导出为JSON
+        function exportToJson() {
+            if (Object.keys(seatAssignments).length === 0) {
+                alert('没有座位分配数据可导出');
+                return;
+            }
+
+            const dataStr = JSON.stringify(seatAssignments, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+            const exportFileDefaultName = '座位分配.json';
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // 导出为CSV
+        function exportToCsv() {
+            if (Object.keys(seatAssignments).length === 0) {
+                alert('没有座位分配数据可导出');
+                return;
+            }
+
+            // 按座位编号排序
+            const sortedSeats = Object.keys(seatAssignments).sort((a, b) => {
+                const [aRow, aCol] = a.split('-').map(Number);
+                const [bRow, bCol] = b.split('-').map(Number);
+                return aRow - bRow || aCol - bCol;
+            });
+
+            let csvContent = "座位编号,姓名,单位\n";
+
+            sortedSeats.forEach(seatId => {
+                csvContent += `"${seatId}","${seatAssignments[seatId].name}","${seatAssignments[seatId].unit || ''}"\n`;
+            });
+
+            const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', encodedUri);
+            linkElement.setAttribute('download', '座位分配.csv');
+            linkElement.click();
+        }
+
+        // 导出为PNG图片
+        function exportToPng() {
+            // 检查是否有座次表
+            if (seatingTable.rows.length === 0) {
+                alert('请先生成座次表');
+                return;
+            }
+
+            // 使用html2canvas将座次表转换为图片
+            html2canvas(seatingChartContainer, {
+                scale: 2, // 提高导出图片的质量
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.download = '会议座次图.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('导出图片失败:', err);
+                alert('导出图片失败，请重试');
+            });
+        }
+
+        // 导出为PDF
+        function exportToPdf() {
+            // 检查是否有座次表
+            if (seatingTable.rows.length === 0) {
+                alert('请先生成座次表');
+                return;
+            }
+
+            // 使用html2canvas将座次表转换为图片
+            html2canvas(seatingChartContainer, {
+                scale: 2, // 提高导出图片的质量
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                // 创建PDF文档
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape', // 横向
+                    unit: 'mm'
+                });
+
+                // 计算PDF页面尺寸
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 280; // A4横向宽度(297mm)减去边距
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                // 添加图片到PDF
+                pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+
+                // 保存PDF文件
+                pdf.save('会议座次图.pdf');
+            }).catch(err => {
+                console.error('导出PDF失败:', err);
+                alert('导出PDF失败，请重试');
+            });
+        }
+
+        // 清空分配记录
+        function clearAssignments() {
+            if (confirm('确定要清空所有座位分配记录吗？')) {
+                seatAssignments = {};
+                updateAssignmentDisplay();
+                // 重新生成座次表以清除座位上的分配
+                generateSeatingChart();
+                // 重新导入参会人员以恢复所有人员到可拖拽列表
+                updateParticipantsDisplay();
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM已加载完成");
+            setupEventListeners();
+            generateSeatingChart();
+        });
+    </script>
+</body>
+</html>

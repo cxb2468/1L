@@ -1,0 +1,59 @@
+{
+  "办公模式": {
+    "快速左移": {
+      "action": "page_up",
+      "min_distance": 300,
+      "max_time": 0.5,
+      "direction": "left",
+      "threshold": 0.7
+    },
+    "快速右移": {
+      "action": "page_down",
+      "min_distance": 300,
+      "max_time": 0.5,
+      "direction": "right",
+      "threshold": 0.7
+    },
+    "画圆": {
+      "action": "minimize",
+      "min_points": 30,
+      "circularity_threshold": 0.7,
+      "min_radius": 50
+    },
+    "画矩形": {
+      "action": "screenshot",
+      "min_points": 40,
+      "rectangularity_threshold": 0.6
+    }
+  },
+  "游戏模式": {
+    "右上斜线": {
+      "action": "up+right",
+      "min_distance": 200,
+      "max_time": 0.4,
+      "direction": "up-right",
+      "threshold": 0.6
+    },
+    "左下斜线": {
+      "action": "down+left",
+      "min_distance": 200,
+      "max_time": 0.4,
+      "direction": "down-left",
+      "threshold": 0.6
+    },
+    "快速上移": {
+      "action": "up",
+      "min_distance": 250,
+      "max_time": 0.4,
+      "direction": "up",
+      "threshold": 0.7
+    },
+    "快速下移": {
+      "action": "down",
+      "min_distance": 250,
+      "max_time": 0.4,
+      "direction": "down",
+      "threshold": 0.7
+    }
+  }
+}

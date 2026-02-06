@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大塚常用中日用语对照</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .search-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+        .search-box h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        .search-form input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .search-form input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .search-form button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .search-form button:hover {
+            background-color: #45a049;
+        }
+        .smart-search-results {
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: none;
+        }
+        .smart-search-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .smart-search-item:hover {
+            background-color: #f9f9f9;
+        }
+        .smart-search-item:last-child {
+            border-bottom: none;
+        }
+        .add-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .add-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .add-link a:hover {
+            text-decoration: underline;
+        }
+        .category-links {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        .category-links h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .category-link {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .category-link:hover {
+            background-color: #0b7dda;
+        }
+        .user-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .user-info a {
+            color: #4CAF50;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        /* 添加播放按钮样式 */
+        .speaker-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .speaker-button:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        {% if user_role == 'admin' %}
+            <span>管理员</span>
+        {% elif user_role == 'user' %}
+            <span>普通用户</span>
+        {% else %}
+            <span>访客</span>
+        {% endif %}
+        {% if user_role %}
+            <a href="{{ url_for('logout') }}">登出</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">登录</a>
+        {% endif %}
+    </div>
+    
+    <div class="container">
+        <div class="search-box">
+            <h1>大塚常用中日用语对照</h1>
+            <form class="search-form" action="{{ url_for('search') }}" method="GET">
+                <input type="text" name="query" id="search-input" placeholder="请输入中文、日语或其他关键词..." autocomplete="off">
+                <button type="submit">搜索</button>
+            </form>
+            <div class="smart-search-results" id="smart-search-results"></div>
+            {% if user_role == 'admin' %}
+            <div class="add-link">
+                <a href="{{ url_for('add') }}">添加新记录</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="category-links">
+<!--            <h2>词汇分类</h2>-->
+            <div class="category-list">
+                {% for category in categories %}
+                    <a href="{{ url_for('search', category=category) }}" class="category-link">{{ category }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search-input');
+        const smartSearchResults = document.getElementById('smart-search-results');
+        
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            if (query.length === 0) {
+                smartSearchResults.style.display = 'none';
+                return;
+            }
+            
+            // 发送智能搜索请求
+            fetch(`/api/smart_search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let html = '';
+                        data.forEach(item => {
+                            // 在智能搜索结果中也添加播放按钮
+                            const pronunciation = item.发音 || '';
+                            const speakerButton = pronunciation ? 
+                                `<button class="speaker-button" onclick="event.stopPropagation(); playPronunciation('${pronunciation}')" title="播放发音">🔊</button>` : '';
+                            
+                            html += `
+                                <div class="smart-search-item" onclick="selectItem('${item.中文}')">
+                                    <strong>${item.中文 || ''}</strong> - ${item.日语 || ''} (${item.词汇分类 || ''}) ${speakerButton}
+                                </div>
+                            `;
+                        });
+                        smartSearchResults.innerHTML = html;
+                        smartSearchResults.style.display = 'block';
+                    } else {
+                        smartSearchResults.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('智能搜索出错:', error);
+                    smartSearchResults.style.display = 'none';
+                });
+        });
+        
+        function selectItem(text) {
+            searchInput.value = text;
+            smartSearchResults.style.display = 'none';
+            // 自动提交表单
+            document.querySelector('.search-form').submit();
+        }
+        
+        // 播放发音功能
+        function playPronunciation(pronunciation) {
+            // 使用Web Speech API播放日语发音
+            if ('speechSynthesis' in window) {
+                // 取消之前的语音播放
+                speechSynthesis.cancel();
+                
+                // 创建新的语音对象
+                const utterance = new SpeechSynthesisUtterance(pronunciation);
+                
+                // 设置语言为日语
+                utterance.lang = 'ja-JP';
+                
+                // 设置语速
+                utterance.rate = 0.8;
+                
+                // 播放语音
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('您的浏览器不支持语音播放功能，请使用最新版本的Chrome、Firefox或Edge浏览器。');
+            }
+        }
+        
+        // 点击其他地方隐藏智能搜索结果
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !smartSearchResults.contains(event.target)) {
+                smartSearchResults.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
