@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>价格监控 - 黄金价格监控后台管理系统</title>
+    <!-- 默认为事件监听器添加 passive: true -->
+    <script src="/static/vendor/default-passive-events.js"></script>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <!-- Element Plus Icons -->
+    <script src="/static/vendor/element-plus/icons-vue.iife.min.js"></script>
+    <!-- Element Plus 中文语言包 -->
+    <script src="/static/vendor/element-plus/zh-cn.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #303133;
+            line-height: 1.6;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            transition: all 0.3s ease;
+        }
+
+        .header:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #409eff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i.el-icon {
+            font-size: 24px;
+        }
+
+        .el-dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #606266;
+        }
+
+        .el-dropdown-link:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .el-dropdown-link .el-icon {
+            transition: all 0.3s ease;
+        }
+
+        .el-dropdown-link:hover .el-icon {
+            transform: scale(1.1);
+        }
+
+        .el-dropdown-menu {
+            border: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+
+        .el-dropdown-menu__item {
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 4px 8px;
+        }
+
+        .el-dropdown-menu__item:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar:hover {
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+        }
+
+        .card-container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card-container:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-container h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #409eff;
+        }
+
+        .el-menu {
+            border-right: none;
+        }
+
+        .el-menu-item {
+            height: 60px;
+            line-height: 60px;
+            margin: 0 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .el-menu-item:hover {
+            background-color: #ecf5ff !important;
+        }
+
+        .el-menu-item.is-active {
+            background-color: #ecf5ff !important;
+            color: #409eff !important;
+            font-weight: bold;
+        }
+
+        .el-table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .el-table th {
+            background-color: #f5f7fa !important;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content {
+                padding: 20px;
+            }
+
+            .sidebar {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+
+            .content {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 头部 -->
+            <el-header class="header">
+                <div class="logo">
+                    <el-icon>
+                        <component :is="Coin"></component>
+                    </el-icon>
+                    黄金价格监控管理系统
+                </div>
+                <div>
+                    <el-dropdown @command="handleUserCommand">
+                        <span class="el-dropdown-link">
+                            <el-icon :size="30">
+                                <component :is="UserFilled"></component>
+                            </el-icon>
+                            <el-icon class="el-icon--right">
+                                <component :is="ArrowDown"></component>
+                            </el-icon>
+                        </span>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+            </el-header>
+
+            <el-container class="main-container">
+                <!-- 侧边栏 -->
+                <el-aside class="sidebar" width="200px">
+                    <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleMenuSelect"
+                        background-color="#ffffff" text-color="#303133" active-text-color="#409eff">
+                        <el-menu-item index="dashboard">
+                            <el-icon>
+                                <component :is="House"></component>
+                            </el-icon>
+                            <span>仪表盘</span>
+                        </el-menu-item>
+                        <el-menu-item index="price-monitor">
+                            <el-icon>
+                                <component :is="DataLine"></component>
+                            </el-icon>
+                            <span>价格监控</span>
+                        </el-menu-item>
+                        <el-menu-item index="config">
+                            <el-icon>
+                                <component :is="SetUp"></component>
+                            </el-icon>
+                            <span>系统配置</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+
+                <!-- 主内容区 -->
+                <el-main class="content">
+                    <!-- 价格监控页面 -->
+                    <div>
+                        <div class="card-container">
+                            <h2>实时价格监控</h2>
+                            <el-row :gutter="20" style="margin-bottom: 20px;">
+                                <el-col :span="6">
+                                    <div style="background-color: #ecf5ff; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #409eff;">当前金价</h3>
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: baseline;">
+                                            <p style="font-size: 24px; font-weight: bold;">{{ currentPrice }} 元/克</p>
+                                            <p style="color: #606266;">{{ priceTrend }}</p>
+                                        </div>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #f0f9eb; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #67c23a;">价格变化</h3>
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: baseline;">
+                                            <p style="font-size: 24px; font-weight: bold;">{{ priceChange }} 元</p>
+                                            <p style="color: #606266;">{{ priceChangePercent }}%</p>
+                                        </div>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #fdf6ec; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #e6a23c;">今日最高</h3>
+                                        <p style="font-size: 24px; font-weight: bold;">{{ highestPrice }} 元/克</p>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #fef0f0; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #f56c6c;">今日最低</h3>
+                                        <p style="font-size: 24px; font-weight: bold;">{{ lowestPrice }} 元/克</p>
+                                    </div>
+                                </el-col>
+                            </el-row>
+
+                            <!-- 系统状态信息 -->
+                            <el-row :gutter="20" style="margin-bottom: 20px;">
+                                <el-col :span="6">
+                                    <div style="background-color: #fdf6ec; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #e6a23c;">默认金价</h3>
+                                        <p style="font-size: 16px;">{{ defaultGoldPrice || '未知' }} 元/克</p>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #f0f5ff; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #6690ff;">数据来源</h3>
+                                        <p style="font-size: 16px;">{{ dataSource || '未知' }}</p>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #f0f9eb; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #67c23a;">数据类型</h3>
+                                        <p style="font-size: 16px;">{{ dataType || '未知' }}</p>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div style="background-color: #fef0f0; padding: 20px; border-radius: 8px;">
+                                        <h3 style="margin-bottom: 10px; color: #f56c6c;">状态</h3>
+                                        <p style="font-size: 16px;">{{ status || '未知' }}</p>
+                                    </div>
+                                </el-col>
+                            </el-row>
+
+                            <!-- 日期检索 -->
+                            <el-row :gutter="20"
+                                style="margin-bottom: 20px; padding: 15px; background-color: #f9fafc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+                                <el-col :span="8">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 14px; color: #606266; font-weight: 500;">选择日期：</span>
+                                        <el-date-picker v-model="selectedDate" type="date" placeholder="选择日期"
+                                            format="YYYY年MM月DD日" value-format="YYYY-MM-DD" style="width: 180px;"
+                                            :locale="datePickerLocale" @change="handleDateChange" />
+                                    </div>
+                                </el-col>
+                                <el-col :span="16">
+                                    <div
+                                        style="display: flex; align-items: center; font-size: 14px; line-height: 32px; color: #606266; font-weight: 600;">
+                                        {{ selectedDate || '今日' }}
+                                    </div>
+                                </el-col>
+                            </el-row>
+
+                            <el-table :data="priceData.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+                                style="width: 100%" stripe>
+                                <el-table-column prop="time" label="时间" width="180"></el-table-column>
+                                <el-table-column prop="price" label="价格(元/克)" width="120">
+                                    <template #default="scope">
+                                        <span>{{ scope.row.price }}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="change" label="涨跌额" width="120">
+                                    <template #default="scope">
+                                        <span
+                                            :style="{ color: scope.row.change > 0 ? '#67c23a' : scope.row.change < 0 ? '#f56c6c' : '#909399' }">
+                                            {{ scope.row.change > 0 ? '+' : '' }}{{ scope.row.change }}
+                                        </span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="source" label="数据源"></el-table-column>
+                            </el-table>
+                            <div
+                                style="margin-top: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 15px; padding: 15px; background-color: #f9fafc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+                                <!-- 自定义分页组件 -->
+                                <div style="font-size: 14px; color: #606266;">共 {{ total }} 条</div>
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #606266;">
+                                    <span>每页条数：</span>
+                                    <el-select v-model="pageSize" size="small" @change="handleSizeChange"
+                                        style="width: 100px;">
+                                        <el-option label="20" value="20"></el-option>
+                                        <el-option label="50" value="50"></el-option>
+                                        <el-option label="100" value="100"></el-option>
+                                    </el-select>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <el-button size="small" :disabled="currentPage === 1"
+                                        @click="currentPage > 1 && handleCurrentChange(currentPage - 1)"
+                                        style="border-radius: 4px; transition: all 0.3s ease;">
+                                        上一页
+                                    </el-button>
+                                    <div
+                                        style="min-width: 80px; text-align: center; font-size: 14px; color: #303133; font-weight: 500;">
+                                        {{ currentPage }} / {{ Math.ceil(total / pageSize) || 1 }}
+                                    </div>
+                                    <el-button size="small"
+                                        :disabled="currentPage === Math.ceil(total / pageSize) || total === 0"
+                                        @click="currentPage < Math.ceil(total / pageSize) && handleCurrentChange(currentPage + 1)"
+                                        style="border-radius: 4px; transition: all 0.3s ease;">
+                                        下一页
+                                    </el-button>
+                                </div>
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #606266;">
+                                    <span>前往：</span>
+                                    <el-input-number v-model="currentPage" size="small" :min="1"
+                                        :max="Math.ceil(total / pageSize) || 1" @change="handleCurrentChange"
+                                        style="width: 80px;"></el-input-number>
+                                    <span>页</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { ElMessage } = ElementPlus;
+
+        // 创建 Vue 应用
+        const app = createApp({
+            data() {
+                // 获取今天的日期，格式为YYYY-MM-DD
+                const today = new Date().toISOString().split('T')[0];
+
+                // 日期选择器中文配置
+                const datePickerLocale = {
+                    name: 'zh-cn',
+                    el: {
+                        datepicker: {
+                            now: '此刻',
+                            today: '今天',
+                            cancel: '取消',
+                            clear: '清空',
+                            confirm: '确定',
+                            selectDate: '选择日期',
+                            selectTime: '选择时间',
+                            startDate: '开始日期',
+                            startTime: '开始时间',
+                            endDate: '结束日期',
+                            endTime: '结束时间',
+                            prevYear: '前一年',
+                            nextYear: '后一年',
+                            prevMonth: '上个月',
+                            nextMonth: '下个月',
+                            year: '年',
+                            month1: '1月',
+                            month2: '2月',
+                            month3: '3月',
+                            month4: '4月',
+                            month5: '5月',
+                            month6: '6月',
+                            month7: '7月',
+                            month8: '8月',
+                            month9: '9月',
+                            month10: '10月',
+                            month11: '11月',
+                            month12: '12月',
+                            week: '周次',
+                            weeks: {
+                                sun: '日',
+                                mon: '一',
+                                tue: '二',
+                                wed: '三',
+                                thu: '四',
+                                fri: '五',
+                                sat: '六'
+                            },
+                            months: {
+                                jan: '一月',
+                                feb: '二月',
+                                mar: '三月',
+                                apr: '四月',
+                                may: '五月',
+                                jun: '六月',
+                                jul: '七月',
+                                aug: '八月',
+                                sep: '九月',
+                                oct: '十月',
+                                nov: '十一月',
+                                dec: '十二月'
+                            }
+                        }
+                    }
+                };
+
+                return {
+                    activeMenu: 'price-monitor',
+                    currentPrice: 0,
+                    priceChange: 0,
+                    priceChangePercent: 0,
+                    highestPrice: 0,
+                    lowestPrice: 0,
+                    priceTrend: '加载中',
+                    priceData: [],
+                    currentPage: 1,
+                    pageSize: 20,
+                    total: 0,
+                    priceUpdateInterval: null,
+                    // 日期选择相关
+                    selectedDate: '',
+                    today: today,
+                    datePickerLocale: datePickerLocale,
+                    dateChangeTimer: null,
+                    // 系统状态信息
+                    dataSource: '未知',
+                    dataType: '未知',
+                    defaultGoldPrice: '未知',
+                    updateTime: '未知',
+                    status: '未知',
+                    // 图标组件引用
+                    Coin: ElementPlusIconsVue.Coin,
+                    House: ElementPlusIconsVue.House,
+                    DataLine: ElementPlusIconsVue.DataLine,
+                    SetUp: ElementPlusIconsVue.SetUp,
+                    ArrowDown: ElementPlusIconsVue.ArrowDown,
+                    UserFilled: ElementPlusIconsVue.UserFilled
+                };
+            },
+            methods: {
+                handleMenuSelect(key) {
+                    this.activeMenu = key;
+                    if (key === 'dashboard') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (key === 'price-monitor') {
+                        window.location.href = '/admin/price-monitor';
+                    } else if (key === 'config') {
+                        window.location.href = '/admin/config';
+                    }
+                },
+                handleUserCommand(command) {
+                    if (command === 'logout') {
+                        this.logout();
+                    } else if (command === 'profile') {
+                        ElMessage.info('个人中心功能待开发');
+                    }
+                },
+                // 退出登录
+                async logout() {
+                    try {
+                        const response = await fetch('/admin/logout', { method: 'GET' });
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            window.location.href = '/admin/login';
+                        }
+                    } catch (error) {
+                        console.error('退出登录失败:', error);
+                        window.location.href = '/admin/login';
+                    }
+                },
+                // 获取价格数据
+                async getPriceData(date = '') {
+                    try {
+                        // 构建请求URL，添加日期参数和随机参数禁用缓存
+                        let url = `/admin/api/price-data?timestamp=${Date.now()}`;
+                        if (date) {
+                            url += `&date=${date}`;
+                        }
+                        const response = await fetch(url);
+                        const result = await response.json();
+
+                        if (result.code === 200) {
+                            const data = result.data;
+                            this.currentPrice = data.current_price;
+                            this.priceChange = data.change_amount;
+                            this.priceChangePercent = data.change_percent;
+                            this.highestPrice = data.highest;
+                            this.lowestPrice = data.lowest;
+                            this.priceTrend = data.trend;
+
+                            // 更新系统状态信息
+                            this.dataSource = data.source || (data.is_cache ? '缓存' : '实时');
+                            this.dataType = data.is_cache ? '缓存数据' : '实时数据';
+                            this.defaultGoldPrice = data.default_gold_price || '未知';
+                            this.updateTime = new Date().toLocaleString('zh-CN');
+                            this.status = result.message === 'success' ? '正常' : '警告';
+
+                            // 如果包含历史数据，使用历史数据更新列表
+                            if (data.history && Array.isArray(data.history)) {
+                                this.priceData = data.history;
+                                this.total = data.history.length;
+
+                                // 检查是否有数据
+                                if (this.priceData.length === 0 && date) {
+                                    ElMessage.warning(`未找到 ${date} 的数据记录`);
+                                }
+                            } else {
+                                // 否则添加到价格历史数据
+                                const now = new Date();
+                                const timeStr = now.toLocaleString('zh-CN', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit'
+                                });
+
+                                this.priceData.unshift({
+                                    time: timeStr,
+                                    price: data.current_price,
+                                    change: data.change_amount,
+                                    source: data.is_cache ? '缓存' : '实时'
+                                });
+
+                                this.total = this.priceData.length;
+                            }
+                        } else {
+                            console.error('获取价格数据失败:', result.message);
+                            this.priceTrend = '获取数据失败';
+                            this.status = '错误';
+                            ElMessage.error('获取价格数据失败: ' + result.message);
+                        }
+                    } catch (error) {
+                        console.error('获取价格数据失败:', error);
+                        this.priceTrend = '获取数据失败';
+                        this.status = '错误';
+                        ElMessage.error('获取价格数据失败，请稍后重试');
+                    }
+                },
+                // 处理日期选择变化（带防抖）
+                handleDateChange(date) {
+                    if (date) {
+                        // 清除之前的定时器
+                        if (this.dateChangeTimer) {
+                            clearTimeout(this.dateChangeTimer);
+                        }
+                        // 设置新的定时器，300ms 后执行查询
+                        this.dateChangeTimer = setTimeout(() => {
+                            this.fetchDataByDate();
+                        }, 300);
+                    }
+                },
+
+                // 按日期查询数据
+                async fetchDataByDate() {
+                    // 清除之前的定时器，避免在查看历史数据时自动更新
+                    if (this.priceUpdateInterval) {
+                        clearInterval(this.priceUpdateInterval);
+                        this.priceUpdateInterval = null;
+                    }
+
+                    // 获取选择日期的数据
+                    await this.getPriceData(this.selectedDate);
+
+                    // 重置分页
+                    this.currentPage = 1;
+                },
+
+                // 启动价格数据更新
+                startPriceUpdates() {
+                    // 清除之前的定时器
+                    if (this.priceUpdateInterval) {
+                        clearInterval(this.priceUpdateInterval);
+                    }
+
+                    // 立即获取一次数据（使用当前选择的日期）
+                    this.getPriceData(this.selectedDate);
+
+                    // 设置定时器，每30秒更新一次，与缓存过期时间（60秒）不同步，以便能看到缓存数据
+                    this.priceUpdateInterval = setInterval(() => {
+                        this.getPriceData(this.selectedDate);
+                    }, 30000);
+                },
+                // 停止价格数据更新
+                stopPriceUpdates() {
+                    if (this.priceUpdateInterval) {
+                        clearInterval(this.priceUpdateInterval);
+                        this.priceUpdateInterval = null;
+                    }
+                },
+                // 处理分页大小变化
+                handleSizeChange(size) {
+                    this.pageSize = size;
+                    this.currentPage = 1;
+                },
+                // 处理当前页码变化
+                handleCurrentChange(current) {
+                    this.currentPage = current;
+                },
+                initPageData() {
+                    this.startPriceUpdates();
+                }
+            },
+            mounted() {
+                this.initPageData();
+            },
+            beforeUnmount() {
+                this.stopPriceUpdates();
+                // 清理日期选择防抖定时器
+                if (this.dateChangeTimer) {
+                    clearTimeout(this.dateChangeTimer);
+                }
+            }
+        });
+
+        // 注册 ElementPlus 插件并使用中文语言包
+        app.use(ElementPlus, {
+            locale: ElementPlusLocaleZhCn
+        });
+
+        // 处理ResizeObserver循环错误
+        window.ResizeObserver = window.ResizeObserver || (function () {
+            var observers = [];
+            var frame = null;
+
+            function loop() {
+                observers.forEach(function (observer) {
+                    observer.check();
+                });
+                frame = null;
+            }
+
+            return function (callback) {
+                var observer = {
+                    observe: function (element) {
+                        this.elements.push(element);
+                        this.check();
+                    },
+                    unobserve: function (element) {
+                        this.elements = this.elements.filter(function (el) {
+                            return el !== element;
+                        });
+                    },
+                    disconnect: function () {
+                        this.elements = [];
+                    },
+                    elements: [],
+                    check: function () {
+                        var self = this;
+                        var changes = [];
+
+                        this.elements.forEach(function (element) {
+                            var rect = element.getBoundingClientRect();
+                            if (rect.width !== self.lastWidth || rect.height !== self.lastHeight) {
+                                changes.push({
+                                    target: element,
+                                    contentRect: rect
+                                });
+                                self.lastWidth = rect.width;
+                                self.lastHeight = rect.height;
+                            }
+                        });
+
+                        if (changes.length && callback) {
+                            callback(changes);
+                        }
+                    }
+                };
+
+                observers.push(observer);
+
+                if (!frame) {
+                    frame = requestAnimationFrame(loop);
+                }
+
+                return observer;
+            };
+        })();
+
+        // 挂载应用
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

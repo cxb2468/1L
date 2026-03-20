@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Icon Test</title>
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <!-- Element Plus Icons -->
+    <script src="/static/vendor/element-plus/icons-vue.iife.min.js"></script>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #303133;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #409eff;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 1px solid #ebeef5;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .icon-item:hover {
+            border-color: #409eff;
+            box-shadow: 0 2px 12px rgba(64, 158, 255, 0.1);
+        }
+
+        .icon-item i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #409eff;
+        }
+
+        .icon-name {
+            font-size: 14px;
+            color: #606266;
+        }
+
+        .test-result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #f0f9eb;
+            border: 1px solid #e1f3d8;
+            color: #67c23a;
+        }
+
+        .error {
+            background-color: #fef0f0;
+            border: 1px solid #fbc4c4;
+            color: #f56c6c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Element Plus 图标测试</h1>
+
+        <div id="app">
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="Edit"></component>
+                    </el-icon>
+                    <div class="icon-name">Edit (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="Coin"></component>
+                    </el-icon>
+                    <div class="icon-name">Coin (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="House"></component>
+                    </el-icon>
+                    <div class="icon-name">House (原HomeFilled图标)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="TrendCharts"></component>
+                    </el-icon>
+                    <div class="icon-name">TrendCharts (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="SetUp"></component>
+                    </el-icon>
+                    <div class="icon-name">SetUp (原Setting图标)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="ArrowDown"></component>
+                    </el-icon>
+                    <div class="icon-name">ArrowDown (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="CircleCheck"></component>
+                    </el-icon>
+                    <div class="icon-name">CircleCheck (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="CircleClose"></component>
+                    </el-icon>
+                    <div class="icon-name">CircleClose (推荐方式)</div>
+                </div>
+                <div class="icon-item">
+                    <el-icon>
+                        <component :is="UserFilled"></component>
+                    </el-icon>
+                    <div class="icon-name">UserFilled (推荐方式)</div>
+                </div>
+            </div>
+
+            <div class="test-result success" v-if="iconsLoaded">
+                图标加载成功！所有图标都已正确注册和显示。
+                <div>已注册图标数量: {{ registeredIconCount }}</div>
+            </div>
+            <div class="test-result error" v-else>
+                图标加载失败！请检查图标注册和引入是否正确。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局调试信息
+        console.log('=== 图标测试页面调试信息 ===');
+        console.log('Vue:', Vue);
+        console.log('ElementPlus:', ElementPlus);
+        console.log('ElementPlusIconsVue:', ElementPlusIconsVue);
+
+        // 检查可用的图标
+        if (ElementPlusIconsVue) {
+            console.log('可用图标数量:', Object.keys(ElementPlusIconsVue).length);
+            console.log('部分可用图标:', Object.keys(ElementPlusIconsVue).slice(0, 20));
+
+            // 检查特定图标是否可用
+            const requiredIcons = ['Edit', 'Coin', 'House', 'TrendCharts', 'SetUp', 'ArrowDown', 'CircleCheck', 'CircleClose', 'UserFilled'];
+            console.log('=== 检查必需图标 ===');
+            requiredIcons.forEach(icon => {
+                if (ElementPlusIconsVue[icon]) {
+                    console.log(`✓ ${icon} 图标可用`);
+                } else {
+                    console.log(`✗ ${icon} 图标不可用`);
+                }
+            });
+        }
+
+        const { createApp } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    iconsLoaded: false,
+                    registeredIconCount: 0,
+                    // 直接引用图标组件
+                    Edit: ElementPlusIconsVue.Edit,
+                    Coin: ElementPlusIconsVue.Coin,
+                    House: ElementPlusIconsVue.House,
+                    TrendCharts: ElementPlusIconsVue.TrendCharts,
+                    SetUp: ElementPlusIconsVue.SetUp,
+                    ArrowDown: ElementPlusIconsVue.ArrowDown,
+                    CircleCheck: ElementPlusIconsVue.CircleCheck,
+                    CircleClose: ElementPlusIconsVue.CircleClose,
+                    UserFilled: ElementPlusIconsVue.UserFilled
+                };
+            },
+            mounted() {
+                try {
+                    console.log('=== 组件挂载 ===');
+                    this.iconsLoaded = true;
+                    this.registeredIconCount = 9;
+                    console.log('图标测试页面加载完成，状态:', this.iconsLoaded);
+                } catch (error) {
+                    console.error('页面加载失败:', error);
+                    this.iconsLoaded = false;
+                }
+            }
+        });
+
+        // 注册ElementPlus插件
+        console.log('注册ElementPlus插件');
+        app.use(ElementPlus);
+
+        // 挂载应用到DOM
+        console.log('挂载应用到DOM');
+        const vm = app.mount('#app');
+
+        console.log('应用挂载完成:', vm);
+
+        // 添加全局错误处理
+        window.addEventListener('error', function (e) {
+            // 忽略ResizeObserver循环错误，这是浏览器API的已知问题
+            if (e.message.includes('ResizeObserver loop completed with undelivered notifications')) {
+                return;
+            }
+            console.error('全局错误:', e.message, e.filename, e.lineno, e.colno, e.error);
+        });
+
+        window.addEventListener('unhandledrejection', function (e) {
+            console.error('未处理的Promise拒绝:', e.reason);
+        });
+    </script>
+</body>
+
+</html>

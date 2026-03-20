@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - 黄金价格监控后台管理系统</title>
+    <!-- 默认为事件监听器添加 passive: true -->
+    <script src="/static/vendor/default-passive-events.js"></script>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <!-- Element Plus Icons -->
+    <script src="/static/vendor/element-plus/icons-vue.iife.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #303133;
+            line-height: 1.6;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            transition: all 0.3s ease;
+        }
+
+        .header:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #409eff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i.el-icon {
+            font-size: 24px;
+        }
+
+        .el-dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #606266;
+        }
+
+        .el-dropdown-link:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .el-dropdown-link .el-icon {
+            transition: all 0.3s ease;
+        }
+
+        .el-dropdown-link:hover .el-icon {
+            transform: scale(1.1);
+        }
+
+        .el-dropdown-menu {
+            border: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+
+        .el-dropdown-menu__item {
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 4px 8px;
+        }
+
+        .el-dropdown-menu__item:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar:hover {
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+        }
+
+        .card-container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card-container:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-container h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #409eff;
+        }
+
+        .statistic-card {
+            border-radius: 12px;
+            padding: 24px;
+            color: white;
+            box-shadow: 0 4px 16px rgba(64, 158, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .statistic-card:hover {
+            box-shadow: 0 6px 20px rgba(64, 158, 255, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .el-menu {
+            border-right: none;
+        }
+
+        .el-menu-item {
+            height: 60px;
+            line-height: 60px;
+            margin: 0 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .el-menu-item:hover {
+            background-color: #ecf5ff !important;
+        }
+
+        .el-menu-item.is-active {
+            background-color: #ecf5ff !important;
+            color: #409eff !important;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content {
+                padding: 20px;
+            }
+
+            .sidebar {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+
+            .content {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 头部 -->
+            <el-header class="header">
+                <div class="logo">
+                    <el-icon>
+                        <component :is="Coin"></component>
+                    </el-icon>
+                    黄金价格监控管理系统
+                </div>
+                <div>
+                    <el-dropdown @command="handleUserCommand">
+                        <span class="el-dropdown-link">
+                            <el-icon :size="30">
+                                <component :is="UserFilled"></component>
+                            </el-icon>
+                            <el-icon class="el-icon--right">
+                                <component :is="ArrowDown"></component>
+                            </el-icon>
+                        </span>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+            </el-header>
+
+            <el-container class="main-container">
+                <!-- 侧边栏 -->
+                <el-aside class="sidebar" width="200px">
+                    <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleMenuSelect"
+                        background-color="#ffffff" text-color="#303133" active-text-color="#409eff">
+                        <el-menu-item index="dashboard">
+                            <el-icon>
+                                <component :is="House"></component>
+                            </el-icon>
+                            <span>仪表盘</span>
+                        </el-menu-item>
+                        <el-menu-item index="price-monitor">
+                            <el-icon>
+                                <component :is="DataLine"></component>
+                            </el-icon>
+                            <span>价格监控</span>
+                        </el-menu-item>
+                        <el-menu-item index="config">
+                            <el-icon>
+                                <component :is="SetUp"></component>
+                            </el-icon>
+                            <span>系统配置</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+
+                <!-- 主内容区 -->
+                <el-main class="content">
+                    <!-- 仪表盘页面 -->
+                    <div>
+                        <div class="card-container">
+                            <h2>系统概览</h2>
+                            <el-row :gutter="20">
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="当前金价" :value="currentPrice" suffix="元/克">
+                                            <template #prefix>
+                                                <el-icon color="#409eff">
+                                                    <component :is="Coin"></component>
+                                                </el-icon>
+                                            </template>
+                                        </el-statistic>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="监控状态" :value="monitorStatus">
+                                            <template #prefix>
+                                                <el-icon v-if="monitorStatus === '运行中'" color="#67c23a">
+                                                    <component :is="CircleCheck"></component>
+                                                </el-icon>
+                                                <el-icon v-else color="#f56c6c">
+                                                    <component :is="CircleClose"></component>
+                                                </el-icon>
+                                            </template>
+                                        </el-statistic>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+
+                        <div class="card-container">
+                            <h2>系统信息</h2>
+                            <el-row :gutter="20">
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="系统版本" :value="systemInfo.version"></el-statistic>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="运行时间" :value="systemInfo.uptime"></el-statistic>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="内存使用率" :value="systemInfo.memory_usage"></el-statistic>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="CPU使用率" :value="systemInfo.cpu_usage"></el-statistic>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                            <el-row :gutter="20" style="margin-top: 20px;">
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="磁盘使用率" :value="systemInfo.disk_usage"></el-statistic>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="statistic-card">
+                                        <el-statistic title="操作系统" :value="systemInfo.platform || '未知'"></el-statistic>
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { ElMessage } = ElementPlus;
+
+        // 创建 Vue 应用
+        const app = createApp({
+            data() {
+                return {
+                    activeMenu: 'dashboard',
+                    currentPrice: 0,
+                    monitorStatus: '加载中',
+                    systemInfo: {
+                        version: '1.0.0',
+                        uptime: '未知',
+                        memory_usage: '未知',
+                        cpu_usage: '未知',
+                        disk_usage: '未知'
+                    },
+                    // 图标组件引用
+                    Coin: ElementPlusIconsVue.Coin,
+                    House: ElementPlusIconsVue.House,
+                    DataLine: ElementPlusIconsVue.DataLine,
+                    SetUp: ElementPlusIconsVue.SetUp,
+                    ArrowDown: ElementPlusIconsVue.ArrowDown,
+                    CircleCheck: ElementPlusIconsVue.CircleCheck,
+                    CircleClose: ElementPlusIconsVue.CircleClose,
+                    UserFilled: ElementPlusIconsVue.UserFilled
+                };
+            },
+            methods: {
+                handleMenuSelect(key) {
+                    this.activeMenu = key;
+                    if (key === 'dashboard') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (key === 'price-monitor') {
+                        window.location.href = '/admin/price-monitor';
+                    } else if (key === 'config') {
+                        window.location.href = '/admin/config';
+                    }
+                },
+                handleUserCommand(command) {
+                    if (command === 'logout') {
+                        this.logout();
+                    } else if (command === 'profile') {
+                        ElMessage.info('个人中心功能待开发');
+                    }
+                },
+                // 退出登录
+                async logout() {
+                    try {
+                        const response = await fetch('/admin/logout', { method: 'GET' });
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            window.location.href = '/admin/login';
+                        }
+                    } catch (error) {
+                        console.error('退出登录失败:', error);
+                        window.location.href = '/admin/login';
+                    }
+                },
+                // 获取系统信息
+                async getSystemInfo() {
+                    try {
+                        const response = await fetch('/admin/api/system-info');
+                        const result = await response.json();
+
+                        if (result.code === 200) {
+                            this.systemInfo = result.data;
+                        } else {
+                            console.error('获取系统信息失败:', result.message);
+                        }
+                    } catch (error) {
+                        console.error('获取系统信息失败:', error);
+                    }
+                },
+                // 获取价格数据
+                async getPriceData() {
+                    try {
+                        const response = await fetch('/admin/api/price-data');
+                        const result = await response.json();
+
+                        if (result.code === 200) {
+                            this.currentPrice = result.data.current_price;
+                            this.monitorStatus = '运行中';
+                        } else {
+                            console.error('获取价格数据失败:', result.message);
+                            this.monitorStatus = '获取数据失败';
+                        }
+                    } catch (error) {
+                        console.error('获取价格数据失败:', error);
+                        this.monitorStatus = '获取数据失败';
+                    }
+                },
+                initPageData() {
+                    this.getSystemInfo();
+                    this.getPriceData();
+                }
+            },
+            mounted() {
+                this.initPageData();
+            }
+        });
+
+        // 注册 ElementPlus 插件
+        app.use(ElementPlus);
+
+        // 处理ResizeObserver循环错误
+        window.ResizeObserver = window.ResizeObserver || (function () {
+            var observers = [];
+            var frame = null;
+
+            function loop() {
+                observers.forEach(function (observer) {
+                    observer.check();
+                });
+                frame = null;
+            }
+
+            return function (callback) {
+                var observer = {
+                    observe: function (element) {
+                        this.elements.push(element);
+                        this.check();
+                    },
+                    unobserve: function (element) {
+                        this.elements = this.elements.filter(function (el) {
+                            return el !== element;
+                        });
+                    },
+                    disconnect: function () {
+                        this.elements = [];
+                    },
+                    elements: [],
+                    check: function () {
+                        var self = this;
+                        var changes = [];
+
+                        this.elements.forEach(function (element) {
+                            var rect = element.getBoundingClientRect();
+                            if (rect.width !== self.lastWidth || rect.height !== self.lastHeight) {
+                                changes.push({
+                                    target: element,
+                                    contentRect: rect
+                                });
+                                self.lastWidth = rect.width;
+                                self.lastHeight = rect.height;
+                            }
+                        });
+
+                        if (changes.length && callback) {
+                            callback(changes);
+                        }
+                    }
+                };
+
+                observers.push(observer);
+
+                if (!frame) {
+                    frame = requestAnimationFrame(loop);
+                }
+
+                return observer;
+            };
+        })();
+
+        // 挂载应用
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

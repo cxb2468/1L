@@ -1,0 +1,9 @@
+DrissionPage
+requests
+PyInstaller
+Flask
+python-dotenv
+pyyaml
+psutil
+numpy
+openpyxl

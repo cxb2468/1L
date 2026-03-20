@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>黄金价格监控</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ffd700;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .update-time {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .price-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .price-card {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .price-item {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            width: 200px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .price-unit {
+            font-size: 16px;
+            color: #999;
+            margin-left: 5px;
+        }
+
+        .trend-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .trend-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-label {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .trend-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .trend-up {
+            color: #e74c3c;
+        }
+
+        .trend-down {
+            color: #2ecc71;
+        }
+
+        .trend-stable {
+            color: #95a5a6;
+        }
+
+        .trend-error {
+            color: #e74c3c;
+        }
+
+        .alert-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .alert-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-high {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .alert-low {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+
+        .alert-blocked {
+            background-color: #e2e3e5;
+            border-left-color: #6c757d;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .alert-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .price-card {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .price-item {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>黄金价格监控系统</h1>
+            <div class="update-time">最后更新时间: {{ update_time }}</div>
+        </header>
+
+        <section class="price-section">
+            <h2 style="margin-bottom: 20px; color: #333;">黄金价格</h2>
+            <div class="price-card">
+                <div class="price-item">
+                    <div class="price-label">默认金价</div>
+                    <div class="price-value">{{ default_gold_price }}</div>
+                </div>
+                <div class="price-item">
+                    <div class="price-label">当前价格</div>
+                    <div class="price-value">{{ current_price }}</div>
+                </div>
+                <div class="price-item">
+                    <div class="price-label">基准价格</div>
+                    <div class="price-value">{{ base_price }}</div>
+                </div>
+                <div class="price-item">
+                    <div class="price-label">高价预警</div>
+                    <div class="price-value">{{ high_threshold }}</div>
+                </div>
+                <div class="price-item">
+                    <div class="price-label">低价预警</div>
+                    <div class="price-value">{{ low_threshold }}</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="trend-section">
+            <h2 style="margin-bottom: 20px; color: #333;">价格趋势</h2>
+            <div class="trend-item">
+                <div class="trend-label">价格变化</div>
+                <div class="trend-value {{ trend_class }}">{{ trend_arrow }} {{ trend_text }}</div>
+            </div>
+            <div class="trend-item">
+                <div class="trend-label">数据来源</div>
+                <div class="trend-value">{{ data_source }}</div>
+            </div>
+            <div class="trend-item">
+                <div class="trend-label">监控状态</div>
+                <div class="trend-value trend-stable">正常运行</div>
+            </div>
+        </section>
+
+        {{ ai_analysis_section }}
+
+        <section class="alert-section">
+            <h2 style="margin-bottom: 20px; color: #333;">预警信息</h2>
+            {{ alerts }}
+        </section>
+
+        <footer>
+            <p>黄金价格监控系统 © {{ current_year }}</p>
+        </footer>
+    </div>
+</body>
+
+</html>

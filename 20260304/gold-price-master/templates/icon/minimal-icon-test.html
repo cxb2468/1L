@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Icon Test</title>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <!-- Element Plus Icons -->
+    <script src="/static/vendor/element-plus/icons-vue.iife.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon-test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .icon { font-size: 32px; color: #409eff; }
+        .status { margin: 5px 0; font-size: 14px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Icon Test</h1>
+    
+    <div id="app">
+        <h2>Icon Availability Test</h2>
+        
+        <div class="icon-test">
+            <strong>ElementPlusIconsVue Available:</strong>
+            <span :class="{success: epIconsAvailable, error: !epIconsAvailable}">
+                {{ epIconsAvailable ? 'YES' : 'NO' }}
+            </span>
+        </div>
+        
+        <div class="icon-test">
+            <strong>Available Icons Count:</strong> {{ availableIconsCount }}
+        </div>
+        
+        <h2>Individual Icon Tests</h2>
+        
+        <div class="icon-test" v-for="iconName in iconNames" :key="iconName">
+            <div class="status">
+                <strong>{{ iconName }} Available:</strong>
+                <span :class="{success: iconStatus[iconName], error: !iconStatus[iconName]}">
+                    {{ iconStatus[iconName] ? 'YES' : 'NO' }}
+                </span>
+            </div>
+            <div class="icon" v-if="iconStatus[iconName]">
+                <component :is="iconName"></component>
+            </div>
+        </div>
+        
+        <h2>Console Output</h2>
+        <div class="icon-test">
+            <p>Check browser console for detailed logs</p>
+        </div>
+    </div>
+
+    <script>
+        console.log('=== MINIMAL ICON TEST ===');
+        console.log('Window object keys:', Object.keys(window).filter(key => key.includes('Element')));
+        console.log('ElementPlusIconsVue:', window.ElementPlusIconsVue);
+        console.log('Vue:', window.Vue);
+        console.log('ElementPlus:', window.ElementPlus);
+        
+        const { createApp } = Vue;
+        
+        const app = createApp({
+            data() {
+                return {
+                    epIconsAvailable: !!window.ElementPlusIconsVue,
+                    availableIconsCount: window.ElementPlusIconsVue ? Object.keys(window.ElementPlusIconsVue).length : 0,
+                    iconNames: ['Edit', 'Coin', 'House', 'TrendCharts', 'SetUp', 'ArrowDown', 'CircleCheck', 'CircleClose', 'UserFilled'],
+                    iconStatus: {}
+                };
+            },
+            mounted() {
+                console.log('=== APP MOUNTED ===');
+                
+                // Check each icon
+                this.iconNames.forEach(iconName => {
+                    this.iconStatus[iconName] = !!window.ElementPlusIconsVue[iconName];
+                    console.log(`${iconName} available:`, this.iconStatus[iconName]);
+                });
+            }
+        });
+        
+        // Register ElementPlus
+        console.log('=== REGISTERING ELEMENT PLUS ===');
+        app.use(ElementPlus);
+        
+        // Register icons
+        console.log('=== REGISTERING ICONS ===');
+        if (window.ElementPlusIconsVue) {
+            console.log('Registering all icons...');
+            for (const [key, component] of Object.entries(window.ElementPlusIconsVue)) {
+                try {
+                    app.component(key, component);
+                    console.log('Registered:', key);
+                } catch (error) {
+                    console.error('Failed to register:', key, error);
+                }
+            }
+        }
+        
+        // Mount app
+        console.log('=== MOUNTING APP ===');
+        app.mount('#app');
+        console.log('=== TEST COMPLETE ===');
+    </script>
+</body>
+</html>

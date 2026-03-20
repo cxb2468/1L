@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗翻斗兽棋专业版3.0</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: linear-gradient(145deg, #1f4d2b, #14321d);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', '华文楷体', 'KaiTi', 'Microsoft YaHei', Roboto, sans-serif;
+        }
+
+        .game-container {
+            background: transparent;
+            padding: 1.5rem 1.5rem 1.2rem;
+            border-radius: 70px 70px 50px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-turn-indicator {
+            background: #3d2919;
+            padding: 8px 30px;
+            border-radius: 50px;
+            color: #f9e7c2;
+            letter-spacing: 1px;
+            box-shadow: inset 0 -2px 0 #836e4a, 0 6px 0 #4f3a22;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 16px;
+            width: fit-content;
+            border: 2px solid #b38b54;
+            white-space: nowrap;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 130px);
+            grid-template-rows: repeat(4, 130px);
+            gap: 16px;
+            padding: 16px;
+            background: #b8864b;
+            border-radius: 50px;
+            box-shadow: inset 0 0 0 4px #9a6e3e, inset 0 0 20px #4f351b;
+        }
+
+        .cell {
+            position: relative;
+            background: #603d20;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 4px #4f3219, 0 10px 0 #2f1c0c, 0 12px 20px black;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            color: white;
+            text-shadow: 2px 3px 3px #1f1f1f;
+            font-weight: bold;
+        }
+
+        .cell.selected {
+            box-shadow: 0 0 0 6px #ffdb7c, 0 0 0 10px #f9b83c, 0 10px 0 #2f1c0c, 0 15px 25px black;
+            transform: scale(1.02);
+        }
+
+        .cell.red {
+            background: radial-gradient(circle at 25% 25%, #ff9494, #b32b2b 80%, #691b1b);
+        }
+        .cell.blue {
+            background: radial-gradient(circle at 25% 25%, #96b8ff, #2f5ac7 80%, #102c6b);
+        }
+
+        .cell.back {
+            background: radial-gradient(circle at 40% 40%, #c9a37c, #7b5d3e);
+            box-shadow: 0 0 0 4px #6a4c2d, 0 10px 0 #3f301f, 0 12px 18px black, inset 0 0 15px #edc18b;
+            color: #2a2a2a;
+            text-shadow: none;
+        }
+        .cell.back::after {
+            content: "?";
+            font-size: 4.2rem;
+            font-weight: 800;
+            color: #422f1c;
+            opacity: 0.9;
+            text-shadow: 2px 4px 3px #ad8b62;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .cell.back span {
+            display: none;
+        }
+
+        .cell .piece-char {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            font-family: '华文楷体', 'KaiTi', 'Microsoft YaHei', serif;
+            text-shadow: 3px 3px 0 #3f2b1a, 5px 5px 8px black;
+            color: #fff4e0;
+            letter-spacing: 2px;
+        }
+        .cell.red .piece-char {
+            text-shadow: 3px 3px 0 #5d2a2a, 5px 5px 8px black;
+        }
+        .cell.blue .piece-char {
+            text-shadow: 3px 3px 0 #1f3a7a, 5px 5px 8px black;
+        }
+
+        .cell.empty {
+            background: #795d34;
+            box-shadow: 0 0 0 4px #5b421f, 0 10px 0 #3b2c15, inset 0 0 10px #bfa16b;
+            opacity: 0.9;
+        }
+        .cell.empty span {
+            opacity: 0;
+        }
+
+        .start-dot {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            background: #2ecc40;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #fff, 0 0 4px rgba(0,0,0,0.5);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .cell.target-green-border {
+            box-shadow: 0 0 0 8px #2ecc40,
+                        0 0 0 4px #4f3219,
+                        0 10px 0 #2f1c0c,
+                        0 12px 20px black;
+        }
+        .cell.selected.target-green-border {
+            box-shadow: 0 0 0 6px #ffdb7c,
+                        0 0 0 10px #f9b83c,
+                        0 0 0 14px #2ecc40,
+                        0 10px 0 #2f1c0c,
+                        0 15px 25px black;
+        }
+
+        .bottom-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+            max-width: 600px;
+        }
+        .action-btn {
+            background: #dba161;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2d1f0e;
+            box-shadow: 0 4px 0 #7b572c, 0 5px 8px black;
+            cursor: pointer;
+            transition: 0.06s linear;
+            border: 2px solid #ffd78b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #7b572c, 0 5px 8px black;
+        }
+        .action-btn:disabled {
+            opacity: 0.4;
+            transform: none;
+            box-shadow: 0 4px 0 #7b572c;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="top-turn-indicator" id="turnText">⚡ 点击棋子开始 ⚡</div>
+
+    <div class="board" id="board"></div>
+
+    <div class="bottom-buttons">
+        <button class="action-btn" id="undoBtn">↩ 悔棋</button>
+        <button class="action-btn" id="restartBtn">🔄 新局</button>
+        <button class="action-btn" id="humanVsAIBtn">🤖 人机对战</button>
+        <button class="action-btn" id="humanVsHumanBtn">👥 双人对战</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- 动物常量 & 等级 -----
+        const ANIMALS = ['🐘', '🦁', '🐯', '🐆', '🐺', '🐕', '🐱', '🐭'];
+        const TYPE_MAP = {
+            '🐘': { name: '象', level: 8 },
+            '🦁': { name: '狮', level: 7 },
+            '🐯': { name: '虎', level: 6 },
+            '🐆': { name: '豹', level: 5 },
+            '🐺': { name: '狼', level: 4 },
+            '🐕': { name: '狗', level: 3 },
+            '🐱': { name: '猫', level: 2 },
+            '🐭': { name: '鼠', level: 1 }
+        };
+
+        // 游戏状态
+        let board = [];
+        let currentTurn = null;          // null, 'red', 'blue'
+        let selectedRow = -1, selectedCol = -1;
+        let gameOver = false;
+        let winner = null;
+
+        // 轨迹记录
+        let lastMoveFrom = null;
+        let lastMoveTo = null;
+
+        // 历史栈
+        let historyStack = [];
+
+        // 模式与AI锁
+        let mode = 'humanVsHuman';
+        let isAIThinking = false;
+
+        // DOM
+        const boardEl = document.getElementById('board');
+        const turnText = document.getElementById('turnText');
+        const undoBtn = document.getElementById('undoBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const humanVsAIBtn = document.getElementById('humanVsAIBtn');
+        const humanVsHumanBtn = document.getElementById('humanVsHumanBtn');
+
+        // ----- 初始化棋盘 -----
+        function createInitialBoard() {
+            let pieces = [];
+            for (let emoji of ANIMALS) pieces.push({ color: 'red', type: emoji, flipped: false });
+            for (let emoji of ANIMALS) pieces.push({ color: 'blue', type: emoji, flipped: false });
+            for (let i = pieces.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+            }
+            const newBoard = [];
+            let idx = 0;
+            for (let r = 0; r < 4; r++) {
+                const row = [];
+                for (let c = 0; c < 4; c++) row.push(pieces[idx++]);
+                newBoard.push(row);
+            }
+            return newBoard;
+        }
+
+        // 深拷贝
+        function cloneState() {
+            return {
+                board: board.map(row => row.map(cell => cell ? { ...cell } : null)),
+                currentTurn: currentTurn,
+                selectedRow, selectedCol,
+                gameOver, winner,
+                lastMoveFrom: lastMoveFrom ? { ...lastMoveFrom } : null,
+                lastMoveTo: lastMoveTo ? { ...lastMoveTo } : null
+            };
+        }
+
+        function pushStateToHistory() {
+            historyStack.push(cloneState());
+        }
+
+        function restoreStateFromHistory(state) {
+            board = state.board.map(row => row.map(cell => cell ? { ...cell } : null));
+            currentTurn = state.currentTurn;
+            selectedRow = state.selectedRow;
+            selectedCol = state.selectedCol;
+            gameOver = state.gameOver;
+            winner = state.winner;
+            lastMoveFrom = state.lastMoveFrom ? { ...state.lastMoveFrom } : null;
+            lastMoveTo = state.lastMoveTo ? { ...state.lastMoveTo } : null;
+        }
+
+        // 更新单行显示：回合 + 模式
+        function updateTurnDisplay() {
+            const modeSuffix = mode === 'humanVsHuman' ? '👥 双人对战' : '🤖 人机对战';
+            if (gameOver) {
+                if (winner === 'red') turnText.innerText = `🔴 红方赢了 · ${modeSuffix}`;
+                else if (winner === 'blue') turnText.innerText = `🔵 蓝方赢了 · ${modeSuffix}`;
+                else turnText.innerText = `⚔️ 游戏结束 · ${modeSuffix}`;
+                return;
+            }
+            if (currentTurn === null) turnText.innerText = `⚡ 点击棋子开始 · ${modeSuffix}`;
+            else turnText.innerText = (currentTurn === 'red' ? '🔴 红方回合' : '🔵 蓝方回合') + ` · ${modeSuffix}`;
+        }
+
+        // 胜负检查
+        function checkGameOver() {
+            let redCount = 0, blueCount = 0;
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (board[r][c]) board[r][c].color === 'red' ? redCount++ : blueCount++;
+                }
+            }
+            if (redCount === 0) { gameOver = true; winner = 'blue'; }
+            else if (blueCount === 0) { gameOver = true; winner = 'red'; }
+            else { gameOver = false; winner = null; }
+        }
+
+        // 吃子判定
+        function canEat(attackerType, defenderType) {
+            const attLevel = TYPE_MAP[attackerType].level;
+            const defLevel = TYPE_MAP[defenderType].level;
+            if (attackerType === '🐭' && defenderType === '🐘') return true;
+            if (attackerType === '🐘' && defenderType === '🐭') return false;
+            if (attLevel === defLevel) return true;
+            return attLevel > defLevel;
+        }
+
+        // 移动棋子
+        function movePiece(fromRow, fromCol, toRow, toCol, isSameLevel) {
+            if (isSameLevel) {
+                board[fromRow][fromCol] = null;
+                board[toRow][toCol] = null;
+            } else {
+                const piece = board[fromRow][fromCol];
+                board[toRow][toCol] = { ...piece };
+                board[fromRow][fromCol] = null;
+            }
+        }
+
+        // 翻转格子
+        function flipCell(row, col) {
+            const cell = board[row][col];
+            if (!cell || cell.flipped) return false;
+            cell.flipped = true;
+            if (currentTurn === null) {
+                const flippedColor = cell.color;
+                currentTurn = (flippedColor === 'red' ? 'blue' : 'red');
+            } else {
+                currentTurn = (currentTurn === 'red' ? 'blue' : 'red');
+            }
+            return true;
+        }
+
+        // ---------- 强化AI评分函数 (翻牌必选逻辑) ----------
+        function canBeEaten(attackerType, defenderType) {
+            return canEat(attackerType, defenderType);
+        }
+
+        // 翻牌评分：基础分提高，鼓励翻牌
+        function evaluateFlipAction(row, col) {
+            let score = 20; // 基础分大幅提高
+            const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+            for (let [dr, dc] of dirs) {
+                const nr = row + dr, nc = col + dc;
+                if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+                const neighbor = board[nr][nc];
+                if (neighbor && neighbor.flipped) {
+                    if (neighbor.color === 'blue') {
+                        score += 3; // 友方保护
+                    } else {
+                        score -= 4; // 敌方威胁
+                    }
+                }
+            }
+            return score;
+        }
+
+        // 移动评分
+        function evaluateMoveAction(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+            if (!piece || !piece.flipped) return -999;
+
+            let baseScore = 0;
+            if (target === null) {
+                baseScore = 0;
+            } else {
+                const attType = piece.type;
+                const defType = target.type;
+                const attLevel = TYPE_MAP[attType].level;
+                const defLevel = TYPE_MAP[defType].level;
+
+                if (attType === '🐭' && defType === '🐘') {
+                    baseScore = 300; // 鼠吃象，最高奖励
+                } else if (attType === '🐘' && defType === '🐭') {
+                    baseScore = -1000; // 不会发生
+                } else if (attLevel > defLevel) {
+                    baseScore = defLevel * 20; // 吃子得分
+                } else if (attLevel === defLevel) {
+                    baseScore = 50; // 同归于尽
+                } else {
+                    baseScore = -1000;
+                }
+            }
+
+            // 威胁惩罚
+            let threatPenalty = 0;
+            const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+            for (let [dr, dc] of dirs) {
+                const nr = toRow + dr, nc = toCol + dc;
+                if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+                const neighbor = board[nr][nc];
+                if (!neighbor || !neighbor.flipped || neighbor.color === piece.color) continue;
+                if (target && neighbor === target) continue;
+                if (canBeEaten(neighbor.type, piece.type)) {
+                    threatPenalty += TYPE_MAP[neighbor.type].level * 12;
+                }
+            }
+
+            // 保护加分
+            let protectBonus = 0;
+            for (let [dr, dc] of dirs) {
+                const nr = toRow + dr, nc = toCol + dc;
+                if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+                const neighbor = board[nr][nc];
+                if (neighbor && neighbor.flipped && neighbor.color === piece.color) {
+                    protectBonus += 5;
+                }
+            }
+
+            const selfLevel = TYPE_MAP[piece.type].level;
+            threatPenalty = threatPenalty * (selfLevel / 5);
+
+            return baseScore - threatPenalty + protectBonus;
+        }
+
+        // 获取AI最佳动作（增加强制翻牌逻辑）
+        function getBestAIAction(color) {
+            let moves = [];
+            // 可翻转的己方棋子
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const cell = board[r][c];
+                    if (cell && !cell.flipped && cell.color === color) {
+                        moves.push({ type: 'flip', row: r, col: c, score: evaluateFlipAction(r, c) });
+                    }
+                }
+            }
+            // 可移动的己方已翻开棋子
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const cell = board[r][c];
+                    if (cell && cell.flipped && cell.color === color) {
+                        const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+                        for (let [dr, dc] of dirs) {
+                            const nr = r + dr, nc = c + dc;
+                            if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) continue;
+                            const target = board[nr][nc];
+                            if (target === null) {
+                                moves.push({ type: 'move', fromRow: r, fromCol: c, toRow: nr, toCol: nc, score: evaluateMoveAction(r, c, nr, nc) });
+                            } else if (target.flipped && target.color !== color) {
+                                if (canEat(cell.type, target.type)) {
+                                    moves.push({ type: 'move', fromRow: r, fromCol: c, toRow: nr, toCol: nc, score: evaluateMoveAction(r, c, nr, nc) });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (moves.length === 0) return null;
+
+            // 检查是否有移动动作
+            const hasMove = moves.some(m => m.type === 'move');
+            // 如果没有移动动作，则翻牌动作得分统一加100，保证翻牌被选
+            if (!hasMove) {
+                moves.forEach(m => { if (m.type === 'flip') m.score += 100; });
+            }
+
+            let bestScore = -Infinity;
+            moves.forEach(m => { if (m.score > bestScore) bestScore = m.score; });
+            const bestMoves = moves.filter(m => m.score === bestScore);
+            return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+        }
+
+        // AI执行最佳动作
+        function aiMove() {
+            if (gameOver) return;
+            const color = currentTurn; // 此时一定是蓝色
+            const bestAction = getBestAIAction(color);
+            if (!bestAction) return;
+
+            if (bestAction.type === 'flip') {
+                const row = bestAction.row, col = bestAction.col;
+                const cell = board[row][col];
+                if (cell && !cell.flipped && cell.color === color) {
+                    pushStateToHistory();
+                    flipCell(row, col);
+                    pushStateToHistory();
+                    checkGameOver();
+                    updateTurnDisplay();
+                    renderBoard();
+                }
+            } else { // move
+                attemptMove(bestAction.fromRow, bestAction.fromCol, bestAction.toRow, bestAction.toCol);
+            }
+        }
+
+        // 触发AI
+        function triggerAI() {
+            if (mode !== 'humanVsAI' || gameOver || currentTurn !== 'blue' || isAIThinking) return;
+            isAIThinking = true;
+            setTimeout(() => {
+                if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') {
+                    aiMove();
+                }
+                isAIThinking = false;
+                if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') {
+                    triggerAI();
+                }
+                renderBoard();
+            }, 200);
+        }
+
+        // 尝试移动
+        function attemptMove(fromRow, fromCol, toRow, toCol) {
+            if (fromRow === toRow && fromCol === toCol) return false;
+            const dr = Math.abs(fromRow - toRow);
+            const dc = Math.abs(fromCol - toCol);
+            if (!((dr === 1 && dc === 0) || (dr === 0 && dc === 1))) {
+                selectedRow = -1; selectedCol = -1; renderBoard(); return false;
+            }
+
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+
+            if (!piece || !piece.flipped || piece.color !== currentTurn) {
+                selectedRow = -1; selectedCol = -1; renderBoard(); return false;
+            }
+            if (target && !target.flipped) {
+                selectedRow = -1; selectedCol = -1; renderBoard(); return false;
+            }
+            if (target && target.flipped && target.color === currentTurn) {
+                selectedRow = toRow; selectedCol = toCol; renderBoard(); return false;
+            }
+
+            let isSameLevel = false;
+            if (target && target.flipped && target.color !== currentTurn) {
+                if (!canEat(piece.type, target.type)) {
+                    selectedRow = -1; selectedCol = -1; renderBoard(); return false;
+                }
+                if (TYPE_MAP[piece.type].level === TYPE_MAP[target.type].level) isSameLevel = true;
+            }
+
+            pushStateToHistory();
+            movePiece(fromRow, fromCol, toRow, toCol, isSameLevel);
+            lastMoveFrom = { row: fromRow, col: fromCol };
+            lastMoveTo   = { row: toRow, col: toCol };
+            currentTurn = (currentTurn === 'red' ? 'blue' : 'red');
+            selectedRow = -1; selectedCol = -1;
+            pushStateToHistory();
+
+            checkGameOver();
+            renderBoard();
+            updateTurnDisplay();
+            return true;
+        }
+
+        // 渲染棋盘
+        function renderBoard() {
+            let html = '';
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const cell = board[r][c];
+                    let classes = 'cell';
+
+                    if (selectedRow === r && selectedCol === c) classes += ' selected';
+
+                    if (cell === null) classes += ' empty';
+                    else if (!cell.flipped) classes += ' back';
+                    else classes += cell.color === 'red' ? ' red' : ' blue';
+
+                    if (lastMoveTo && lastMoveTo.row === r && lastMoveTo.col === c && cell && cell.flipped) {
+                        classes += ' target-green-border';
+                    }
+
+                    let innerHtml = '';
+                    if (cell && cell.flipped) {
+                        const chineseName = TYPE_MAP[cell.type].name;
+                        innerHtml = `<span class="piece-char">${chineseName}</span>`;
+                    } else if (cell && !cell.flipped) {
+                        innerHtml = '<span style="display:none;">?</span>';
+                    } else {
+                        innerHtml = '<span style="opacity:0;">⬤</span>';
+                    }
+
+                    if (lastMoveFrom && lastMoveFrom.row === r && lastMoveFrom.col === c) {
+                        innerHtml += '<span class="start-dot"></span>';
+                    }
+
+                    html += `<div class="${classes}" data-row="${r}" data-col="${c}">${innerHtml}</div>`;
+                }
+            }
+            boardEl.innerHTML = html;
+        }
+
+        // 点击处理（无颜色翻牌限制）
+        function handleCellClick(row, col) {
+            if (gameOver) return;
+            if (mode === 'humanVsAI' && currentTurn === 'blue') return;
+            if (isAIThinking) return;
+
+            const cell = board[row][col];
+
+            if (cell === null) {
+                if (selectedRow !== -1 && selectedCol !== -1) {
+                    attemptMove(selectedRow, selectedCol, row, col);
+                } else {
+                    selectedRow = -1; selectedCol = -1; renderBoard();
+                }
+                if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') triggerAI();
+                return;
+            }
+
+            if (!cell.flipped) {
+                pushStateToHistory();
+                const flipped = flipCell(row, col);
+                if (flipped) {
+                    selectedRow = -1; selectedCol = -1;
+                    pushStateToHistory();
+                } else {
+                    historyStack.pop();
+                }
+                renderBoard();
+                updateTurnDisplay();
+                checkGameOver();
+                if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') triggerAI();
+                return;
+            }
+
+            if (cell.flipped) {
+                if (selectedRow !== -1 && selectedCol !== -1) {
+                    const selectedPiece = board[selectedRow][selectedCol];
+                    if (selectedPiece && selectedPiece.color === currentTurn) {
+                        if (row === selectedRow && col === selectedCol) {
+                            selectedRow = -1; selectedCol = -1;
+                        } else {
+                            attemptMove(selectedRow, selectedCol, row, col);
+                        }
+                    } else {
+                        if (cell.color === currentTurn) { selectedRow = row; selectedCol = col; }
+                        else { selectedRow = -1; selectedCol = -1; }
+                    }
+                } else {
+                    if (cell.color === currentTurn) { selectedRow = row; selectedCol = col; }
+                    else { selectedRow = -1; selectedCol = -1; }
+                }
+                renderBoard();
+                updateTurnDisplay();
+                if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') triggerAI();
+            }
+        }
+
+        // 重置游戏
+        function resetGame() {
+            board = createInitialBoard();
+            currentTurn = null;
+            selectedRow = -1; selectedCol = -1;
+            gameOver = false;
+            winner = null;
+            lastMoveFrom = null;
+            lastMoveTo = null;
+            historyStack = [];
+            isAIThinking = false;
+            pushStateToHistory();
+            updateTurnDisplay();
+            renderBoard();
+        }
+
+        // 悔棋
+        function undo() {
+            if (historyStack.length <= 1) return;
+            historyStack.pop();
+            const prevState = historyStack[historyStack.length - 1];
+            restoreStateFromHistory(prevState);
+            isAIThinking = false;
+            updateTurnDisplay();
+            renderBoard();
+            if (mode === 'humanVsAI' && !gameOver && currentTurn === 'blue') triggerAI();
+        }
+
+        // 事件绑定
+        boardEl.addEventListener('click', (e) => {
+            const cellDiv = e.target.closest('.cell');
+            if (!cellDiv) return;
+            const row = parseInt(cellDiv.dataset.row);
+            const col = parseInt(cellDiv.dataset.col);
+            handleCellClick(row, col);
+        });
+
+        restartBtn.addEventListener('click', resetGame);
+        undoBtn.addEventListener('click', undo);
+        humanVsAIBtn.addEventListener('click', () => { mode = 'humanVsAI'; resetGame(); });
+        humanVsHumanBtn.addEventListener('click', () => { mode = 'humanVsHuman'; resetGame(); });
+
+        // 启动
+        resetGame();
+    })();
+</script>
+</body>
+</html>

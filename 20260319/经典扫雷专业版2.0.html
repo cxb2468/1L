@@ -1,0 +1,647 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典扫雷专业版2.0</title>
+    <style>
+
+        * {
+            user-select: none;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(145deg, #1f2c3a 0%, #15232e 100%);
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        #Mclear {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 36px;
+            padding: 24px 20px;
+            box-shadow: 0 25px 40px -10px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.06);
+            display: inline-block;
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(20, 30, 40, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 6px 12px 6px 20px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 12px -8px rgba(0,0,0,0.4);
+        }
+        #time, #tabnum {
+            background: rgba(0, 0, 0, 0.25);
+            color: #b7e4fa;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-weight: 500;
+            font-size: 26px;
+            padding: 4px 14px;
+            border-radius: 40px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 6px #2ad4ff;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.4), 0 2px 0 rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 85px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+        #restart {
+            width: 54px;
+            height: 54px;
+            background: rgba(230, 245, 255, 0.15);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 300;
+            color: #ddf0ff;
+            box-shadow: 0 6px 0 #0e1a24, 0 8px 16px rgba(0,0,0,0.5), inset 0 2px 4px #b0daff;
+            transition: all 0.12s ease;
+            border: 1px solid rgba(255,255,240,0.3);
+            backdrop-filter: blur(6px);
+        }
+        #restart:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #0e1a24, 0 6px 12px rgba(0,0,0,0.5), inset 0 2px 4px white;
+        }
+        #shadow {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 32px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 18px 30px -10px black;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        canvas {
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 20px 30px -12px black;
+            background: #1e2b36;
+        }
+        #hint {
+            background: rgba(20, 30, 40, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 48px;
+            box-shadow: 0 30px 50px -20px black, 0 0 0 1px rgba(255,255,255,0.1);
+            overflow: hidden;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .animati1 {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -30%) scale(0.9);
+        }
+        .animati2 {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .hbg {
+            background: transparent;
+            padding: 32px 36px;
+            text-align: center;
+            min-width: 280px;
+        }
+        #load {
+            font-size: 24px;
+            color: #b0e0ff;
+            padding: 20px;
+        }
+        #text p {
+            font-size: 26px;
+            color: #f5c6a0;
+            margin: 16px 0 12px;
+            text-shadow: 0 2px 6px #ffb56b;
+            line-height: 1.4;
+        }
+        #butt {
+            background: linear-gradient(145deg, #2e4357, #1b2a38);
+            display: inline-block;
+            padding: 14px 36px;
+            border-radius: 60px;
+            font-size: 22px;
+            font-weight: 500;
+            color: #e2f0fa;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 8px 0 #0d1a22, 0 8px 18px rgba(0,0,0,0.4);
+            transition: 0.08s linear;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        #butt:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #0d1a22, 0 8px 18px rgba(0,0,0,0.4);
+        }
+        #Difficu ul {
+            padding: 0;
+            margin: 15px 0 5px;
+        }
+        #Difficu li {
+            list-style: none;
+            margin: 18px 0;
+        }
+        #Difficu span {
+            font-size: 28px;
+            font-weight: 450;
+            color: #d7edff;
+            cursor: pointer;
+            background: rgba(25, 40, 55, 0.7);
+            padding: 14px 45px;
+            border-radius: 60px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 0 #0f1c27, 0 8px 20px rgba(0,0,0,0.3);
+            display: inline-block;
+            transition: 0.08s;
+        }
+        #Difficu span:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #0f1c27, 0 8px 20px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+<div id="Mclear">
+    <div class="title">
+        <div id="time">000</div>
+        <div id="restart" title="新一局">↻</div>
+        <div id="tabnum">000</div>
+    </div>
+    <div id="shadow">
+        <canvas id="canvas" width="300" height="400"></canvas>
+        <!-- 浮层 -->
+        <div id="hint" class="animati2">
+            <div class="hbg">
+                <div id="load" style="display: none;">加载中...</div>
+                <div id="text" style="display: none;">
+                    <p>💥 踩到炸弹啦 💥<br>再试一次</p>
+                    <span id="butt">再来一局</span>
+                </div>
+                <div id="Difficu">
+                    <ul>
+                        <li><span onclick="window.Difficulty('简单')">🍃 简单</span></li>
+                        <li><span onclick="window.Difficulty('一般')">⚙️ 一般</span></li>
+                        <li><span onclick="window.Difficulty('困难')">💀 困难</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // 常量定义
+    const CELL_SIZE = 30;
+    const SHADOW_PADDING = 16;      // #shadow的内边距
+    const BORDER_COLOR = '#2d3e4f';
+    const COVER_INNER = '#a3b9d1';
+    const OPEN_INNER = '#f2f6fc';
+    const MAX_TIME = 999;
+
+    // DOM 快捷获取
+    const $ = id => document.getElementById(id);
+    const canvas = $('canvas');
+    const ctx = canvas.getContext('2d');
+    const timeDiv = $('time');
+    const tabnumDiv = $('tabnum');
+    const hintDiv = $('hint');
+    const textDiv = $('text');
+    const difficuDiv = $('Difficu');
+    const restartBtn = $('restart');
+    const butt = $('butt');
+
+    // 游戏状态变量
+    let gridCanvas = null;          // 网格离屏canvas（已无网格，仅作占位）
+    let cellCanvas = null;          // 方块离屏canvas
+    let map = [];                   // 二维数组，存储每个格子的对象
+    let stageWidth = 300;
+    let stageHeight = 400;
+    let difficulty = '简单';
+    let rows = 0, cols = 0;
+    let mineCount = 0;              // 总雷数
+    let flaggedCount = 0;           // 已插旗数
+    let correctFlagCount = 0;       // 标记正确的雷数
+    let elapsedSeconds = 0;
+    let gameActive = false;
+    let timerInterval = null;
+    let pendingCoord = null;        // 按下的格子坐标
+
+    // 初始化显示
+    difficuDiv.style.display = 'block';
+    textDiv.style.display = 'none';
+
+    // ----- 绘制函数（精确居中，无偏移）-----
+    function fillCellBase(destCtx, col, row, innerColor) {
+        const x = col * CELL_SIZE, y = row * CELL_SIZE;
+        destCtx.fillStyle = BORDER_COLOR;
+        destCtx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+        destCtx.fillStyle = innerColor;
+        destCtx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+    }
+
+    function drawCovered(destCtx, col, row) {
+        fillCellBase(destCtx, col, row, COVER_INNER);
+    }
+
+    function drawOpenedBase(destCtx, col, row) {
+        fillCellBase(destCtx, col, row, OPEN_INNER);
+    }
+
+    function drawNumber(destCtx, col, row, num) {
+        drawOpenedBase(destCtx, col, row);
+        if (num > 0) {
+            const x = col * CELL_SIZE + CELL_SIZE/2;
+            const y = row * CELL_SIZE + CELL_SIZE/2;
+            destCtx.font = 'bold 24px "JetBrains Mono", "Segoe UI", monospace';
+            const colors = ['#2673b3', '#2b7a4b', '#c44536', '#8a4f9e', '#b3444a', '#3f6a7a', '#4a4a4a', '#2673b3'];
+            destCtx.fillStyle = colors[(num-1) % colors.length];
+            destCtx.textAlign = 'center';
+            destCtx.textBaseline = 'middle';
+            destCtx.fillText(num, x, y);
+        }
+    }
+
+    function drawEmpty(destCtx, col, row) {
+        drawOpenedBase(destCtx, col, row);
+    }
+
+    function drawFlag(destCtx, col, row) {
+        drawCovered(destCtx, col, row);
+        const x = col * CELL_SIZE + CELL_SIZE/2;
+        const y = row * CELL_SIZE + CELL_SIZE/2;
+        destCtx.font = '24px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+        destCtx.fillStyle = '#dc5f4c';
+        destCtx.textAlign = 'center';
+        destCtx.textBaseline = 'middle';
+        destCtx.fillText('🚩', x, y);
+    }
+
+    function drawMine(destCtx, col, row, isRed = false) {
+        const x = col * CELL_SIZE, y = row * CELL_SIZE;
+        destCtx.fillStyle = BORDER_COLOR;
+        destCtx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+        destCtx.fillStyle = isRed ? '#f6cfcf' : OPEN_INNER;
+        destCtx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+        const cx = x + CELL_SIZE/2;
+        const cy = y + CELL_SIZE/2;
+        destCtx.font = '24px "Segoe UI Emoji", "Apple Color Emoji"';
+        destCtx.fillStyle = '#2e2e2e';
+        destCtx.textAlign = 'center';
+        destCtx.textBaseline = 'middle';
+        destCtx.fillText('💣', cx, cy);
+    }
+
+    // 更新数字显示
+    function updateCounters() {
+        const remain = Math.max(0, mineCount - flaggedCount);
+        tabnumDiv.innerText = remain.toString().padStart(3, '0');
+        timeDiv.innerText = elapsedSeconds.toString().padStart(3, '0');
+    }
+
+    // 重置游戏（不生成新地图，只清空状态）
+    function resetGame() {
+        gridCanvas = null;
+        cellCanvas = null;
+        map = [];
+        pendingCoord = null;
+        correctFlagCount = 0;
+        flaggedCount = 0;
+        mineCount = 0;
+        elapsedSeconds = 0;
+        gameActive = false;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        updateCounters();
+    }
+
+    // 生成随机地雷（Fisher-Yates 洗牌）
+    function generateMines(totalCells, mineNum) {
+        const indices = Array.from({ length: totalCells }, (_, i) => i);
+        for (let i = 0; i < mineNum; i++) {
+            const j = i + Math.floor(Math.random() * (totalCells - i));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        return indices.slice(0, mineNum).sort((a, b) => a - b);
+    }
+
+    // 初始化地图
+    function initMap() {
+        // 根据难度确定行列和雷数
+        switch (difficulty) {
+            case '简单': cols = 10; mineCount = 10; break;
+            case '一般': cols = 20; mineCount = 40; break;
+            case '困难': cols = 30; mineCount = 120; break;
+            default: cols = 10; mineCount = 10;
+        }
+        const width = cols * CELL_SIZE;
+        // 高度根据视口自适应，但保证至少有一行，且为CELL_SIZE整数倍
+        const maxHeight = window.innerHeight - 200;
+        let height = (width > maxHeight) ? maxHeight - (maxHeight % CELL_SIZE) : width;
+        if (height < CELL_SIZE) height = CELL_SIZE;
+        rows = Math.floor(height / CELL_SIZE);
+
+        stageWidth = width;
+        stageHeight = rows * CELL_SIZE;
+        canvas.width = stageWidth;
+        canvas.height = stageHeight;
+        $('Mclear').style.width = 'auto';
+
+        // 创建网格画布（已无网格线，仅保留占位）
+        gridCanvas = document.createElement('canvas');
+        gridCanvas.width = stageWidth;
+        gridCanvas.height = stageHeight;
+        // 不绘制任何线条
+
+        // 创建方块画布
+        cellCanvas = document.createElement('canvas');
+        cellCanvas.width = stageWidth;
+        cellCanvas.height = stageHeight;
+        const cellCtx = cellCanvas.getContext('2d');
+
+        // 生成雷索引
+        const totalCells = rows * cols;
+        const mineIndices = generateMines(totalCells, mineCount);
+
+        // 构建地图数组
+        map = Array.from({ length: rows }, (_, r) =>
+            Array.from({ length: cols }, (_, c) => {
+                const idx = r * cols + c;
+                const isMine = mineIndices.includes(idx);
+                return {
+                    mine: isMine,
+                    covered: true,
+                    flagged: false,
+                    num: 0
+                };
+            })
+        );
+
+        // 计算周围雷数
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (map[r][c].mine) continue;
+                let cnt = 0;
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        if (dr === 0 && dc === 0) continue;
+                        const nr = r + dr, nc = c + dc;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && map[nr][nc].mine) cnt++;
+                    }
+                }
+                map[r][c].num = cnt;
+            }
+        }
+
+        // 绘制所有格子为覆盖状态
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                drawCovered(cellCtx, c, r);
+            }
+        }
+
+        // 显示到主canvas
+        ctx.clearRect(0, 0, stageWidth, stageHeight);
+        ctx.drawImage(cellCanvas, 0, 0);
+
+        gameActive = true;
+        updateCounters();
+
+        // 启动计时器
+        if (timerInterval) clearInterval(timerInterval);
+        elapsedSeconds = 0;
+        timerInterval = setInterval(() => {
+            if (!gameActive) return;
+            if (elapsedSeconds >= MAX_TIME) {
+                gameOver(false);
+                return;
+            }
+            elapsedSeconds++;
+            updateCounters();
+        }, 1000);
+    }
+
+    // 刷新主画布（从离屏画布复制）
+    function redrawScene() {
+        ctx.clearRect(0, 0, stageWidth, stageHeight);
+        if (gridCanvas) ctx.drawImage(gridCanvas, 0, 0);
+        if (cellCanvas) ctx.drawImage(cellCanvas, 0, 0);
+    }
+
+    // 获取鼠标在canvas上的格子坐标（返回 { row, col } 或 null）
+    function getCellFromEvent(e) {
+        const shadowRect = $('shadow').getBoundingClientRect();
+        // 计算相对于canvas的坐标（减去shadow内边距）
+        const canvasX = e.clientY - shadowRect.top - SHADOW_PADDING;
+        const canvasY = e.clientX - shadowRect.left - SHADOW_PADDING;
+        if (canvasX < 0 || canvasY < 0 || canvasX >= stageHeight || canvasY >= stageWidth) return null;
+        const row = Math.floor(canvasX / CELL_SIZE);
+        const col = Math.floor(canvasY / CELL_SIZE);
+        if (row < 0 || row >= rows || col < 0 || col >= cols) return null;
+        return { row, col };
+    }
+
+    // 按下处理
+    function onMouseDown(e) {
+        if (!gameActive) return;
+        const cell = getCellFromEvent(e);
+        if (!cell) return;
+        const { row, col } = cell;
+        if (!map[row]?.[col]?.covered) return;
+        pendingCoord = { row, col };
+        // 显示按下效果
+        redrawScene();
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = '#2f4f6f';
+        ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        ctx.globalAlpha = 1.0;
+    }
+
+    // 弹起处理
+    function onMouseUp(e) {
+        if (!gameActive || !pendingCoord) return;
+        const start = pendingCoord;
+        pendingCoord = null;
+
+        const end = getCellFromEvent(e);
+        if (!end) {
+            redrawScene();
+            return;
+        }
+
+        const { row: sRow, col: sCol } = start;
+        const { row: eRow, col: eCol } = end;
+        const cell = map[sRow]?.[sCol];
+        if (!cell || !cell.covered) return;
+
+        const cellCtx = cellCanvas.getContext('2d');
+
+        // 左键
+        if (e.button === 0) {
+            if (sRow === eRow && sCol === eCol && !cell.flagged) {
+                if (cell.mine) {
+                    // 踩雷：显示所有雷
+                    cell.covered = false;
+                    drawMine(cellCtx, sCol, sRow, true);
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            if (map[r][c].mine && !(r === sRow && c === sCol)) {
+                                map[r][c].covered = false;
+                                drawMine(cellCtx, c, r, false);
+                            }
+                        }
+                    }
+                    gameOver(false);
+                } else {
+                    if (cell.num === 0) {
+                        expandEmpty(sRow, sCol);
+                    } else {
+                        cell.covered = false;
+                        drawNumber(cellCtx, sCol, sRow, cell.num);
+                    }
+                }
+            }
+        }
+        // 右键（插旗/拔旗）
+        else if (e.button === 2) {
+            if (sRow === eRow && sCol === eCol) {
+                if (!cell.flagged && flaggedCount < mineCount) {
+                    cell.flagged = true;
+                    flaggedCount++;
+                    if (cell.mine) correctFlagCount++;
+                    drawFlag(cellCtx, sCol, sRow);
+                    updateCounters();
+                    if (correctFlagCount === mineCount) gameOver(true);
+                } else if (cell.flagged) {
+                    cell.flagged = false;
+                    flaggedCount--;
+                    if (cell.mine) correctFlagCount--;
+                    drawCovered(cellCtx, sCol, sRow);
+                    updateCounters();
+                }
+            }
+        }
+
+        redrawScene();
+    }
+
+    // 展开空白区域（广度优先）
+    function expandEmpty(startRow, startCol) {
+        const cellCtx = cellCanvas.getContext('2d');
+        const queue = [{ row: startRow, col: startCol }];
+        while (queue.length) {
+            const { row, col } = queue.shift();
+            const cell = map[row]?.[col];
+            if (!cell || !cell.covered || cell.flagged || cell.mine) continue;
+
+            cell.covered = false;
+            if (cell.num === 0) {
+                drawEmpty(cellCtx, col, row);
+            } else {
+                drawNumber(cellCtx, col, row, cell.num);
+                continue;
+            }
+
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    const nr = row + dr, nc = col + dc;
+                    if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+                    const neighbor = map[nr][nc];
+                    if (neighbor.covered && !neighbor.flagged && !neighbor.mine) {
+                        if (neighbor.num === 0) {
+                            queue.push({ row: nr, col: nc });
+                        } else {
+                            neighbor.covered = false;
+                            drawNumber(cellCtx, nc, nr, neighbor.num);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 游戏结束
+    function gameOver(isWin) {
+        gameActive = false;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        const msg = textDiv.querySelector('p');
+        if (isWin) {
+            msg.innerHTML = `🎉 胜利！ 🎉<br>用时 ${elapsedSeconds} 秒`;
+            butt.innerText = '再玩一局';
+        } else {
+            msg.innerHTML = '💥 踩到炸弹啦 💥<br>再来一次';
+            butt.innerText = '重新开始';
+        }
+        textDiv.style.display = 'block';
+        difficuDiv.style.display = 'none';
+        hintDiv.className = 'animati2';
+    }
+
+    // 重新开始（显示难度选择）
+    function showDifficulty() {
+        hintDiv.className = 'animati2';
+        textDiv.style.display = 'none';
+        difficuDiv.style.display = 'block';
+        gameActive = false;
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    // 暴露给全局的难度选择函数
+    window.Difficulty = function(diff) {
+        difficulty = diff;
+        resetGame();
+        hintDiv.className = 'animati1';
+        initMap();
+    };
+
+    // 事件绑定
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    restartBtn.addEventListener('click', showDifficulty);
+    butt.addEventListener('click', function() {
+        textDiv.style.display = 'none';
+        difficuDiv.style.display = 'block';
+        hintDiv.className = 'animati2';
+        gameActive = false;
+    });
+})();
+</script>
+</body>
+</html>

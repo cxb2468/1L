@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金价格监控系统 - 登录</title>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-form {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .login-form:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #409eff;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .login-btn {
+            width: 100%;
+            margin-top: 30px;
+            height: 45px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(64, 158, 255, 0.4);
+        }
+
+        .error-message {
+            color: #f56c6c;
+            margin-top: 15px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .el-form-item {
+            margin-bottom: 25px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .el-form-item:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .el-form-item:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .el-form-item:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="login-container">
+            <div class="login-form">
+                <div class="login-title">
+                    黄金价格监控系统
+                </div>
+                <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" label-width="80px"
+                    @keyup.enter="handleLogin">
+                    <el-form-item label="用户名" prop="username">
+                        <el-input v-model="loginForm.username" placeholder="请输入用户名"
+                            @keyup.enter="handleLogin"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="password">
+                        <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password
+                            @keyup.enter="handleLogin"></el-input>
+                    </el-form-item>
+                    <el-form-item label-width="0">
+                        <el-button type="primary" @click="handleLogin" class="login-btn"
+                            style="width: 100%">登录</el-button>
+                    </el-form-item>
+                    <div v-if="errorMessage" class="error-message">
+                        {{ errorMessage }}
+                    </div>
+                </el-form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { ElMessage } = ElementPlus;
+
+        createApp({
+            data() {
+                return {
+                    loginForm: {
+                        username: '',
+                        password: ''
+                    },
+                    loginRules: {
+                        username: [
+                            { required: true, message: '请输入用户名', trigger: 'blur' }
+                        ],
+                        password: [
+                            { required: true, message: '请输入密码', trigger: 'blur' }
+                        ]
+                    },
+                    errorMessage: ''
+                };
+            },
+            methods: {
+                handleLogin() {
+                    // 使用 API 进行登录验证
+                    fetch('/admin/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.loginForm)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.code === 200) {
+                                // 登录成功，跳转到管理首页
+                                window.location.href = '/admin/index';
+                            } else {
+                                this.errorMessage = data.message;
+                            }
+                        })
+                        .catch(error => {
+                            this.errorMessage = '登录失败，请稍后重试';
+                            console.error('登录失败:', error);
+                        });
+                }
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+
+</html>

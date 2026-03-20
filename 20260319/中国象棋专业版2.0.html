@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国象棋专业版2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: '楷体', 'KaiTi', '华文楷体', serif;
+        }
+        .game-container {
+            background: transparent;
+            padding: 20px;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+        /* 强制canvas显示尺寸与像素尺寸一致，防止浏览器缩放导致模糊 */
+        canvas {
+            display: block;
+            width: 560px;
+            height: 630px;
+            border-radius: 18px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background: #f0d9b5;
+            cursor: pointer;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+        }
+        .turn-indicator {
+            background: #5e3e1e;
+            color: #f9eac3;
+            padding: 8px 12px;
+            border-radius: 50px;
+            font-size: 22px;
+            letter-spacing: 2px;
+            box-shadow: inset 0 -3px 0 #2f1f0e, 0 6px 10px black;
+            border-bottom: 2px solid #b5914c;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .mode-selector, .difficulty-selector {
+            background: #c29e5e;
+            border-radius: 40px;
+            padding: 8px 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2b1a0a;
+            border: 2px solid #efd39e;
+            box-shadow: inset 0 -2px 0 #6f4f2e, 0 6px 8px black;
+            cursor: pointer;
+            outline: none;
+            width: 100%;
+            text-align: center;
+        }
+        .action-btn {
+            background: #c29e5e;
+            border: none;
+            font-size: 22px;
+            font-family: '楷体', serif;
+            font-weight: bold;
+            padding: 8px 0;
+            border-radius: 40px;
+            color: #2b1a0a;
+            box-shadow: 0 8px 0 #6f4f2e, 0 10px 15px black;
+            cursor: pointer;
+            transition: 0.08s linear;
+            border: 1px solid #efd39e;
+            letter-spacing: 2px;
+            width: 100%;
+        }
+        .action-btn:active {
+            transform: translateY(7px);
+            box-shadow: 0 2px 0 #5a3f22, 0 8px 12px black;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="chessCanvas" width="560" height="630"></canvas>
+        <div class="right-panel">
+            <div class="turn-indicator" id="turnText">红方走棋</div>
+            <select id="modeSelect" class="mode-selector">
+                <option value="human" selected>双人对战</option>
+                <option value="ai-black">🤖AI执黑</option>
+                <option value="ai-red">🤖AI执红</option>
+            </select>
+            <select id="difficultySelect" class="difficulty-selector">
+                <option value="1">🤖初级1层</option>
+                <option value="2" selected>🤖中级2层</option>
+                <option value="3">🤖高级3层</option>
+            </select>
+            <button class="action-btn" id="undoBtn">悔棋</button>
+            <button class="action-btn restart-btn" id="restartBtn">新局</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- 棋盘配置 ----------
+            const canvas = document.getElementById('chessCanvas');
+            const ctx = canvas.getContext('2d');
+            const turnText = document.getElementById('turnText');
+            const modeSelect = document.getElementById('modeSelect');
+            const difficultySelect = document.getElementById('difficultySelect');
+            const undoBtn = document.getElementById('undoBtn');
+            const restartBtn = document.getElementById('restartBtn');
+
+            const ROWS = 10;
+            const COLS = 9;
+            const GRID_SIZE = 56;
+            const OFFSET_X = 56;
+            const OFFSET_Y = 63;
+
+            // ---------- 全局状态 ----------
+            let board = [];
+            let currentPlayer = 'r';
+            let selectedPiece = null;
+            let gameOver = false;
+            let winner = null;               
+            let history = [];
+
+            // AI 相关
+            let gameMode = 'human';
+            let aiDifficulty = 2;
+            let isAIPlaying = false;
+
+            let killerMoves = [];
+            const MAX_DEPTH = 10;
+            function initKillers() {
+                killerMoves = [];
+                for (let d = 0; d <= MAX_DEPTH; d++) killerMoves[d] = [null, null];
+            }
+            initKillers();
+
+            const pieceValue = {
+                'k': 10000, 'a': 200, 'b': 200, 'n': 500, 'r': 1000, 'c': 800, 'p': 100
+            };
+
+            function initBoard() {
+                board = Array(ROWS).fill().map(() => Array(COLS).fill(null));
+
+                board[0][0] = 'br'; board[0][1] = 'bn'; board[0][2] = 'bb'; board[0][3] = 'ba'; board[0][4] = 'bk'; 
+                board[0][5] = 'ba'; board[0][6] = 'bb'; board[0][7] = 'bn'; board[0][8] = 'br';
+                board[2][1] = 'bc'; board[2][7] = 'bc';
+                board[3][0] = 'bp'; board[3][2] = 'bp'; board[3][4] = 'bp'; board[3][6] = 'bp'; board[3][8] = 'bp';
+
+                board[9][0] = 'rr'; board[9][1] = 'rn'; board[9][2] = 'rb'; board[9][3] = 'ra'; board[9][4] = 'rk'; 
+                board[9][5] = 'ra'; board[9][6] = 'rb'; board[9][7] = 'rn'; board[9][8] = 'rr';
+                board[7][1] = 'rc'; board[7][7] = 'rc';
+                board[6][0] = 'rp'; board[6][2] = 'rp'; board[6][4] = 'rp'; board[6][6] = 'rp'; board[6][8] = 'rp';
+
+                currentPlayer = 'r';
+                selectedPiece = null;
+                gameOver = false;
+                winner = null;
+                history = [];
+                turnText.innerText = '红方走棋';
+                initKillers();
+            }
+
+            // ---------- 绘制函数 (锐化处理) ----------
+            function drawBoard() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawGrid();
+                drawPieces();
+                if (selectedPiece) {
+                    const { row, col } = selectedPiece;
+                    // 选中高亮：坐标对齐到半像素，阴影调小
+                    ctx.save();
+                    ctx.strokeStyle = '#f5e56b';
+                    ctx.lineWidth = 3;
+                    ctx.shadowBlur = 6;          // 减小阴影模糊
+                    ctx.shadowColor = 'gold';
+                    ctx.beginPath();
+                    // 使用半像素坐标使圆弧边缘更清晰
+                    ctx.arc(OFFSET_X + col * GRID_SIZE + 0.5, OFFSET_Y + row * GRID_SIZE + 0.5, 24, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            function drawGrid() {
+                ctx.save();
+                ctx.strokeStyle = '#6b4f32';
+                ctx.lineWidth = 1;               // 线宽设为1，配合半像素坐标获得锐利直线
+
+                // 绘制横线 (坐标+0.5使线条精确覆盖像素)
+                for (let i = 0; i < ROWS; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(OFFSET_X + 0.5, OFFSET_Y + i * GRID_SIZE + 0.5);
+                    ctx.lineTo(OFFSET_X + (COLS - 1) * GRID_SIZE + 0.5, OFFSET_Y + i * GRID_SIZE + 0.5);
+                    ctx.stroke();
+                }
+                // 绘制竖线
+                for (let i = 0; i < COLS; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(OFFSET_X + i * GRID_SIZE + 0.5, OFFSET_Y + 0.5);
+                    ctx.lineTo(OFFSET_X + i * GRID_SIZE + 0.5, OFFSET_Y + (ROWS - 1) * GRID_SIZE + 0.5);
+                    ctx.stroke();
+                }
+
+                // 绘制楚河汉界 (半透明背景文字，稍微下移一点避开中线，保留原风格)
+                ctx.font = '35px "楷体", "KaiTi"';
+                ctx.fillStyle = '#4e2f15';
+                ctx.globalAlpha = 0.3;
+                const text = '楚 河   　    　汉 界';
+                const textWidth = ctx.measureText(text).width;
+                const boardLeft = OFFSET_X;
+                const boardRight = OFFSET_X + (COLS - 1) * GRID_SIZE;
+                const centerX = (boardLeft + boardRight) / 2;
+                const textX = centerX - textWidth / 2;
+                // 保持文字整数坐标防止模糊 (半透明背景无需锐利)
+                ctx.fillText(text, textX, OFFSET_Y + 5 * GRID_SIZE - 13);
+                ctx.globalAlpha = 1;
+
+                // 九宫对角线 (同样用半像素坐标)
+                ctx.beginPath();
+                ctx.moveTo(OFFSET_X + 3 * GRID_SIZE + 0.5, OFFSET_Y + 0.5);
+                ctx.lineTo(OFFSET_X + 5 * GRID_SIZE + 0.5, OFFSET_Y + 2 * GRID_SIZE + 0.5);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(OFFSET_X + 5 * GRID_SIZE + 0.5, OFFSET_Y + 0.5);
+                ctx.lineTo(OFFSET_X + 3 * GRID_SIZE + 0.5, OFFSET_Y + 2 * GRID_SIZE + 0.5);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(OFFSET_X + 3 * GRID_SIZE + 0.5, OFFSET_Y + 7 * GRID_SIZE + 0.5);
+                ctx.lineTo(OFFSET_X + 5 * GRID_SIZE + 0.5, OFFSET_Y + 9 * GRID_SIZE + 0.5);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(OFFSET_X + 5 * GRID_SIZE + 0.5, OFFSET_Y + 7 * GRID_SIZE + 0.5);
+                ctx.lineTo(OFFSET_X + 3 * GRID_SIZE + 0.5, OFFSET_Y + 9 * GRID_SIZE + 0.5);
+                ctx.stroke();
+
+                // 绘制炮/兵/卒标记点 (使用半像素坐标，使圆点清晰)
+                ctx.fillStyle = '#6b4f32';
+                ctx.shadowBlur = 0; // 标记点不要阴影
+                for (let r of [2, 7]) {
+                    for (let c of [1, 7]) {
+                        ctx.beginPath();
+                        ctx.arc(OFFSET_X + c * GRID_SIZE + 0.5, OFFSET_Y + r * GRID_SIZE + 0.5, 5, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+                for (let r of [3, 6]) {
+                    for (let c of [0, 2, 4, 6, 8]) {
+                        ctx.beginPath();
+                        ctx.arc(OFFSET_X + c * GRID_SIZE + 0.5, OFFSET_Y + r * GRID_SIZE + 0.5, 4, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+            }
+
+            function drawPieces() {
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        const piece = board[r][c];
+                        if (!piece) continue;
+                        // 圆心坐标对齐半像素，使棋子边缘清晰
+                        const x = OFFSET_X + c * GRID_SIZE + 0.5;
+                        const y = OFFSET_Y + r * GRID_SIZE + 0.5;
+
+                        ctx.save();
+                        // 棋子阴影减弱
+                        ctx.shadowColor = '#333';
+                        ctx.shadowBlur = 4;        // 原为8，减半减少模糊
+                        ctx.shadowOffsetY = 2;      // 原为3
+                        ctx.beginPath();
+                        ctx.arc(x, y, 24, 0, 2 * Math.PI);
+                        ctx.fillStyle = piece[0] === 'r' ? '#c33' : '#222';
+                        ctx.fill();
+                        ctx.shadowBlur = 2;          // 描边阴影稍弱
+                        ctx.strokeStyle = '#f1d28c';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // 绘制文字前清除阴影，保证文字清晰
+                        ctx.shadowBlur = 0;
+                        ctx.shadowOffsetY = 0;
+                        ctx.font = '35px "楷体", "KaiTi", "华文楷体", serif';
+                        ctx.fillStyle = piece[0] === 'r' ? '#FFD966' : '#ddd';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        // 微调偏移量，配合半像素圆心，文字仍保留轻微偏移以居中
+                        ctx.fillText(pieceToChinese(piece), x - 1, y + 5);
+                        ctx.restore();
+                    }
+                }
+            }
+
+            function pieceToChinese(p) {
+                const map = {
+                    'r': { 'k': '帅', 'a': '仕', 'b': '相', 'n': '马', 'r': '车', 'c': '炮', 'p': '兵' },
+                    'b': { 'k': '将', 'a': '士', 'b': '象', 'n': '马', 'r': '车', 'c': '炮', 'p': '卒' }
+                };
+                return map[p[0]][p[1]] || '?';
+            }
+
+            // ---------- 规则核心函数 (保持不变，保证AI逻辑正确) ----------
+            function getPieceRawMoves(boardState, row, col, piece) {
+                const color = piece[0];
+                const type = piece[1];
+                const moves = [];
+
+                if (type === 'k') {
+                    const palaceRows = (color === 'r') ? [7,8,9] : [0,1,2];
+                    const palaceCols = [3,4,5];
+                    const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+                    for (let [dx,dy] of dirs) {
+                        const nr = row+dx, nc = col+dy;
+                        if (palaceRows.includes(nr) && palaceCols.includes(nc)) {
+                            const target = boardState[nr]?.[nc];
+                            if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                        }
+                    }
+                }
+                else if (type === 'a') {
+                    const palaceRows = (color === 'r') ? [7,8,9] : [0,1,2];
+                    const palaceCols = [3,4,5];
+                    const dirs = [[-1,-1],[-1,1],[1,-1],[1,1]];
+                    for (let [dx,dy] of dirs) {
+                        const nr = row+dx, nc = col+dy;
+                        if (palaceRows.includes(nr) && palaceCols.includes(nc)) {
+                            const target = boardState[nr]?.[nc];
+                            if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                        }
+                    }
+                }
+                else if (type === 'b') {
+                    const dirs = [[-2,-2],[-2,2],[2,-2],[2,2]];
+                    for (let [dx,dy] of dirs) {
+                        const nr = row+dx, nc = col+dy;
+                        if (nr<0 || nr>=ROWS || nc<0 || nc>=COLS) continue;
+                        if (color === 'r' && nr < 5) continue;
+                        if (color === 'b' && nr > 4) continue;
+                        const eyeRow = row + dx/2, eyeCol = col + dy/2;
+                        if (boardState[eyeRow][eyeCol] !== null) continue;
+                        const target = boardState[nr][nc];
+                        if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                    }
+                }
+                else if (type === 'n') {
+                    const jumps = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+                    for (let [dx,dy] of jumps) {
+                        const nr = row+dx, nc = col+dy;
+                        if (nr<0 || nr>=ROWS || nc<0 || nc>=COLS) continue;
+                        let blockRow = row, blockCol = col;
+                        if (Math.abs(dx) === 2) { blockRow = row + (dx>0?1:-1); blockCol = col; }
+                        else { blockRow = row; blockCol = col + (dy>0?1:-1); }
+                        if (boardState[blockRow][blockCol] !== null) continue;
+                        const target = boardState[nr][nc];
+                        if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                    }
+                }
+                else if (type === 'r') {
+                    const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+                    for (let [dx,dy] of dirs) {
+                        let nr = row+dx, nc = col+dy;
+                        while (nr>=0 && nr<ROWS && nc>=0 && nc<COLS) {
+                            const target = boardState[nr][nc];
+                            if (!target) moves.push({toX:nr, toY:nc});
+                            else {
+                                if (target[0] !== color) moves.push({toX:nr, toY:nc});
+                                break;
+                            }
+                            nr += dx; nc += dy;
+                        }
+                    }
+                }
+                else if (type === 'c') {
+                    const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+                    for (let [dx,dy] of dirs) {
+                        let nr = row+dx, nc = col+dy;
+                        let foundObstacle = false;
+                        while (nr>=0 && nr<ROWS && nc>=0 && nc<COLS) {
+                            const target = boardState[nr][nc];
+                            if (!foundObstacle) {
+                                if (!target) moves.push({toX:nr, toY:nc});
+                                else foundObstacle = true;
+                            } else {
+                                if (target && target[0] !== color) {
+                                    moves.push({toX:nr, toY:nc});
+                                    break;
+                                } else if (target) break;
+                            }
+                            nr += dx; nc += dy;
+                        }
+                    }
+                }
+                else if (type === 'p') {
+                    const forward = (color === 'r') ? -1 : 1;
+                    let nr = row + forward, nc = col;
+                    if (nr>=0 && nr<ROWS) {
+                        const target = boardState[nr][nc];
+                        if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                    }
+                    const crossed = (color === 'r') ? row <= 4 : row >= 5;
+                    if (crossed) {
+                        for (let dc of [-1,1]) {
+                            nr = row; nc = col + dc;
+                            if (nc>=0 && nc<COLS) {
+                                const target = boardState[nr][nc];
+                                if (!target || target[0] !== color) moves.push({toX:nr, toY:nc});
+                            }
+                        }
+                    }
+                }
+                return moves;
+            }
+
+            function applyMove(boardState, fromX, fromY, toX, toY) {
+                const newBoard = boardState.map(row => row.map(cell => cell));
+                const piece = newBoard[fromX][fromY];
+                newBoard[toX][toY] = piece;
+                newBoard[fromX][fromY] = null;
+                return newBoard;
+            }
+
+            function isKingInCheck(boardState, color) {
+                let kingPos = null;
+                for (let r=0; r<ROWS; r++) {
+                    for (let c=0; c<COLS; c++) {
+                        const p = boardState[r][c];
+                        if (p && p[0]===color && p[1]==='k') kingPos = [r,c];
+                    }
+                }
+                if (!kingPos) return false;
+                const opponent = color==='r' ? 'b' : 'r';
+                for (let r=0; r<ROWS; r++) {
+                    for (let c=0; c<COLS; c++) {
+                        const p = boardState[r][c];
+                        if (p && p[0]===opponent) {
+                            const rawMoves = getPieceRawMoves(boardState, r, c, p);
+                            for (let m of rawMoves) {
+                                if (m.toX === kingPos[0] && m.toY === kingPos[1]) return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            function hasGeneralsFacing(boardState) {
+                let redKing = null, blackKing = null;
+                for (let r=0; r<ROWS; r++) {
+                    for (let c=0; c<COLS; c++) {
+                        const p = boardState[r][c];
+                        if (p && p[1]==='k') {
+                            if (p[0]==='r') redKing = [r,c];
+                            else blackKing = [r,c];
+                        }
+                    }
+                }
+                if (!redKing || !blackKing) return false;
+                if (redKing[1] !== blackKing[1]) return false;
+                const col = redKing[1];
+                const minRow = Math.min(redKing[0], blackKing[0]);
+                const maxRow = Math.max(redKing[0], blackKing[0]);
+                for (let r = minRow+1; r < maxRow; r++) {
+                    if (boardState[r][col] !== null) return false;
+                }
+                return true;
+            }
+
+            function getAllValidMoves(boardState, color) {
+                const moves = [];
+                for (let r=0; r<ROWS; r++) {
+                    for (let c=0; c<COLS; c++) {
+                        const piece = boardState[r][c];
+                        if (!piece || piece[0] !== color) continue;
+                        const raw = getPieceRawMoves(boardState, r, c, piece);
+                        for (let m of raw) {
+                            const newBoard = applyMove(boardState, r, c, m.toX, m.toY);
+                            if (isKingInCheck(newBoard, color)) continue;
+                            if (hasGeneralsFacing(newBoard)) continue;
+                            const pieceVal = pieceValue[piece[1]] || 0;
+                            const target = boardState[m.toX][m.toY];
+                            const targetVal = target ? (pieceValue[target[1]] || 0) : 0;
+                            moves.push({
+                                fromX: r, fromY: c,
+                                toX: m.toX, toY: m.toY,
+                                pieceValue: pieceVal, targetValue: targetVal
+                            });
+                        }
+                    }
+                }
+                return moves;
+            }
+
+            function evaluateBoard(boardState, perspective) {
+                let score = 0;
+                for (let r=0; r<ROWS; r++) {
+                    for (let c=0; c<COLS; c++) {
+                        const p = boardState[r][c];
+                        if (!p) continue;
+                        const val = pieceValue[p[1]] || 0;
+                        if (p[0] === perspective) score += val;
+                        else score -= val;
+                    }
+                }
+                return score;
+            }
+
+            function alphaBeta(boardState, depth, alpha, beta, maximizing, aiColor, currentDepth) {
+                const currentColor = maximizing ? aiColor : (aiColor==='r' ? 'b' : 'r');
+                const moves = getAllValidMoves(boardState, currentColor);
+                if (moves.length === 0) {
+                    return maximizing ? -Infinity : Infinity;
+                }
+                if (depth === 0) return evaluateBoard(boardState, aiColor);
+
+                const killers = killerMoves[currentDepth] || [null, null];
+                moves.sort((a,b) => {
+                    const aKiller = (killers[0] && a.fromX===killers[0].fromX && a.fromY===killers[0].fromY && a.toX===killers[0].toX && a.toY===killers[0].toY) ||
+                                    (killers[1] && a.fromX===killers[1].fromX && a.fromY===killers[1].fromY && a.toX===killers[1].toX && a.toY===killers[1].toY);
+                    const bKiller = (killers[0] && b.fromX===killers[0].fromX && b.fromY===killers[0].fromY && b.toX===killers[0].toX && b.toY===killers[0].toY) ||
+                                    (killers[1] && b.fromX===killers[1].fromX && b.fromY===killers[1].fromY && b.toX===killers[1].toX && b.toY===killers[1].toY);
+                    if (aKiller && !bKiller) return -1;
+                    if (!aKiller && bKiller) return 1;
+                    if (a.targetValue !== b.targetValue) return b.targetValue - a.targetValue;
+                    return b.pieceValue - a.pieceValue;
+                });
+
+                if (maximizing) {
+                    let maxEval = -Infinity;
+                    for (let move of moves) {
+                        const newBoard = applyMove(boardState, move.fromX, move.fromY, move.toX, move.toY);
+                        const evalScore = alphaBeta(newBoard, depth-1, alpha, beta, false, aiColor, currentDepth+1);
+                        maxEval = Math.max(maxEval, evalScore);
+                        alpha = Math.max(alpha, evalScore);
+                        if (beta <= alpha) {
+                            if (move.targetValue === 0) {
+                                if (!killerMoves[currentDepth]) killerMoves[currentDepth] = [null, null];
+                                const k = killerMoves[currentDepth];
+                                if (!k[0]) k[0] = move;
+                                else if (!k[1] && !(k[0].fromX===move.fromX && k[0].fromY===move.fromY && k[0].toX===move.toX && k[0].toY===move.toY)) k[1] = move;
+                            }
+                            break;
+                        }
+                    }
+                    return maxEval;
+                } else {
+                    let minEval = Infinity;
+                    for (let move of moves) {
+                        const newBoard = applyMove(boardState, move.fromX, move.fromY, move.toX, move.toY);
+                        const evalScore = alphaBeta(newBoard, depth-1, alpha, beta, true, aiColor, currentDepth+1);
+                        minEval = Math.min(minEval, evalScore);
+                        beta = Math.min(beta, evalScore);
+                        if (beta <= alpha) {
+                            if (move.targetValue === 0) {
+                                if (!killerMoves[currentDepth]) killerMoves[currentDepth] = [null, null];
+                                const k = killerMoves[currentDepth];
+                                if (!k[0]) k[0] = move;
+                                else if (!k[1] && !(k[0].fromX===move.fromX && k[0].fromY===move.fromY && k[0].toX===move.toX && k[0].toY===move.toY)) k[1] = move;
+                            }
+                            break;
+                        }
+                    }
+                    return minEval;
+                }
+            }
+
+            function getBestMove(boardState, color, depth) {
+                initKillers();
+                const moves = getAllValidMoves(boardState, color);
+                if (moves.length === 0) return null;
+                let bestMoves = [];
+                let bestScore = -Infinity;
+                for (let move of moves) {
+                    const newBoard = applyMove(boardState, move.fromX, move.fromY, move.toX, move.toY);
+                    const score = alphaBeta(newBoard, depth-1, -Infinity, Infinity, false, color, 0);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMoves = [move];
+                    } else if (score === bestScore) {
+                        bestMoves.push(move);
+                    }
+                }
+                return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+            }
+
+            function aiMakeMove(color) {
+                if (gameOver || isAIPlaying) return;
+                const isAITurn = (gameMode === 'ai-black' && color === 'b') || (gameMode === 'ai-red' && color === 'r');
+                if (!isAITurn) return;
+
+                isAIPlaying = true;
+                setTimeout(() => {
+                    if (gameOver) { isAIPlaying = false; return; }
+                    const depth = aiDifficulty;
+                    const bestMove = getBestMove(board, color, depth);
+                    if (!bestMove) {
+                        gameOver = true;
+                        winner = (color === 'r') ? 'b' : 'r';
+                        turnText.innerText = winner === 'r' ? '🔴 红方胜' : '⚫ 黑方胜';
+                        drawBoard();
+                        isAIPlaying = false;
+                        return;
+                    }
+                    const { fromX, fromY, toX, toY } = bestMove;
+                    const boardCopy = board.map(row => row.map(cell => cell));
+                    history.push({ board: boardCopy, currentPlayer, lastMoveFrom: [fromX,fromY], lastMoveTo: [toX,toY] });
+
+                    const piece = board[fromX][fromY];
+                    board[toX][toY] = piece;
+                    board[fromX][fromY] = null;
+
+                    const enemyColor = color === 'r' ? 'b' : 'r';
+                    let enemyKingAlive = false;
+                    for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) {
+                        const p = board[r][c];
+                        if (p && p[0]===enemyColor && p[1]==='k') enemyKingAlive = true;
+                    }
+                    if (!enemyKingAlive) {
+                        gameOver = true;
+                        winner = color;
+                        turnText.innerText = winner === 'r' ? '红方胜' : '黑方胜';
+                    } else {
+                        currentPlayer = enemyColor;
+                        turnText.innerText = currentPlayer === 'r' ? '红方走棋' : '黑方走棋';
+                    }
+                    selectedPiece = null;
+                    drawBoard();
+
+                    if (!gameOver) {
+                        const nextIsAI = (gameMode === 'ai-black' && currentPlayer === 'b') || (gameMode === 'ai-red' && currentPlayer === 'r');
+                        if (nextIsAI) {
+                            setTimeout(() => { aiMakeMove(currentPlayer); }, 150);
+                        }
+                    }
+                    isAIPlaying = false;
+                }, 150);
+            }
+
+            function handleCanvasClick(e) {
+                if (gameOver) return;
+                const isCurrentAITurn = (gameMode === 'ai-black' && currentPlayer === 'b') || (gameMode === 'ai-red' && currentPlayer === 'r');
+                if (isCurrentAITurn) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const canvasX = (e.clientX - rect.left) * scaleX;
+                const canvasY = (e.clientY - rect.top) * scaleY;
+                const col = Math.round((canvasX - OFFSET_X) / GRID_SIZE);
+                const row = Math.round((canvasY - OFFSET_Y) / GRID_SIZE);
+                if (row<0 || row>=ROWS || col<0 || col>=COLS) return;
+
+                if (!selectedPiece) {
+                    const piece = board[row][col];
+                    if (piece && piece[0] === currentPlayer) {
+                        selectedPiece = { row, col, piece };
+                    }
+                } else {
+                    const { row: sRow, col: sCol, piece: sPiece } = selectedPiece;
+                    if (board[row][col] && board[row][col][0] === currentPlayer) {
+                        selectedPiece = { row, col, piece: board[row][col] };
+                        drawBoard();
+                        return;
+                    }
+                    const rawMoves = getPieceRawMoves(board, sRow, sCol, sPiece);
+                    let valid = false;
+                    for (let m of rawMoves) {
+                        if (m.toX === row && m.toY === col) {
+                            const newBoard = applyMove(board, sRow, sCol, row, col);
+                            if (!isKingInCheck(newBoard, currentPlayer) && !hasGeneralsFacing(newBoard)) {
+                                valid = true;
+                            }
+                            break;
+                        }
+                    }
+                    if (valid) {
+                        const boardCopy = board.map(r => r.map(c => c));
+                        history.push({ board: boardCopy, currentPlayer, lastMoveFrom: [sRow,sCol], lastMoveTo: [row,col] });
+
+                        const piece = board[sRow][sCol];
+                        board[row][col] = piece;
+                        board[sRow][sCol] = null;
+
+                        const enemyColor = currentPlayer === 'r' ? 'b' : 'r';
+                        let enemyKingAlive = false;
+                        for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) {
+                            const p = board[r][c];
+                            if (p && p[0]===enemyColor && p[1]==='k') enemyKingAlive = true;
+                        }
+                        if (!enemyKingAlive) {
+                            gameOver = true;
+                            winner = currentPlayer;
+                            turnText.innerText = winner === 'r' ? '红方胜' : '黑方胜';
+                        } else {
+                            currentPlayer = enemyColor;
+                            turnText.innerText = currentPlayer === 'r' ? '红方走棋' : '黑方走棋';
+                        }
+                        selectedPiece = null;
+                        drawBoard();
+
+                        if (!gameOver) {
+                            const nextIsAI = (gameMode === 'ai-black' && currentPlayer === 'b') || (gameMode === 'ai-red' && currentPlayer === 'r');
+                            if (nextIsAI) {
+                                setTimeout(() => { aiMakeMove(currentPlayer); }, 200);
+                            }
+                        }
+                    } else {
+                        selectedPiece = null;
+                    }
+                }
+                drawBoard();
+            }
+
+            function undoMove() {
+                if (history.length === 0) return;
+                if (isAIPlaying) return;
+                const last = history.pop();
+                board = last.board.map(row => row.map(cell => cell));
+                currentPlayer = last.currentPlayer;
+                selectedPiece = null;
+                gameOver = false;
+                winner = null;
+                turnText.innerText = currentPlayer === 'r' ? '红方走棋' : '黑方走棋';
+                drawBoard();
+                if (!gameOver) {
+                    const nextIsAI = (gameMode === 'ai-black' && currentPlayer === 'b') || (gameMode === 'ai-red' && currentPlayer === 'r');
+                    if (nextIsAI) {
+                        setTimeout(() => { aiMakeMove(currentPlayer); }, 200);
+                    }
+                }
+            }
+
+            function restartGame() {
+                if (isAIPlaying) return;
+                initBoard();
+                drawBoard();
+                if (gameMode === 'ai-black' && currentPlayer === 'b') aiMakeMove('b');
+                else if (gameMode === 'ai-red' && currentPlayer === 'r') aiMakeMove('r');
+            }
+
+            canvas.addEventListener('click', handleCanvasClick);
+            undoBtn.addEventListener('click', undoMove);
+            restartBtn.addEventListener('click', restartGame);
+            modeSelect.addEventListener('change', (e) => {
+                gameMode = e.target.value;
+                restartGame();
+            });
+            difficultySelect.addEventListener('change', (e) => {
+                aiDifficulty = parseInt(e.target.value, 10);
+            });
+
+            initBoard();
+            drawBoard();
+        })();
+    </script>
+</body>
+</html>

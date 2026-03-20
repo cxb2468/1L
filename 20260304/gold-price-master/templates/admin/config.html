@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统配置 - 黄金价格监控后台管理系统</title>
+    <!-- 默认为事件监听器添加 passive: true -->
+    <script src="/static/vendor/default-passive-events.js"></script>
+    <!-- Element Plus CSS -->
+    <link rel="stylesheet" href="/static/vendor/element-plus/index.css">
+    <!-- Vue 3 -->
+    <script src="/static/vendor/vue/vue.global.prod.js"></script>
+    <!-- Element Plus JS -->
+    <script src="/static/vendor/element-plus/index.full.min.js"></script>
+    <!-- Element Plus Icons -->
+    <script src="/static/vendor/element-plus/icons-vue.iife.min.js"></script>
+    <!-- Element Plus 中文语言包 -->
+    <script src="/static/vendor/element-plus/zh-cn.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #303133;
+            line-height: 1.6;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            transition: all 0.3s ease;
+        }
+
+        .header:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #409eff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i.el-icon {
+            font-size: 24px;
+        }
+
+        .el-dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: #606266;
+        }
+
+        .el-dropdown-link:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .el-dropdown-link .el-icon {
+            transition: all 0.3s ease;
+        }
+
+        .el-dropdown-link:hover .el-icon {
+            transform: scale(1.1);
+        }
+
+        .el-dropdown-menu {
+            border: none;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+        }
+
+        .el-dropdown-menu__item {
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 4px 8px;
+        }
+
+        .el-dropdown-menu__item:hover {
+            background-color: #f5f7fa;
+            color: #409eff;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar:hover {
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+        }
+
+        .card-container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card-container:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-container h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #409eff;
+        }
+
+        .card-container h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ebeef5;
+        }
+
+        .el-menu {
+            border-right: none;
+        }
+
+        .el-menu-item {
+            height: 60px;
+            line-height: 60px;
+            margin: 0 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .el-menu-item:hover {
+            background-color: #ecf5ff !important;
+        }
+
+        .el-menu-item.is-active {
+            background-color: #ecf5ff !important;
+            color: #409eff !important;
+            font-weight: bold;
+        }
+
+        .el-button {
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .el-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+        }
+
+        .el-form-item {
+            margin-bottom: 20px;
+        }
+
+        .el-input,
+        .el-select,
+        .el-input-number {
+            border-radius: 8px;
+        }
+
+        .el-table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* 解决操作列按钮hover动画被截断的问题 */
+        .table-with-visible-overflow .cell {
+            overflow: visible !important;
+        }
+
+        /* 确保操作列有足够的空间显示hover效果 */
+        .table-with-visible-overflow .el-table__body td:last-child {
+            overflow: visible !important;
+        }
+
+        /* 为操作按钮添加更好的hover效果 */
+        .table-action-buttons .el-button {
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .table-action-buttons .el-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+        }
+
+        .table-action-buttons .el-button--danger:hover {
+            box-shadow: 0 4px 12px rgba(245, 108, 108, 0.3);
+        }
+
+        .el-table th {
+            background-color: #f5f7fa !important;
+            font-weight: bold;
+        }
+
+        .el-tabs {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dialog-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content {
+                padding: 20px;
+            }
+
+            .sidebar {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+
+            .content {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 头部 -->
+            <el-header class="header">
+                <div class="logo">
+                    <el-icon>
+                        <component :is="Coin"></component>
+                    </el-icon>
+                    黄金价格监控管理系统
+                </div>
+                <div>
+                    <el-dropdown @command="handleUserCommand">
+                        <span class="el-dropdown-link">
+                            <el-icon :size="30">
+                                <component :is="UserFilled"></component>
+                            </el-icon>
+                            <el-icon class="el-icon--right">
+                                <component :is="ArrowDown"></component>
+                            </el-icon>
+                        </span>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
+            </el-header>
+
+            <el-container class="main-container">
+                <!-- 侧边栏 -->
+                <el-aside class="sidebar" width="200px">
+                    <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleMenuSelect"
+                        background-color="#ffffff" text-color="#303133" active-text-color="#409eff">
+                        <el-menu-item index="dashboard">
+                            <el-icon>
+                                <component :is="House"></component>
+                            </el-icon>
+                            <span>仪表盘</span>
+                        </el-menu-item>
+                        <el-menu-item index="price-monitor">
+                            <el-icon>
+                                <component :is="DataLine"></component>
+                            </el-icon>
+                            <span>价格监控</span>
+                        </el-menu-item>
+                        <el-menu-item index="config">
+                            <el-icon>
+                                <component :is="SetUp"></component>
+                            </el-icon>
+                            <span>系统配置</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+
+                <!-- 主内容区 -->
+                <el-main class="content">
+                    <!-- 系统配置页面 -->
+                    <div>
+                        <el-tabs v-model="activeConfigTab" type="border-card">
+                            <!-- 基本配置 -->
+                            <el-tab-pane label="基本配置" name="basic">
+                                <div class="card-container">
+                                    <el-form :model="configForm" label-width="150px">
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="监控间隔(秒)">
+                                                    <el-input-number v-model="configForm.monitor_interval" :min="30"
+                                                        :max="3600" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="价格变化阈值(%)">
+                                                    <el-input-number v-model="configForm.alert_threshold" :min="1"
+                                                        :max="100" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="启用微信推送">
+                                                    <el-switch v-model="configForm.enable_wechat" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="启用AI分析">
+                                                    <el-switch v-model="configForm.enable_ai_analysis" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="生成HTML文件">
+                                                    <el-switch v-model="configForm.enable_html_generation" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="显示GUI窗口">
+                                                    <el-switch v-model="configForm.enable_gui_window" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-form-item label="测试模式">
+                                            <el-switch v-model="configForm.test_mode" />
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </el-tab-pane>
+
+                            <!-- 推送配置 -->
+                            <el-tab-pane label="推送配置" name="push">
+                                <div class="card-container">
+                                    <el-form :model="configForm" label-width="150px">
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="推送开始时间">
+                                                    <el-time-picker v-model="configForm.push_start_time" format="HH:mm"
+                                                        value-format="HH:mm" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="推送结束时间">
+                                                    <el-time-picker v-model="configForm.push_end_time" format="HH:mm"
+                                                        value-format="HH:mm" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="推送间隔(分钟)">
+                                                    <el-input-number v-model="configForm.push_interval_minutes" :min="1"
+                                                        :max="1440" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="定时推送窗口(分钟)">
+                                                    <el-input-number v-model="configForm.regular_push_window" :min="1"
+                                                        :max="60" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="最大推送次数">
+                                                    <el-input-number v-model="configForm.max_push_count" :min="1"
+                                                        :max="10" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="批量推送间隔(秒)">
+                                                    <el-input-number v-model="configForm.batch_push_interval" :min="60"
+                                                        :max="3600" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="全局推送间隔(秒)">
+                                                    <el-input-number v-model="configForm.global_push_interval" :min="60"
+                                                        :max="3600" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-form-item label="定时推送分钟">
+                                            <el-select v-model="configForm.regular_push_minutes" multiple
+                                                placeholder="选择推送分钟">
+                                                <el-option v-for="minute in 60" :key="minute-1" :label="minute-1"
+                                                    :value="minute-1"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                            </el-tab-pane>
+
+                            <!-- 数据源配置 -->
+                            <el-tab-pane label="数据源配置" name="datasource">
+                                <div class="card-container">
+                                    <el-form :model="configForm" label-width="150px">
+                                        <el-form-item label="数据源获取模式">
+                                            <el-select v-model="configForm.data_source_mode" placeholder="选择获取模式">
+                                                <el-option v-for="(label, value) in dataSourceModes" :key="value"
+                                                    :label="label" :value="value">
+                                                </el-option>
+                                            </el-select>
+                                        </el-form-item>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="8">
+                                                <el-form-item label="重试次数">
+                                                    <el-input-number v-model="configForm.data_source_retry_count"
+                                                        :min="1" :max="10" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="8">
+                                                <el-form-item label="重试间隔(秒)">
+                                                    <el-input-number v-model="configForm.data_source_retry_interval"
+                                                        :min="1" :max="30" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="8">
+                                                <el-form-item label="超时时间(秒)">
+                                                    <el-input-number v-model="configForm.data_source_timeout" :min="5"
+                                                        :max="30" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                    </el-form>
+                                </div>
+
+                                <div class="card-container">
+                                    <h3>黄金价格数据源管理</h3>
+                                    <el-table :data="configForm.gold_price_sources" style="width: 100%" border
+                                        class="table-with-visible-overflow">
+                                        <el-table-column prop="name" label="数据源名称" width="200"></el-table-column>
+                                        <el-table-column prop="url" label="URL地址"></el-table-column>
+                                        <el-table-column prop="type" label="类型" width="120">
+                                            <template #default="scope">
+                                                {{ getDataSourceTypeName(scope.row.type) }}
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="enabled" label="启用" width="80">
+                                            <template #default="scope">
+                                                <el-tag :type="scope.row.enabled ? 'success' : 'danger'">{{
+                                                    scope.row.enabled ? '是' : '否' }}</el-tag>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="sort_order" label="排序" width="80"></el-table-column>
+                                        <el-table-column label="操作" width="140">
+                                            <template #default="scope">
+                                                <div class="table-action-buttons">
+                                                    <el-button size="small"
+                                                        @click="editDataSource(scope.$index)">编辑</el-button>
+                                                    <el-button size="small" type="danger"
+                                                        @click="removeDataSource(scope.$index)">删除</el-button>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                    <div style="margin-top: 15px;">
+                                        <el-button type="primary" @click="addDataSource">添加数据源</el-button>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+
+                            <!-- 微信配置 -->
+                            <el-tab-pane label="微信配置" name="wechat">
+                                <div class="card-container">
+                                    <h3>微信公众号账号管理</h3>
+                                    <el-table :data="configForm.multi_account_config" style="width: 100%" border
+                                        class="table-with-visible-overflow">
+                                        <el-table-column prop="NAME" label="账号名称" width="180"></el-table-column>
+                                        <el-table-column prop="APP_ID" label="AppID" width="200"></el-table-column>
+                                        <el-table-column prop="TEMPLATE_ID" label="模板ID" width="400"></el-table-column>
+                                        <el-table-column prop="WEB_URL" label="跳转URL"></el-table-column>
+                                        <el-table-column label="操作" width="140">
+                                            <template #default="scope">
+                                                <div class="table-action-buttons">
+                                                    <el-button size="small"
+                                                        @click="editWechatAccount(scope.$index)">编辑</el-button>
+                                                    <el-button size="small" type="danger"
+                                                        @click="removeWechatAccount(scope.$index)">删除</el-button>
+                                                </div>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                    <div style="margin-top: 15px;">
+                                        <el-button type="primary" @click="addWechatAccount">添加账号</el-button>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+
+                            <!-- 系统配置 -->
+                            <el-tab-pane label="系统配置" name="system">
+                                <div class="card-container">
+                                    <el-form :model="configForm" label-width="150px">
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="日志级别">
+                                                    <el-select v-model="configForm.log_level" placeholder="选择日志级别">
+                                                        <el-option label="DEBUG" value="DEBUG"></el-option>
+                                                        <el-option label="INFO" value="INFO"></el-option>
+                                                        <el-option label="WARNING" value="WARNING"></el-option>
+                                                        <el-option label="ERROR" value="ERROR"></el-option>
+                                                    </el-select>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="日志文件路径">
+                                                    <el-input v-model="configForm.log_file"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="价格缓存过期(秒)">
+                                                    <el-input-number v-model="configForm.price_cache_expiration"
+                                                        :min="30" :max="300" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                    </el-form>
+                                </div>
+
+                                <div class="card-container">
+                                    <el-form :model="configForm" label-width="150px">
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="默认黄金价格">
+                                                    <el-input-number v-model="configForm.default_gold_price"
+                                                        :precision="2" :step="1" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+
+                                        <el-row :gutter="20">
+                                            <el-col :span="12">
+                                                <el-form-item label="默认高价差">
+                                                    <el-input-number v-model="configForm.default_price_gap_high"
+                                                        :precision="2" :step="0.1" />
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="12">
+                                                <el-form-item label="默认低价差">
+                                                    <el-input-number v-model="configForm.default_price_gap_low"
+                                                        :precision="2" :step="0.1" />
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                    </el-form>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <el-button type="primary" @click="saveConfig" size="large">保存全部配置</el-button>
+                            <el-button @click="loadConfig" size="large">重新加载配置</el-button>
+                        </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+
+        <!-- 数据源编辑弹窗 -->
+        <el-dialog v-model="dataSourceDialogVisible" title="编辑数据源" width="500px">
+            <el-form :model="editDataSourceForm" label-width="100px">
+                <el-form-item label="数据源名称">
+                    <el-input v-model="editDataSourceForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="URL地址">
+                    <el-input v-model="editDataSourceForm.url" type="textarea"></el-input>
+                </el-form-item>
+                <el-form-item label="类型">
+                    <el-select v-model="editDataSourceForm.type">
+                        <el-option label="DrissionPage" value="drissionpage"></el-option>
+                        <el-option label="API" value="api"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="启用">
+                    <el-switch v-model="editDataSourceForm.enabled"></el-switch>
+                </el-form-item>
+                <el-form-item label="排序">
+                    <el-input-number v-model="editDataSourceForm.sort_order" :min="1"></el-input-number>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dataSourceDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="saveDataSourceEdit">保存</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        <!-- 微信账号编辑弹窗 -->
+        <el-dialog v-model="wechatDialogVisible" title="编辑微信账号" width="500px">
+            <el-form :model="editWechatForm" label-width="100px">
+                <el-form-item label="账号名称">
+                    <el-input v-model="editWechatForm.NAME"></el-input>
+                </el-form-item>
+                <el-form-item label="AppID">
+                    <el-input v-model="editWechatForm.APP_ID"></el-input>
+                </el-form-item>
+                <el-form-item label="AppSecret">
+                    <el-input v-model="editWechatForm.APP_SECRET" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="TemplateID">
+                    <el-input v-model="editWechatForm.TEMPLATE_ID"></el-input>
+                </el-form-item>
+                <el-form-item label="Web URL">
+                    <el-input v-model="editWechatForm.WEB_URL"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="wechatDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="saveWechatEdit">保存</el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { ElMessage } = ElementPlus;
+
+        // 创建 Vue 应用
+        const app = createApp({
+            data() {
+                return {
+                    activeMenu: 'config',
+                    activeConfigTab: 'basic',
+                    configForm: {
+                        // 基本配置
+                        monitor_interval: 300,
+                        alert_threshold: 5,
+                        enable_wechat: false,
+                        enable_ai_analysis: false,
+                        enable_html_generation: true,
+                        enable_gui_window: false,
+                        test_mode: false,
+
+                        // 推送配置
+                        push_start_time: '09:00',
+                        push_end_time: '23:00',
+                        push_interval_minutes: 30,
+                        regular_push_minutes: [1, 31],
+                        regular_push_window: 5,
+                        max_push_count: 1,
+                        batch_push_interval: 300,
+                        global_push_interval: 300,
+
+                        // 数据源配置
+                        data_source_mode: 'single',
+                        data_source_retry_count: 3,
+                        data_source_retry_interval: 2,
+                        data_source_timeout: 10,
+                        gold_price_sources: [],
+
+                        // 微信配置
+                        multi_account_config: [],
+
+                        // 系统配置
+                        log_level: 'INFO',
+                        log_file: 'logs/gold_monitor.log',
+                        price_cache_expiration: 60,
+                        default_gold_price: 1100.0,
+                        default_price_gap_high: 15.0,
+                        default_price_gap_low: 10.0
+                    },
+
+                    // 枚举配置
+                    dataSourceModes: {},
+                    dataSourceTypes: {},
+
+                    // 编辑弹窗相关
+                    dataSourceDialogVisible: false,
+                    currentEditIndex: null,
+                    editDataSourceForm: {
+                        name: '',
+                        url: '',
+                        type: 'drissionpage',
+                        enabled: true,
+                        sort_order: 0
+                    },
+
+                    wechatDialogVisible: false,
+                    currentWechatEditIndex: null,
+                    editWechatForm: {
+                        NAME: '',
+                        APP_ID: '',
+                        APP_SECRET: '',
+                        TEMPLATE_ID: '',
+                        WEB_URL: ''
+                    },
+                    // 图标组件引用
+                    Coin: ElementPlusIconsVue.Coin,
+                    House: ElementPlusIconsVue.House,
+                    DataLine: ElementPlusIconsVue.DataLine,
+                    SetUp: ElementPlusIconsVue.SetUp,
+                    ArrowDown: ElementPlusIconsVue.ArrowDown,
+                    UserFilled: ElementPlusIconsVue.UserFilled
+                };
+            },
+            methods: {
+                handleMenuSelect(key) {
+                    this.activeMenu = key;
+                    if (key === 'dashboard') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (key === 'price-monitor') {
+                        window.location.href = '/admin/price-monitor';
+                    } else if (key === 'config') {
+                        window.location.href = '/admin/config';
+                    }
+                },
+                handleUserCommand(command) {
+                    if (command === 'logout') {
+                        this.logout();
+                    } else if (command === 'profile') {
+                        ElMessage.info('个人中心功能待开发');
+                    }
+                },
+                // 退出登录
+                async logout() {
+                    try {
+                        const response = await fetch('/admin/logout', { method: 'GET' });
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            window.location.href = '/admin/login';
+                        }
+                    } catch (error) {
+                        console.error('退出登录失败:', error);
+                        window.location.href = '/admin/login';
+                    }
+                },
+                // 加载配置
+                async loadConfig() {
+                    try {
+                        const response = await fetch('/admin/api/config');
+                        const result = await response.json();
+
+                        if (result.code === 200) {
+                            // 更新配置表单数据
+                            Object.assign(this.configForm, result.data);
+
+                            // 更新枚举配置
+                            this.dataSourceModes = result.data.data_source_modes || {};
+                            this.dataSourceTypes = result.data.data_source_types || {};
+
+                            ElMessage.success('配置加载成功');
+                        } else {
+                            ElMessage.error(result.message || '配置加载失败');
+                        }
+                    } catch (error) {
+                        console.error('加载配置失败:', error);
+                        ElMessage.error('配置加载失败');
+                    }
+                },
+
+                // 保存配置
+                async saveConfig() {
+                    try {
+                        const response = await fetch('/admin/api/config', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.configForm)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.code === 200) {
+                            ElMessage.success('配置保存成功');
+                        } else {
+                            ElMessage.error(result.message || '配置保存失败');
+                        }
+                    } catch (error) {
+                        console.error('保存配置失败:', error);
+                        ElMessage.error('配置保存失败');
+                    }
+                },
+
+                // 数据源编辑弹窗
+                editDataSource(index) {
+                    this.currentEditIndex = index;
+                    this.editDataSourceForm = {
+                        ...this.configForm.gold_price_sources[index]
+                    };
+                    this.dataSourceDialogVisible = true;
+                },
+
+                saveDataSourceEdit() {
+                    if (this.currentEditIndex !== null) {
+                        this.configForm.gold_price_sources[this.currentEditIndex] = {
+                            ...this.editDataSourceForm
+                        };
+                        this.dataSourceDialogVisible = false;
+                        ElMessage.success('数据源编辑成功');
+                    }
+                },
+
+                // 微信账号编辑弹窗
+                editWechatAccount(index) {
+                    this.currentWechatEditIndex = index;
+                    this.editWechatForm = {
+                        ...this.configForm.multi_account_config[index]
+                    };
+                    this.wechatDialogVisible = true;
+                },
+
+                saveWechatEdit() {
+                    if (this.currentWechatEditIndex !== null) {
+                        this.configForm.multi_account_config[this.currentWechatEditIndex] = {
+                            ...this.editWechatForm
+                        };
+                        this.wechatDialogVisible = false;
+                        ElMessage.success('微信账号编辑成功');
+                    }
+                },
+
+                // 数据源管理方法
+                addDataSource() {
+                    this.configForm.gold_price_sources.push({
+                        name: '',
+                        url: '',
+                        type: 'drissionpage',
+                        enabled: true,
+                        sort_order: this.configForm.gold_price_sources.length + 1
+                    });
+                },
+
+                removeDataSource(index) {
+                    this.configForm.gold_price_sources.splice(index, 1);
+                    // 重新排序
+                    this.configForm.gold_price_sources.forEach((source, i) => {
+                        source.sort_order = i + 1;
+                    });
+                },
+
+                // 微信账号管理方法
+                addWechatAccount() {
+                    this.configForm.multi_account_config.push({
+                        NAME: '',
+                        APP_ID: '',
+                        APP_SECRET: '',
+                        TEMPLATE_ID: '',
+                        WEB_URL: ''
+                    });
+                },
+
+                removeWechatAccount(index) {
+                    this.configForm.multi_account_config.splice(index, 1);
+                },
+
+                // 获取数据源类型名称
+                getDataSourceTypeName(typeValue) {
+                    if (!this.dataSourceTypes) {
+                        return typeValue;
+                    }
+                    return this.dataSourceTypes[typeValue] || typeValue;
+                },
+
+                initPageData() {
+                    // 加载配置数据
+                    this.loadConfig();
+
+                    // 初始化默认数据
+                    if (this.configForm.gold_price_sources.length === 0) {
+                        this.configForm.gold_price_sources = [{
+                            name: '默认数据源',
+                            url: '',
+                            type: 'drissionpage',
+                            enabled: true,
+                            sort_order: 1
+                        }];
+                    }
+                }
+            },
+            mounted() {
+                // 页面加载时初始化数据
+                this.initPageData();
+            }
+        });
+
+        // 注册 ElementPlus 插件
+        app.use(ElementPlus, {
+            locale: ElementPlusLocaleZhCn
+        });
+
+        // 处理ResizeObserver循环错误
+        window.ResizeObserver = window.ResizeObserver || (function () {
+            var observers = [];
+            var frame = null;
+
+            function loop() {
+                observers.forEach(function (observer) {
+                    observer.check();
+                });
+                frame = null;
+            }
+
+            return function (callback) {
+                var observer = {
+                    observe: function (element) {
+                        this.elements.push(element);
+                        this.check();
+                    },
+                    unobserve: function (element) {
+                        this.elements = this.elements.filter(function (el) {
+                            return el !== element;
+                        });
+                    },
+                    disconnect: function () {
+                        this.elements = [];
+                    },
+                    elements: [],
+                    check: function () {
+                        var self = this;
+                        var changes = [];
+
+                        this.elements.forEach(function (element) {
+                            var rect = element.getBoundingClientRect();
+                            if (rect.width !== self.lastWidth || rect.height !== self.lastHeight) {
+                                changes.push({
+                                    target: element,
+                                    contentRect: rect
+                                });
+                                self.lastWidth = rect.width;
+                                self.lastHeight = rect.height;
+                            }
+                        });
+
+                        if (changes.length && callback) {
+                            callback(changes);
+                        }
+                    }
+                };
+
+                observers.push(observer);
+
+                if (!frame) {
+                    frame = requestAnimationFrame(loop);
+                }
+
+                return observer;
+            };
+        })();
+
+        // 挂载应用
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

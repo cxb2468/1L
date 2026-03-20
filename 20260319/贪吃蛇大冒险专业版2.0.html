@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>贪吃蛇大冒险专业版2.0</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4361ee',
+            secondary: '#3f37c9',
+            accent: '#f72585',
+            success: '#4cc9f0',
+            warning: '#fca311',
+            danger: '#e63946',
+            dark: '#1e1e24',
+            light: '#f8f9fa'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow-lg {
+        text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      .grid-pattern {
+        background-size: 20px 20px;
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .button-3d {
+        transform-style: preserve-3d;
+        transform: perspective(1000px);
+        transition: all 0.2s ease;
+      }
+      .button-3d:before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        background: rgba(0,0,0,0.2);
+        transform: translateZ(-1px) scale(0.9);
+        filter: blur(10px);
+        border-radius: inherit;
+        transition: all 0.2s ease;
+      }
+      .button-3d:hover {
+        transform: perspective(1000px) translateY(-3px);
+      }
+      .button-3d:hover:before {
+        transform: translateZ(-1px) scale(0.85);
+        filter: blur(15px);
+      }
+      .button-3d:active {
+        transform: perspective(1000px) translateY(1px);
+      }
+      .button-3d:active:before {
+        transform: translateZ(-1px) scale(0.95);
+        filter: blur(5px);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-dark to-gray-900 min-h-screen flex flex-col items-center justify-center p-4 text-light overflow-x-hidden">
+  <!-- 游戏主容器：宽度限制，使用max-w-lg增大棋盘面积 -->
+  <div class="w-full max-w-5xl mx-auto flex flex-col items-center">
+    <!-- 游戏标题 -->
+    <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent text-shadow-lg">
+      贪吃蛇大冒险
+    </h1>
+    
+    <!-- 棋盘居中布局：左侧占位 + 棋盘 + 右侧面板，垂直居中 (桌面端) -->
+    <div class="flex flex-col md:flex-row items-center justify-center w-full">
+      <!-- 左侧占位块（桌面端显示，与右侧面板等宽） -->
+      <div class="hidden md:block w-48 shrink-0"></div>
+      
+      <!-- 棋盘容器：从max-w-md 增大到 max-w-lg -->
+      <div class="relative w-full max-w-lg aspect-square overflow-hidden rounded-xl shadow-2xl mx-0">
+        <canvas id="gameCanvas" class="w-full h-full bg-dark grid-pattern"></canvas>
+        
+        <!-- 开始界面 -->
+        <div id="startScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-dark bg-opacity-80 z-10">
+          <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">准备开始游戏</h2>
+          <!-- 游戏模式选择 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full px-6">
+            <button class="mode-btn button-3d relative bg-primary hover:bg-secondary text-white font-bold py-3 px-4 rounded-lg transition-all active" data-mode="classic">
+              <i class="fa fa-gamepad mr-2"></i>经典模式
+            </button>
+            <button class="mode-btn button-3d relative bg-secondary hover:bg-primary text-white font-bold py-3 px-4 rounded-lg transition-all" data-mode="timed">
+              <i class="fa fa-clock-o mr-2"></i>计时模式
+            </button>
+            <button class="mode-btn button-3d relative bg-accent hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all" data-mode="obstacle">
+              <i class="fa fa-ban mr-2"></i>障碍模式
+            </button>
+          </div>
+          <!-- 皮肤选择 -->
+          <div class="mb-8 w-full px-6">
+            <h3 class="text-lg font-semibold mb-3 text-center">选择蛇皮肤</h3>
+            <div class="grid grid-cols-4 gap-3">
+              <button class="skin-btn w-12 h-12 rounded-full bg-green-500 border-2 border-white active" data-skin="green"></button>
+              <button class="skin-btn w-12 h-12 rounded-full bg-blue-500 border-2 border-transparent" data-skin="blue"></button>
+              <button class="skin-btn w-12 h-12 rounded-full bg-purple-500 border-2 border-transparent" data-skin="purple"></button>
+              <button class="skin-btn w-12 h-12 rounded-full bg-pink-500 border-2 border-transparent" data-skin="pink"></button>
+            </div>
+          </div>
+          <button id="startBtn" class="button-3d relative bg-success hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all flex items-center">
+            <i class="fa fa-play mr-2"></i>开始游戏
+          </button>
+        </div>
+        
+        <!-- 暂停界面 -->
+        <div id="pauseScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-dark bg-opacity-80 z-10 hidden">
+          <h2 class="text-2xl md:text-3xl font-bold mb-6">游戏暂停</h2>
+          <div class="flex flex-col md:flex-row gap-4">
+            <button id="resumeBtn" class="button-3d relative bg-success hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition-all">
+              <i class="fa fa-play mr-2"></i>继续游戏
+            </button>
+            <button id="restartBtn" class="button-3d relative bg-warning hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-all">
+              <i class="fa fa-refresh mr-2"></i>重新开始
+            </button>
+            <button id="quitBtn" class="button-3d relative bg-danger hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-all">
+              <i class="fa fa-home mr-2"></i>返回主菜单
+            </button>
+          </div>
+        </div>
+        
+        <!-- 游戏结束界面 -->
+        <div id="gameOverScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-dark bg-opacity-80 z-10 hidden">
+          <h2 id="gameOverTitle" class="text-2xl md:text-3xl font-bold mb-2">游戏结束</h2>
+          <p class="text-lg mb-2">你的得分: <span id="finalScore" class="font-bold">0</span></p>
+          <p id="newHighScore" class="text-warning font-bold mb-6 hidden">新纪录！</p>
+          <div class="flex flex-col md:flex-row gap-4">
+            <button id="playAgainBtn" class="button-3d relative bg-success hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition-all">
+              <i class="fa fa-refresh mr-2"></i>再玩一次
+            </button>
+            <button id="homeBtn" class="button-3d relative bg-primary hover:bg-secondary text-white font-bold py-3 px-6 rounded-lg transition-all">
+              <i class="fa fa-home mr-2"></i>返回主菜单
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧面板：得分框 + 暂停/音效按钮 (整体缩小，与棋盘垂直居中) -->
+      <div class="flex flex-col gap-3 w-48 shrink-0 ml-3">
+        <!-- 得分框 -->
+        <div class="glass rounded-lg px-3 py-2 flex items-center justify-between">
+          <div class="flex items-center text-sm">
+            <i class="fa fa-trophy text-warning mr-2"></i>
+            <span>得分:</span>
+          </div>
+          <span id="score" class="font-bold text-base">0</span>
+        </div>
+        <div class="glass rounded-lg px-3 py-2 flex items-center justify-between">
+          <div class="flex items-center text-sm">
+            <i class="fa fa-star text-warning mr-2"></i>
+            <span>最高分:</span>
+          </div>
+          <span id="highScore" class="font-bold text-base">0</span>
+        </div>
+        
+        <!-- 两个按钮：小尺寸 -->
+        <button id="pauseBtn" class="button-3d relative bg-warning hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded-lg transition-all w-full flex items-center justify-center text-sm">
+          <i class="fa fa-pause mr-2"></i> 暂停
+        </button>
+        <button id="soundBtn" class="button-3d relative bg-secondary hover:bg-primary text-white font-bold py-2 px-3 rounded-lg transition-all w-full flex items-center justify-center text-sm">
+          <i class="fa fa-volume-up mr-2"></i> 音效
+        </button>
+      </div>
+    </div>
+    
+    <!-- 底部控制区：修改为与棋盘水平居中对齐，内部内容居中 -->
+    <div class="w-full flex flex-col md:flex-row justify-center items-center gap-6 mt-6">
+      <!-- 电脑控制提示 (水平居中) -->
+      <div class="text-center">
+        <p class="text-sm opacity-70">电脑控制: ← → ↑ ↓ 或 W A S D ｜ 空格暂停</p>
+      </div>
+      <!-- 移动端方向按钮 (桌面端也显示？但此处保留移动端显示) -->
+      <div class="md:hidden grid grid-cols-3 gap-1 w-40">
+        <div></div>
+        <button class="control-btn bg-primary bg-opacity-30 hover:bg-opacity-50 w-12 h-12 rounded-lg flex items-center justify-center" data-dir="up">
+          <i class="fa fa-arrow-up"></i>
+        </button>
+        <div></div>
+        <button class="control-btn bg-primary bg-opacity-30 hover:bg-opacity-50 w-12 h-12 rounded-lg flex items-center justify-center" data-dir="left">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <div></div>
+        <button class="control-btn bg-primary bg-opacity-30 hover:bg-opacity-50 w-12 h-12 rounded-lg flex items-center justify-center" data-dir="right">
+          <i class="fa fa-arrow-right"></i>
+        </button>
+        <div></div>
+        <button class="control-btn bg-primary bg-opacity-30 hover:bg-opacity-50 w-12 h-12 rounded-lg flex items-center justify-center" data-dir="down">
+          <i class="fa fa-arrow-down"></i>
+        </button>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 游戏配置
+      const gameConfig = {
+        gridSize: 20,
+        initialSpeed: 150,
+        speedIncrease: 5,
+        minSpeed: 60,
+        foodValue: 10,
+        growthRate: 1,
+        timedModeDuration: 60,
+        obstacleSpawnRate: 5,
+        maxFoodAttempts: 200,
+      };
+
+      // 游戏状态
+      let gameState = {
+        snake: [],
+        food: {},
+        direction: 'right',
+        nextDirection: 'right',
+        score: 0,
+        highScore: 0,
+        gameSpeed: gameConfig.initialSpeed,
+        isGameOver: false,
+        isPaused: false,
+        gameMode: 'classic',
+        snakeSkin: 'green',
+        obstacles: [],
+        timeRemaining: gameConfig.timedModeDuration,
+        foodEaten: 0,
+        lastMoveTime: 0,
+        animationFrameId: null,
+        soundEnabled: true,
+        lastTimeUpdate: 0,
+      };
+
+      // 皮肤颜色映射
+      const skinColors = {
+        green: { head: '#4ade80', body: '#22c55e', highlight: '#86efac' },
+        blue: { head: '#60a5fa', body: '#3b82f6', highlight: '#93c5fd' },
+        purple: { head: '#a78bfa', body: '#8b5cf6', highlight: '#c4b5fd' },
+        pink: { head: '#f472b6', body: '#ec4899', highlight: '#fbcfe8' }
+      };
+
+      // DOM 元素
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const scoreElement = document.getElementById('score');
+      const highScoreElement = document.getElementById('highScore');
+      const startScreen = document.getElementById('startScreen');
+      const pauseScreen = document.getElementById('pauseScreen');
+      const gameOverScreen = document.getElementById('gameOverScreen');
+      const gameOverTitle = document.getElementById('gameOverTitle');
+      const finalScoreElement = document.getElementById('finalScore');
+      const newHighScoreElement = document.getElementById('newHighScore');
+      const startBtn = document.getElementById('startBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const resumeBtn = document.getElementById('resumeBtn');
+      const restartBtn = document.getElementById('restartBtn');
+      const quitBtn = document.getElementById('quitBtn');
+      const playAgainBtn = document.getElementById('playAgainBtn');
+      const homeBtn = document.getElementById('homeBtn');
+      const soundBtn = document.getElementById('soundBtn');
+      const modeButtons = document.querySelectorAll('.mode-btn');
+      const skinButtons = document.querySelectorAll('.skin-btn');
+      const controlButtons = document.querySelectorAll('.control-btn');
+
+      // 音频上下文
+      let audioContext = null;
+      function initAudioContext() {
+        if (audioContext) return audioContext;
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        return audioContext;
+      }
+
+      function playSound(type) {
+        if (!gameState.soundEnabled) return;
+        const ctx = initAudioContext();
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(() => actuallyPlaySound(type, ctx)).catch(() => {});
+        } else {
+          actuallyPlaySound(type, ctx);
+        }
+      }
+
+      function actuallyPlaySound(type, ctx) {
+        const now = ctx.currentTime;
+        switch (type) {
+          case 'eat': {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain).connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+            break;
+          }
+          case 'collision': {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain).connect(ctx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+            break;
+          }
+          case 'start': {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain).connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+            break;
+          }
+          case 'highScore': {
+            for (let i = 0; i < 5; i++) {
+              const delay = i * 0.12;
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.connect(gain).connect(ctx.destination);
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(400 + i * 100, now + delay);
+              gain.gain.setValueAtTime(0.1, now + delay);
+              gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.1);
+              osc.start(now + delay);
+              osc.stop(now + delay + 0.1);
+            }
+            break;
+          }
+          case 'gameOver': {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain).connect(ctx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now);
+            osc.stop(now + 0.5);
+            break;
+          }
+        }
+      }
+
+      function hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function cancelGameLoop() {
+        if (gameState.animationFrameId) {
+          cancelAnimationFrame(gameState.animationFrameId);
+          gameState.animationFrameId = null;
+        }
+      }
+
+      function resetGameState() {
+        const { gameMode, snakeSkin, soundEnabled, highScore } = gameState;
+        const centerX = Math.floor(gameConfig.gridSize / 2);
+        const centerY = Math.floor(gameConfig.gridSize / 2);
+        gameState = {
+          ...gameState,
+          snake: [
+            { x: centerX - 2, y: centerY },
+            { x: centerX - 1, y: centerY },
+            { x: centerX, y: centerY }
+          ],
+          food: generateFoodWithFallback(),
+          direction: 'right',
+          nextDirection: 'right',
+          score: 0,
+          gameSpeed: gameConfig.initialSpeed,
+          isGameOver: false,
+          isPaused: false,
+          obstacles: [],
+          timeRemaining: gameConfig.timedModeDuration,
+          foodEaten: 0,
+          lastMoveTime: 0,
+          lastTimeUpdate: 0,
+          gameMode,
+          snakeSkin,
+          soundEnabled,
+          highScore,
+        };
+        updateScoreDisplay();
+      }
+
+      function generateFoodWithFallback() {
+        let attempts = 0;
+        let x, y;
+        while (attempts < gameConfig.maxFoodAttempts) {
+          x = Math.floor(Math.random() * gameConfig.gridSize);
+          y = Math.floor(Math.random() * gameConfig.gridSize);
+          const occupied = gameState.snake.some(s => s.x === x && s.y === y) ||
+                          gameState.obstacles.some(o => o.x === x && o.y === y);
+          if (!occupied) return { x, y };
+          attempts++;
+        }
+        return { x: 0, y: 0 };
+      }
+
+      function generateObstacle() {
+        let attempts = 0;
+        while (attempts < 200) {
+          const x = Math.floor(Math.random() * gameConfig.gridSize);
+          const y = Math.floor(Math.random() * gameConfig.gridSize);
+          const occupied = gameState.snake.some(s => s.x === x && s.y === y) ||
+                          (gameState.food.x === x && gameState.food.y === y) ||
+                          gameState.obstacles.some(o => o.x === x && o.y === y);
+          if (!occupied) {
+            gameState.obstacles.push({ x, y });
+            return;
+          }
+          attempts++;
+        }
+      }
+
+      function updateScoreDisplay() {
+        scoreElement.textContent = gameState.score;
+      }
+
+      function loadHighScore() {
+        const saved = localStorage.getItem('snakeHighScore_v5');
+        if (saved) {
+          gameState.highScore = parseInt(saved, 10);
+          highScoreElement.textContent = gameState.highScore;
+        }
+      }
+      function saveHighScore() {
+        localStorage.setItem('snakeHighScore_v5', gameState.highScore);
+      }
+
+      function checkCollision(head) {
+        if (head.x < 0 || head.x >= gameConfig.gridSize || head.y < 0 || head.y >= gameConfig.gridSize) {
+          playSound('collision');
+          return true;
+        }
+        for (let i = 0; i < gameState.snake.length - 1; i++) {
+          if (gameState.snake[i].x === head.x && gameState.snake[i].y === head.y) {
+            playSound('collision');
+            return true;
+          }
+        }
+        if (gameState.gameMode === 'obstacle') {
+          for (const o of gameState.obstacles) {
+            if (o.x === head.x && o.y === head.y) {
+              playSound('collision');
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      function endGame(isWin = false) {
+        if (gameState.isGameOver) return;
+        gameState.isGameOver = true;
+        cancelGameLoop();
+        gameOverTitle.textContent = isWin ? '🎉 胜利！ 🎉' : '游戏结束';
+        const isNewHigh = gameState.score > gameState.highScore;
+        if (isNewHigh) {
+          gameState.highScore = gameState.score;
+          highScoreElement.textContent = gameState.highScore;
+          saveHighScore();
+          newHighScoreElement.classList.remove('hidden');
+          playSound('highScore');
+        } else {
+          newHighScoreElement.classList.add('hidden');
+          playSound('gameOver');
+        }
+        finalScoreElement.textContent = gameState.score;
+        gameOverScreen.classList.remove('hidden');
+      }
+
+      function updateGame() {
+        gameState.direction = gameState.nextDirection;
+        const head = { ...gameState.snake[gameState.snake.length - 1] };
+        switch (gameState.direction) {
+          case 'up': head.y--; break;
+          case 'down': head.y++; break;
+          case 'left': head.x--; break;
+          case 'right': head.x++; break;
+        }
+        if (checkCollision(head)) {
+          endGame(false);
+          return;
+        }
+        gameState.snake.push(head);
+        if (head.x === gameState.food.x && head.y === gameState.food.y) {
+          gameState.score += gameConfig.foodValue;
+          gameState.foodEaten++;
+          updateScoreDisplay();
+          gameState.gameSpeed = Math.max(gameConfig.minSpeed, gameState.gameSpeed - gameConfig.speedIncrease);
+          playSound('eat');
+          const newFood = generateFoodWithFallback();
+          if (newFood.x === 0 && newFood.y === 0 && gameState.snake.length >= gameConfig.gridSize * gameConfig.gridSize) {
+            endGame(true);
+            return;
+          }
+          gameState.food = newFood;
+          if (gameState.gameMode === 'obstacle' && gameState.foodEaten % gameConfig.obstacleSpawnRate === 0) {
+            generateObstacle();
+          }
+        } else {
+          gameState.snake.shift();
+        }
+        if (gameState.gameMode === 'timed' && !gameState.isGameOver) {
+          const now = performance.now();
+          if (gameState.lastTimeUpdate === 0) gameState.lastTimeUpdate = now;
+          while (now - gameState.lastTimeUpdate >= 1000) {
+            gameState.timeRemaining = Math.max(0, gameState.timeRemaining - 1);
+            gameState.lastTimeUpdate += 1000;
+            if (gameState.timeRemaining <= 0) {
+              endGame(false);
+              return;
+            }
+          }
+        }
+      }
+
+      function drawGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cellSize = Math.min(canvas.width / gameConfig.gridSize, canvas.height / gameConfig.gridSize);
+        const colors = skinColors[gameState.snakeSkin];
+        // 绘制蛇身（确保与网格对齐，使用整数坐标）
+        for (let i = 0; i < gameState.snake.length - 1; i++) {
+          const seg = gameState.snake[i];
+          const opacity = 0.5 + (i / gameState.snake.length) * 0.5;
+          ctx.fillStyle = hexToRgba(colors.body, opacity);
+          ctx.fillRect(seg.x * cellSize + 1, seg.y * cellSize + 1, cellSize - 2, cellSize - 2);
+          ctx.fillStyle = hexToRgba(colors.highlight, 0.3);
+          ctx.fillRect(seg.x * cellSize + 2, seg.y * cellSize + 2, cellSize - 4, cellSize - 4);
+        }
+        // 蛇头
+        const head = gameState.snake[gameState.snake.length - 1];
+        ctx.fillStyle = colors.head;
+        ctx.fillRect(head.x * cellSize + 1, head.y * cellSize + 1, cellSize - 2, cellSize - 2);
+        ctx.fillStyle = hexToRgba(colors.highlight, 0.5);
+        ctx.fillRect(head.x * cellSize + 2, head.y * cellSize + 2, cellSize - 4, cellSize - 4);
+        // 眼睛
+        ctx.fillStyle = '#fff';
+        const eyeSize = cellSize * 0.2;
+        const eyeOff = cellSize * 0.3;
+        switch (gameState.direction) {
+          case 'up':
+            ctx.fillRect(head.x * cellSize + eyeOff, head.y * cellSize + eyeOff, eyeSize, eyeSize);
+            ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + eyeOff, eyeSize, eyeSize);
+            break;
+          case 'down':
+            ctx.fillRect(head.x * cellSize + eyeOff, head.y * cellSize + cellSize - eyeOff - eyeSize, eyeSize, eyeSize);
+            ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + cellSize - eyeOff - eyeSize, eyeSize, eyeSize);
+            break;
+          case 'left':
+            ctx.fillRect(head.x * cellSize + eyeOff, head.y * cellSize + eyeOff, eyeSize, eyeSize);
+            ctx.fillRect(head.x * cellSize + eyeOff, head.y * cellSize + cellSize - eyeOff - eyeSize, eyeSize, eyeSize);
+            break;
+          case 'right':
+            ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + eyeOff, eyeSize, eyeSize);
+            ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + cellSize - eyeOff - eyeSize, eyeSize, eyeSize);
+            break;
+        }
+        // 食物（圆形，中心与格子中心对齐）
+        ctx.fillStyle = '#f72585';
+        ctx.beginPath();
+        ctx.arc(gameState.food.x * cellSize + cellSize/2, gameState.food.y * cellSize + cellSize/2, cellSize/2 - 2, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.arc(gameState.food.x * cellSize + cellSize/3, gameState.food.y * cellSize + cellSize/3, cellSize/6, 0, Math.PI*2);
+        ctx.fill();
+
+        // 障碍物
+        if (gameState.gameMode === 'obstacle') {
+          gameState.obstacles.forEach(o => {
+            ctx.fillStyle = '#6c757d';
+            ctx.fillRect(o.x * cellSize + 1, o.y * cellSize + 1, cellSize - 2, cellSize - 2);
+            ctx.strokeStyle = '#495057';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(o.x * cellSize + 2, o.y * cellSize + 2, cellSize - 4, cellSize - 4);
+          });
+        }
+        // 计时条
+        if (gameState.gameMode === 'timed') {
+          const percent = gameState.timeRemaining / gameConfig.timedModeDuration;
+          const barHeight = 4;
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.fillRect(0, 0, canvas.width, barHeight);
+          ctx.fillStyle = percent > 0.5 ? '#28a745' : percent > 0.25 ? '#ffc107' : '#dc3545';
+          ctx.fillRect(0, 0, canvas.width * percent, barHeight);
+        }
+      }
+
+      function drawStartScreen() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cellSize = Math.min(canvas.width / gameConfig.gridSize, canvas.height / gameConfig.gridSize);
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= gameConfig.gridSize; i++) {
+          ctx.beginPath(); ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, canvas.height); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, i * cellSize); ctx.lineTo(canvas.width, i * cellSize); ctx.stroke();
+        }
+        const colors = skinColors[gameState.snakeSkin];
+        const cx = Math.floor(gameConfig.gridSize/2);
+        const cy = Math.floor(gameConfig.gridSize/2);
+        const demo = [ { x: cx-2, y: cy }, { x: cx-1, y: cy }, { x: cx, y: cy }, { x: cx+1, y: cy } ];
+        demo.forEach((seg, i) => {
+          const opacity = 0.5 + (i/demo.length)*0.5;
+          ctx.fillStyle = hexToRgba(colors.body, opacity);
+          ctx.fillRect(seg.x * cellSize + 1, seg.y * cellSize + 1, cellSize-2, cellSize-2);
+        });
+        const head = demo[demo.length-1];
+        ctx.fillStyle = colors.head;
+        ctx.fillRect(head.x * cellSize + 1, head.y * cellSize + 1, cellSize-2, cellSize-2);
+        ctx.fillStyle = '#fff';
+        const eyeSize = cellSize*0.2;
+        const eyeOff = cellSize*0.3;
+        ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + eyeOff, eyeSize, eyeSize);
+        ctx.fillRect(head.x * cellSize + cellSize - eyeOff - eyeSize, head.y * cellSize + cellSize - eyeOff - eyeSize, eyeSize, eyeSize);
+        ctx.fillStyle = '#f72585';
+        ctx.beginPath();
+        ctx.arc((cx+3) * cellSize + cellSize/2, cy * cellSize + cellSize/2, cellSize/2-2, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        if (startScreen.classList.contains('hidden')) {
+          drawGame();
+        } else {
+          drawStartScreen();
+        }
+      }
+
+      function gameLoop(timestamp) {
+        if (gameState.isGameOver || gameState.isPaused) return;
+        if (timestamp - gameState.lastMoveTime >= gameState.gameSpeed) {
+          updateGame();
+          if (!gameState.isGameOver) drawGame();
+          gameState.lastMoveTime = timestamp;
+        }
+        if (!gameState.isGameOver && !gameState.isPaused) {
+          gameState.animationFrameId = requestAnimationFrame(gameLoop);
+        } else {
+          gameState.animationFrameId = null;
+        }
+      }
+
+      function startGame() {
+        cancelGameLoop();
+        resetGameState();
+        startScreen.classList.add('hidden');
+        pauseScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        gameState.lastMoveTime = performance.now();
+        gameState.lastTimeUpdate = 0;
+        gameState.animationFrameId = requestAnimationFrame(gameLoop);
+        playSound('start');
+      }
+
+      function pauseGame() {
+        if (gameState.isGameOver) return;
+        if (!gameState.isPaused) {
+          gameState.isPaused = true;
+          cancelGameLoop();
+          pauseScreen.classList.remove('hidden');
+        }
+      }
+
+      function resumeGame() {
+        if (gameState.isGameOver) return;
+        if (gameState.isPaused) {
+          gameState.isPaused = false;
+          pauseScreen.classList.add('hidden');
+          gameState.lastMoveTime = performance.now();
+          gameState.lastTimeUpdate = performance.now();
+          gameState.animationFrameId = requestAnimationFrame(gameLoop);
+        }
+      }
+
+      function returnToMenu() {
+        cancelGameLoop();
+        gameState.isPaused = false;
+        gameState.isGameOver = false;
+        startScreen.classList.remove('hidden');
+        pauseScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        drawStartScreen();
+      }
+
+      function toggleSound() {
+        gameState.soundEnabled = !gameState.soundEnabled;
+        const icon = soundBtn.querySelector('i');
+        icon.className = gameState.soundEnabled ? 'fa fa-volume-up mr-2' : 'fa fa-volume-off mr-2';
+      }
+
+      function initEvents() {
+        startBtn.addEventListener('click', startGame);
+        pauseBtn.addEventListener('click', pauseGame);
+        resumeBtn.addEventListener('click', resumeGame);
+        restartBtn.addEventListener('click', () => { returnToMenu(); startGame(); });
+        quitBtn.addEventListener('click', returnToMenu);
+        playAgainBtn.addEventListener('click', () => { returnToMenu(); startGame(); });
+        homeBtn.addEventListener('click', returnToMenu);
+        soundBtn.addEventListener('click', toggleSound);
+
+        modeButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            modeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            gameState.gameMode = btn.dataset.mode;
+          });
+        });
+
+        skinButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            skinButtons.forEach(b => {
+              b.classList.remove('active', 'border-white');
+              b.classList.add('border-transparent');
+            });
+            btn.classList.add('active');
+            btn.classList.remove('border-transparent');
+            btn.classList.add('border-white');
+            gameState.snakeSkin = btn.dataset.skin;
+            drawStartScreen();
+          });
+        });
+
+        controlButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const dir = btn.dataset.dir;
+            if (!dir) return;
+            if (dir === 'up' && gameState.direction !== 'down') gameState.nextDirection = 'up';
+            else if (dir === 'down' && gameState.direction !== 'up') gameState.nextDirection = 'down';
+            else if (dir === 'left' && gameState.direction !== 'right') gameState.nextDirection = 'left';
+            else if (dir === 'right' && gameState.direction !== 'left') gameState.nextDirection = 'right';
+          });
+        });
+
+        document.addEventListener('keydown', (e) => {
+          const key = e.code;
+          const controlKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'];
+          if (controlKeys.includes(key)) e.preventDefault();
+          if (key === 'Space') {
+            if (!startScreen.classList.contains('hidden')) startGame();
+            else if (gameState.isGameOver) {}
+            else if (gameState.isPaused) resumeGame();
+            else pauseGame();
+            return;
+          }
+          if (gameState.isPaused || gameState.isGameOver || !startScreen.classList.contains('hidden')) return;
+          if ((key === 'ArrowUp' || key === 'KeyW') && gameState.direction !== 'down') gameState.nextDirection = 'up';
+          else if ((key === 'ArrowDown' || key === 'KeyS') && gameState.direction !== 'up') gameState.nextDirection = 'down';
+          else if ((key === 'ArrowLeft' || key === 'KeyA') && gameState.direction !== 'right') gameState.nextDirection = 'left';
+          else if ((key === 'ArrowRight' || key === 'KeyD') && gameState.direction !== 'left') gameState.nextDirection = 'right';
+        });
+
+        let touchStartX = 0, touchStartY = 0;
+        canvas.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        });
+        canvas.addEventListener('touchmove', (e) => e.preventDefault());
+        canvas.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          if (gameState.isPaused || gameState.isGameOver || !startScreen.classList.contains('hidden')) return;
+          const touchEndX = e.changedTouches[0].clientX;
+          const touchEndY = e.changedTouches[0].clientY;
+          const dx = touchEndX - touchStartX;
+          const dy = touchEndY - touchStartY;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0 && gameState.direction !== 'left') gameState.nextDirection = 'right';
+            else if (dx < 0 && gameState.direction !== 'right') gameState.nextDirection = 'left';
+          } else {
+            if (dy > 0 && gameState.direction !== 'up') gameState.nextDirection = 'down';
+            else if (dy < 0 && gameState.direction !== 'down') gameState.nextDirection = 'up';
+          }
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        loadHighScore();
+        resizeCanvas();
+        initEvents();
+        drawStartScreen();
+        initAudioContext();
+      });
+    })();
+  </script>
+</body>
+</html>
