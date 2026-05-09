@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DeviceStatus version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+<currentDeviceTime>2026-05-09T09:00:11+08:00</currentDeviceTime>
+<deviceUpTime>19441648</deviceUpTime>
+<CPUList>
+<CPU>
+<cpuDescription>ARM926EJ-Sid(wb) [41069265] revision 5 (ARMv5TEJ)</cpuDescription>
+<cpuUtilization>64</cpuUtilization>
+</CPU>
+</CPUList>
+<MemoryList>
+<Memory>
+<memoryDescription>DDR Memory</memoryDescription>
+<memoryUsage>85</memoryUsage>
+<memoryAvailable>15256</memoryAvailable>
+</Memory>
+</MemoryList>
+<CameraList>
+<Camera>
+<zoomReverseTimes>0</zoomReverseTimes>
+<zoomTotalSteps>0</zoomTotalSteps>
+<focusReverseTimes>0</focusReverseTimes>
+<focusTotalSteps>0</focusTotalSteps>
+<irisShiftTimes>0</irisShiftTimes>
+<irisTotalSteps>0</irisTotalSteps>
+<icrShiftTimes>0</icrShiftTimes>
+<icrTotalSteps>0</icrTotalSteps>
+<lensIntirTimes>0</lensIntirTimes>
+<cameraRunTotalTime>0</cameraRunTotalTime>
+</Camera>
+</CameraList>
+<DomeInfoList>
+<DomeInfo>
+<domeRunTotalTime>0</domeRunTotalTime>
+<runTimeUnderNegativetwenty>0</runTimeUnderNegativetwenty>
+<runTimeBetweenNtwentyPforty>0</runTimeBetweenNtwentyPforty>
+<runtimeOverPositiveforty>0</runtimeOverPositiveforty>
+<panTotalRounds>0</panTotalRounds>
+<tiltTotalRounds>0</tiltTotalRounds>
+<heatState>0</heatState>
+<fanState>0</fanState>
+</DomeInfo>
+</DomeInfoList>
+<totalRebootCount>0</totalRebootCount>
+</DeviceStatus>

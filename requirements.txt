@@ -37,3 +37,5 @@ pynput~=1.7.7
 pywin32~=227
 wxpython~=4.2.2
 rarfile~=4.2
+spacy~=3.7.5
+zh-core-web-sm==3.7.0

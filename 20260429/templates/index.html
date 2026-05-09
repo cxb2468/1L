@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农历生日转换器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        input[type="file"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:hover,
+        input[type="number"]:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style-position: inside;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎂 农历生日转换器</h1>
+        <p class="subtitle">将员工农历生日转换为指定年份的公历生日</p>
+
+        <!-- 消息提示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} show">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form id="convertForm" action="/convert" method="POST" enctype="multipart/form-data"
+              onsubmit="return handleSubmit(event)">
+            <!-- 文件上传 -->
+            <div class="form-group">
+                <label for="file">选择Excel文件 <span class="required">*</span></label>
+                <input type="file" 
+                       id="file" 
+                       name="file" 
+                       accept=".xlsx,.xls" 
+                       required
+                       onchange="validateFile(this)">
+                <small style="color: #999; display: block; margin-top: 5px;">
+                    支持格式：.xlsx, .xls（最大16MB）
+                </small>
+            </div>
+
+            <!-- 年份输入 -->
+            <div class="form-group">
+                <label for="year">转换年份 <span class="required">*</span></label>
+                <input type="number" 
+                       id="year" 
+                       name="year" 
+                       min="1900" 
+                       max="2100" 
+                       value="{{ current_year }}"
+                       required
+                       placeholder="例如：2026">
+            </div>
+
+            <!-- 按月拆分选项 -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="split_month" name="split_month" checked>
+                <label for="split_month">按月份拆分（生成13个工作表：全年汇总 + 12个月份）</label>
+            </div>
+
+            <!-- 提交按钮 -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+                🚀 开始转换并下载
+            </button>
+        </form>
+
+        <!-- 加载动画 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: #666;">正在处理中，请稍候...</p>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="info-box">
+            <h3>📋 使用说明</h3>
+            <ul>
+                <li>Excel文件需包含"阳历生日"和"阴历生日"列</li>
+                <li>农历生日支持多种格式：八月初五、08-05、8月5日等</li>
+                <li>自动处理腊月跨年情况（如农历十二月对应公历次年1月）</li>
+                <li>勾选"按月份拆分"会生成13个工作表，方便按月查看</li>
+                <li>导出的文件名格式：原文件名_年份年公历生日.xlsx</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            © 2026 农历生日转换器 | Powered by Flask
+        </div>
+    </div>
+
+    <script>
+        // 表单提交处理
+        function handleSubmit(e) {
+            const fileInput = document.getElementById('file');
+            const yearInput = document.getElementById('year');
+            
+            // 验证文件
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                showAlert('请选择要上传的文件', 'error');
+                return false;
+            }
+            
+            // 验证年份
+            const year = parseInt(yearInput.value);
+            if (year < 1900 || year > 2100) {
+                e.preventDefault();
+                showAlert('年份必须在1900-2100之间', 'error');
+                return false;
+            }
+            
+            // 显示加载动画
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('submitBtn').disabled = true;
+            
+            // 设置超时保护：30秒后自动隐藏加载动画
+            setTimeout(() => {
+                hideLoading();
+            }, 30000);
+            
+            return true;
+        }
+
+        // 隐藏加载动画
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // 页面加载时检查是否有flash消息
+        window.addEventListener('load', function() {
+            const alerts = document.querySelectorAll('.alert.show');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                }, 5000);
+            });
+            
+            // 如果有成功消息，说明刚完成转换，隐藏加载动画
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                hideLoading();
+            }
+        });
+
+        // 文件验证
+        function validateFile(input) {
+            const file = input.files[0];
+            if (file) {
+                // 检查文件大小（16MB）
+                if (file.size > 16 * 1024 * 1024) {
+                    showAlert('文件大小不能超过16MB', 'error');
+                    input.value = '';
+                    return;
+                }
+                
+                // 检查文件扩展名
+                const validExtensions = ['.xlsx', '.xls'];
+                const fileName = file.name.toLowerCase();
+                const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (!isValid) {
+                    showAlert('请选择Excel文件（.xlsx或.xls格式）', 'error');
+                    input.value = '';
+                    return;
+                }
+            }
+        }
+
+        // 显示消息
+        function showAlert(message, type) {
+            // 移除现有的alert
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // 创建新的alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} show`;
+            alertDiv.textContent = message;
+            
+            // 插入到表单前面
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, document.getElementById('convertForm'));
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+            }, 3000);
+        }
+
+
+    </script>
+</body>
+</html>

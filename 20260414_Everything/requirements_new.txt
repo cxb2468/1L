@@ -1,0 +1,3 @@
+# 依赖项
+psutil
+pywin32

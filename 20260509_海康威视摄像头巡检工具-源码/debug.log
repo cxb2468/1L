@@ -1,0 +1,156 @@
+[2026-05-09 08:47:14] IP: 192.168.1.2 - ========== 开始处理设备 ==========
+[2026-05-09 08:47:14] IP: 192.168.1.2 - 端口: 80, 用户名: admin
+[2026-05-09 08:47:14] IP: 192.168.1.2 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:47:17] IP: 192.168.1.2 - 设备信息请求异常: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022288D70C40>, 'Connection to 192.168.1.2 timed out. (connect timeout=3)'))
+[2026-05-09 08:47:17] IP: 192.168.1.2 - 检查设备在线状态...
+[2026-05-09 08:47:18] IP: 192.168.1.2 - 设备在线状态: 离线
+[2026-05-09 08:47:18] IP: 192.168.1.2 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:47:21] IP: 192.168.1.2 - 状态信息请求异常: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022288DD7820>, 'Connection to 192.168.1.2 timed out. (connect timeout=3)'))
+[2026-05-09 08:47:21] IP: 192.168.1.3 - ========== 开始处理设备 ==========
+[2026-05-09 08:47:21] IP: 192.168.1.3 - 端口: 80, 用户名: admin
+[2026-05-09 08:47:21] IP: 192.168.1.3 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:47:24] IP: 192.168.1.3 - 设备信息请求异常: HTTPConnectionPool(host='192.168.1.3', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022288DE02E0>, 'Connection to 192.168.1.3 timed out. (connect timeout=3)'))
+[2026-05-09 08:47:24] IP: 192.168.1.3 - 检查设备在线状态...
+[2026-05-09 08:47:25] IP: 192.168.1.3 - 设备在线状态: 离线
+[2026-05-09 08:47:25] IP: 192.168.1.3 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:47:28] IP: 192.168.1.3 - 状态信息请求异常: HTTPConnectionPool(host='192.168.1.3', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022288DD7FA0>, 'Connection to 192.168.1.3 timed out. (connect timeout=3)'))
+[2026-05-09 08:47:28] IP: 192.168.1.4 - ========== 开始处理设备 ==========
+[2026-05-09 08:47:28] IP: 192.168.1.4 - 端口: 80, 用户名: admin
+[2026-05-09 08:47:28] IP: 192.168.1.4 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:56:02] IP: 192.168.1.2 - ========== 开始处理设备 ==========
+[2026-05-09 08:56:02] IP: 192.168.1.2 - 端口: 80, 用户名: admin
+[2026-05-09 08:56:02] IP: 192.168.1.2 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:56:05] IP: 192.168.1.2 - 设备信息请求异常: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001DE86E60C40>, 'Connection to 192.168.1.2 timed out. (connect timeout=3)'))
+[2026-05-09 08:56:05] IP: 192.168.1.2 - 检查设备在线状态...
+[2026-05-09 08:56:06] IP: 192.168.1.2 - 设备在线状态: 离线
+[2026-05-09 08:56:06] IP: 192.168.1.2 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:56:09] IP: 192.168.1.2 - 状态信息请求异常: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001DE86EC7820>, 'Connection to 192.168.1.2 timed out. (connect timeout=3)'))
+[2026-05-09 08:56:09] IP: 192.168.1.3 - ========== 开始处理设备 ==========
+[2026-05-09 08:56:09] IP: 192.168.1.3 - 端口: 80, 用户名: admin
+[2026-05-09 08:56:09] IP: 192.168.1.3 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:56:12] IP: 192.168.1.3 - 设备信息请求异常: HTTPConnectionPool(host='192.168.1.3', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001DE86ED02E0>, 'Connection to 192.168.1.3 timed out. (connect timeout=3)'))
+[2026-05-09 08:56:12] IP: 192.168.1.3 - 检查设备在线状态...
+[2026-05-09 08:56:13] IP: 192.168.1.3 - 设备在线状态: 离线
+[2026-05-09 08:56:13] IP: 192.168.1.3 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:57:02] IP: 10.101.157.52 - ========== 开始处理设备 ==========
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 端口: 80, 用户名: admin
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 设备信息请求状态码: 200
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 原始设备信息XML已保存到: debug_10.101.157.52_deviceinfo.xml
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 获取到的 deviceType: "IPCamera"
+[2026-05-09 08:57:02] IP: 10.101.157.52 - deviceName: IP CAMERA
+[2026-05-09 08:57:02] IP: 10.101.157.52 - model: DS-2CD3T35-I5
+[2026-05-09 08:57:02] IP: 10.101.157.52 - macAddress: 64:db:8b:57:fd:ee
+[2026-05-09 08:57:02] IP: 10.101.157.52 - serialNumber: DS-2CD3T35-I520180111AACH170039735
+[2026-05-09 08:57:02] IP: 10.101.157.52 - firmwareVersion: V5.5.0
+[2026-05-09 08:57:02] IP: 10.101.157.52 - telecontrolID: 88
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 检查设备在线状态...
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 设备在线状态: 在线
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 状态信息请求状态码: 200
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 原始状态信息XML已保存到: debug_10.101.157.52_status.xml
+[2026-05-09 08:57:02] IP: 10.101.157.52 - cpuUtilization: 55%
+[2026-05-09 08:57:02] IP: 10.101.157.52 - deviceUpTime: 5400小时
+[2026-05-09 08:57:02] IP: 10.101.157.52 - memoryUsage: 85%
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 请求摄像头通道信息: /ISAPI/Streaming/channels/101
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 摄像头通道信息请求状态码: 200
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 原始通道信息XML已保存到: debug_10.101.157.52_channels.xml
+[2026-05-09 08:57:02] IP: 10.101.157.52 - channelName: CQ02_水
+[2026-05-09 08:57:02] IP: 10.101.157.52 - videoCodecType: H.265
+[2026-05-09 08:57:02] IP: 10.101.157.52 - constantBitRate: 3072
+[2026-05-09 08:57:02] IP: 10.101.157.52 - videoResolution: 2048x1536
+[2026-05-09 08:57:02] IP: 10.101.157.52 - 尝试截图端点: http://10.101.157.52:80/ISAPI/Streaming/channels/101/picture
+[2026-05-09 08:57:03] IP: 10.101.157.52 - 截图请求状态码: 200
+[2026-05-09 08:57:03] IP: 10.101.157.52 - 截图保存成功: image/20260509/10.101.157.52.jpg
+[2026-05-09 08:59:09] IP: 10.101.157.52 - ========== 开始处理设备 ==========
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 端口: 80, 用户名: admin
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 设备信息请求状态码: 200
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 原始设备信息XML已保存到: debug_10.101.157.52_deviceinfo.xml
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 获取到的 deviceType: "IPCamera"
+[2026-05-09 08:59:09] IP: 10.101.157.52 - deviceName: IP CAMERA
+[2026-05-09 08:59:09] IP: 10.101.157.52 - model: DS-2CD3T35-I5
+[2026-05-09 08:59:09] IP: 10.101.157.52 - macAddress: 64:db:8b:57:fd:ee
+[2026-05-09 08:59:09] IP: 10.101.157.52 - serialNumber: DS-2CD3T35-I520180111AACH170039735
+[2026-05-09 08:59:09] IP: 10.101.157.52 - firmwareVersion: V5.5.0
+[2026-05-09 08:59:09] IP: 10.101.157.52 - telecontrolID: 88
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 检查设备在线状态...
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 设备在线状态: 在线
+[2026-05-09 08:59:09] IP: 10.101.157.52 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 状态信息请求状态码: 200
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 原始状态信息XML已保存到: debug_10.101.157.52_status.xml
+[2026-05-09 08:59:10] IP: 10.101.157.52 - cpuUtilization: 20%
+[2026-05-09 08:59:10] IP: 10.101.157.52 - deviceUpTime: 5400小时
+[2026-05-09 08:59:10] IP: 10.101.157.52 - memoryUsage: 85%
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 请求摄像头通道信息: /ISAPI/Streaming/channels/101
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 摄像头通道信息请求状态码: 200
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 原始通道信息XML已保存到: debug_10.101.157.52_channels.xml
+[2026-05-09 08:59:10] IP: 10.101.157.52 - channelName: CQ02_水
+[2026-05-09 08:59:10] IP: 10.101.157.52 - videoCodecType: H.265
+[2026-05-09 08:59:10] IP: 10.101.157.52 - constantBitRate: 3072
+[2026-05-09 08:59:10] IP: 10.101.157.52 - videoResolution: 2048x1536
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 尝试截图端点: http://10.101.157.52:80/ISAPI/Streaming/channels/101/picture
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 截图请求状态码: 200
+[2026-05-09 08:59:10] IP: 10.101.157.52 - 截图保存成功: image/20260509/10.101.157.52.jpg
+[2026-05-09 08:59:11] IP: 10.101.157.53 - ========== 开始处理设备 ==========
+[2026-05-09 08:59:11] IP: 10.101.157.53 - 端口: 80, 用户名: admin
+[2026-05-09 08:59:11] IP: 10.101.157.53 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:59:14] IP: 10.101.157.53 - 设备信息请求异常: HTTPConnectionPool(host='10.101.157.53', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000002D35FE045B0>, 'Connection to 10.101.157.53 timed out. (connect timeout=3)'))
+[2026-05-09 08:59:14] IP: 10.101.157.53 - 检查设备在线状态...
+[2026-05-09 08:59:15] IP: 10.101.157.53 - 设备在线状态: 离线
+[2026-05-09 08:59:15] IP: 10.101.157.53 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:59:18] IP: 10.101.157.53 - 状态信息请求异常: HTTPConnectionPool(host='10.101.157.53', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000002D35FE6B070>, 'Connection to 10.101.157.53 timed out. (connect timeout=3)'))
+[2026-05-09 08:59:18] IP: 10.101.157.54 - ========== 开始处理设备 ==========
+[2026-05-09 08:59:18] IP: 10.101.157.54 - 端口: 80, 用户名: admin
+[2026-05-09 08:59:18] IP: 10.101.157.54 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 08:59:21] IP: 10.101.157.54 - 设备信息请求异常: HTTPConnectionPool(host='10.101.157.54', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000002D3608F6550>, 'Connection to 10.101.157.54 timed out. (connect timeout=3)'))
+[2026-05-09 08:59:21] IP: 10.101.157.54 - 检查设备在线状态...
+[2026-05-09 08:59:22] IP: 10.101.157.54 - 设备在线状态: 离线
+[2026-05-09 08:59:22] IP: 10.101.157.54 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 08:59:25] IP: 10.101.157.54 - 状态信息请求异常: HTTPConnectionPool(host='10.101.157.54', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000002D3608F6FD0>, 'Connection to 10.101.157.54 timed out. (connect timeout=3)'))
+[2026-05-09 09:00:12] IP: 10.101.157.52 - ========== 开始处理设备 ==========
+[2026-05-09 09:00:12] IP: 10.101.157.52 - 端口: 80, 用户名: admin
+[2026-05-09 09:00:12] IP: 10.101.157.52 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 设备信息请求状态码: 200
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 原始设备信息XML已保存到: debug_10.101.157.52_deviceinfo.xml
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 获取到的 deviceType: "IPCamera"
+[2026-05-09 09:00:13] IP: 10.101.157.52 - deviceName: IP CAMERA
+[2026-05-09 09:00:13] IP: 10.101.157.52 - model: DS-2CD3T35-I5
+[2026-05-09 09:00:13] IP: 10.101.157.52 - macAddress: 64:db:8b:57:fd:ee
+[2026-05-09 09:00:13] IP: 10.101.157.52 - serialNumber: DS-2CD3T35-I520180111AACH170039735
+[2026-05-09 09:00:13] IP: 10.101.157.52 - firmwareVersion: V5.5.0
+[2026-05-09 09:00:13] IP: 10.101.157.52 - telecontrolID: 88
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 检查设备在线状态...
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 设备在线状态: 在线
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 状态信息请求状态码: 200
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 原始状态信息XML已保存到: debug_10.101.157.52_status.xml
+[2026-05-09 09:00:13] IP: 10.101.157.52 - cpuUtilization: 64%
+[2026-05-09 09:00:13] IP: 10.101.157.52 - deviceUpTime: 5400小时
+[2026-05-09 09:00:13] IP: 10.101.157.52 - memoryUsage: 85%
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 请求摄像头通道信息: /ISAPI/Streaming/channels/101
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 摄像头通道信息请求状态码: 200
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 原始通道信息XML已保存到: debug_10.101.157.52_channels.xml
+[2026-05-09 09:00:13] IP: 10.101.157.52 - channelName: CQ02_水
+[2026-05-09 09:00:13] IP: 10.101.157.52 - videoCodecType: H.265
+[2026-05-09 09:00:13] IP: 10.101.157.52 - constantBitRate: 3072
+[2026-05-09 09:00:13] IP: 10.101.157.52 - videoResolution: 2048x1536
+[2026-05-09 09:00:13] IP: 10.101.157.52 - 尝试截图端点: http://10.101.157.52:80/ISAPI/Streaming/channels/101/picture
+[2026-05-09 09:00:14] IP: 10.101.157.52 - 截图请求状态码: 200
+[2026-05-09 09:00:14] IP: 10.101.157.52 - 截图保存成功: image/20260509/10.101.157.52.jpg
+[2026-05-09 09:00:14] IP: 10.101.157.53 - ========== 开始处理设备 ==========
+[2026-05-09 09:00:14] IP: 10.101.157.53 - 端口: 80, 用户名: admin
+[2026-05-09 09:00:14] IP: 10.101.157.53 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 09:00:17] IP: 10.101.157.53 - 设备信息请求异常: HTTPConnectionPool(host='10.101.157.53', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022D3CF845B0>, 'Connection to 10.101.157.53 timed out. (connect timeout=3)'))
+[2026-05-09 09:00:17] IP: 10.101.157.53 - 检查设备在线状态...
+[2026-05-09 09:00:18] IP: 10.101.157.53 - 设备在线状态: 离线
+[2026-05-09 09:00:18] IP: 10.101.157.53 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 09:00:21] IP: 10.101.157.53 - 状态信息请求异常: HTTPConnectionPool(host='10.101.157.53', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022D3CFEA070>, 'Connection to 10.101.157.53 timed out. (connect timeout=3)'))
+[2026-05-09 09:00:21] IP: 10.101.157.54 - ========== 开始处理设备 ==========
+[2026-05-09 09:00:21] IP: 10.101.157.54 - 端口: 80, 用户名: admin
+[2026-05-09 09:00:21] IP: 10.101.157.54 - 请求设备信息: /ISAPI/System/deviceinfo
+[2026-05-09 09:00:24] IP: 10.101.157.54 - 设备信息请求异常: HTTPConnectionPool(host='10.101.157.54', port=80): Max retries exceeded with url: /ISAPI/System/deviceinfo (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022D3DCE5550>, 'Connection to 10.101.157.54 timed out. (connect timeout=3)'))
+[2026-05-09 09:00:24] IP: 10.101.157.54 - 检查设备在线状态...
+[2026-05-09 09:00:25] IP: 10.101.157.54 - 设备在线状态: 离线
+[2026-05-09 09:00:25] IP: 10.101.157.54 - 请求状态信息: /ISAPI/System/status
+[2026-05-09 09:00:28] IP: 10.101.157.54 - 状态信息请求异常: HTTPConnectionPool(host='10.101.157.54', port=80): Max retries exceeded with url: /ISAPI/System/status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000022D3DCE5FD0>, 'Connection to 10.101.157.54 timed out. (connect timeout=3)'))

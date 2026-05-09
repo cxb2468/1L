@@ -1,0 +1,47 @@
+ref_materials/config.json
+ref_materials/everything_gui.py.bak
+ref_materials/Everything-1.5.0.1404a.x86.zip
+ref_materials/Everything-1.5a.backup.db
+ref_materials/Everything-1.5a.backup.ini
+ref_materials/Everything-1.5a.db
+ref_materials/Everything-1.5a.ini
+ref_materials/Everything-SDK-3.0.0.9.zip
+ref_materials/Everything.exe
+ref_materials/Everything3_x64.dll
+ref_materials/Everything64.dll
+ref_materials/Run History-1.5a.csv
+ref_materials/Search History-1.5a.backup.csv
+ref_materials/Search History-1.5a.csv
+ref_materials/Session-1.5a.backup.json
+ref_materials/sdk_temp/Changes.txt
+ref_materials/sdk_temp/dll/Everything3_ARM.dll
+ref_materials/sdk_temp/dll/Everything3_ARM64.dll
+ref_materials/sdk_temp/dll/Everything3_x64.dll
+ref_materials/sdk_temp/dll/Everything3_x86.dll
+ref_materials/sdk_temp/example/Everything3.h
+ref_materials/sdk_temp/example/sdk3.test.c
+ref_materials/sdk_temp/include/Everything3.h
+ref_materials/sdk_temp/lib/Everything3_ARM.lib
+ref_materials/sdk_temp/lib/Everything3_ARM64.lib
+ref_materials/sdk_temp/lib/Everything3_x64.lib
+ref_materials/sdk_temp/lib/Everything3_x86.lib
+ref_materials/sdk_temp/res/resource.h
+ref_materials/sdk_temp/res/sdk3.rc
+ref_materials/sdk_temp/src/Everything3_ARM.def
+ref_materials/sdk_temp/src/Everything3_ARM64.def
+ref_materials/sdk_temp/src/Everything3_x64.def
+ref_materials/sdk_temp/src/Everything3_x86.def
+ref_materials/sdk_temp/src/Everything3.c
+ref_materials/sdk_temp/src/version.h
+ref_materials/sdk_temp/vs2005/sdk3.sln
+ref_materials/sdk_temp/vs2005/sdk3.vcproj
+ref_materials/sdk_temp/vs2019/sdk3.sln
+ref_materials/sdk_temp/vs2019/sdk3.vcxproj
+__pycache__/test_resource_manager.cpython-311.pyc
+__pycache__/test_version_detector.cpython-311.pyc
+version_detector.log
+user_interaction.log
+ui_main.log
+sdk_adapter.log
+resource_manager.log
+config_manager.log

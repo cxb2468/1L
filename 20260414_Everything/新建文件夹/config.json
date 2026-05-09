@@ -1,0 +1,71 @@
+{
+  "buttons": [
+    {
+      "text": "🖼️ 今天修改的图片",
+      "query": "*.jpg|*.jpeg|*.png|*.gif|*.bmp|*.webp|*.svg|*.ico|*.tiff|*.raw dm:today",
+      "bg_color": "#3498db",
+      "hover_color": "#2980b9"
+    },
+    {
+      "text": "📄 今天修改的文档",
+      "query": "*.pdf|*.doc|*.docx|*.txt|*.xls|*.xlsx|*.ppt|*.pptx|*.md|*.rtf dm:today",
+      "bg_color": "#2ecc71",
+      "hover_color": "#27ae60"
+    },
+    {
+      "text": "📦 今天修改的压缩包",
+      "query": "*.zip|*.rar|*.7z|*.tar|*.gz|*.bz2|*.xz|*.iso dm:today",
+      "bg_color": "#f39c12",
+      "hover_color": "#e67e22"
+    },
+    {
+      "text": "⚙️ 今天修改的程序",
+      "query": "*.exe|*.msi|*.bat|*.cmd|*.ps1|*.sh|*.com dm:today",
+      "bg_color": "#95a5a6",
+      "hover_color": "#7f8c8d"
+    },
+    {
+      "text": "📁 今天修改的重复文件",
+      "query": "file: dupe: dm:today",
+      "bg_color": "#1abc9c",
+      "hover_color": "#16a085"
+    },
+    {
+      "text": "🕐 今天修改",
+      "query": "dm:today",
+      "bg_color": "#34495e",
+      "hover_color": "#2c3e50"
+    },
+    {
+      "text": "📏 今天修改的大文件",
+      "query": "size:>100MB dm:today",
+      "bg_color": "#e67e22",
+      "hover_color": "#d35400"
+    },
+    {
+      "text": "📏 今天访问的大文件",
+      "query": "size:>100MB da:today",
+      "bg_color": "#e67e22",
+      "hover_color": "#d35400"
+    }
+  ],
+  "window": {
+    "title": "Everything 搜索工具",
+    "width": 1200,
+    "height": 700
+  },
+  "unused_buttons": [
+    {
+      "text": "🎬 今天修改的视频",
+      "query": "*.mp4|*.avi|*.mkv|*.mov|*.wmv|*.flv|*.webm|*.m4v|*.mpg|*.mpeg dm:today",
+      "bg_color": "#e74c3c",
+      "hover_color": "#c0392b"
+    },
+    {
+      "text": "🎵 今天修改的音频",
+      "query": "*.mp3|*.wav|*.flac|*.aac|*.ogg|*.wma|*.m4a|*.opus dm:today",
+      "bg_color": "#9b59b6",
+      "hover_color": "#8e44ad"
+    }
+  ]
+}

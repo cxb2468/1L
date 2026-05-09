@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DeviceInfo version="2.0" xmlns="http://www.hikvision.com/ver20/XMLSchema">
+<deviceName>IP CAMERA</deviceName>
+<deviceID>817e19b7-750b-11b2-806f-64db8b57fdee</deviceID>
+<deviceDescription>IPCamera</deviceDescription>
+<deviceLocation>hangzhou</deviceLocation>
+<systemContact>Hikvision.China</systemContact>
+<model>DS-2CD3T35-I5</model>
+<serialNumber>DS-2CD3T35-I520180111AACH170039735</serialNumber>
+<macAddress>64:db:8b:57:fd:ee</macAddress>
+<firmwareVersion>V5.5.0</firmwareVersion>
+<firmwareReleasedDate>build 170728</firmwareReleasedDate>
+<encoderVersion>V7.3</encoderVersion>
+<encoderReleasedDate>build 170726</encoderReleasedDate>
+<bootVersion>V1.3.4</bootVersion>
+<bootReleasedDate>100316</bootReleasedDate>
+<hardwareVersion>0x0</hardwareVersion>
+<deviceType>IPCamera</deviceType>
+<telecontrolID>88</telecontrolID>
+<supportBeep>false</supportBeep>
+<supportVideoLoss>false</supportVideoLoss>
+<firmwareVersionInfo>B-R-G0-0</firmwareVersionInfo>
+</DeviceInfo>

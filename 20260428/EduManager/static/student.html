@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+        }
+        
+        .btn-back, .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .toolbar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-view { background: #4caf50; color: white; }
+        .btn-edit { background: #2196f3; color: white; }
+        .btn-transfer { background: #ff9800; color: white; }
+        .btn-delete { background: #f44336; color: white; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 50px auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .modal-footer button {
+            margin-left: 10px;
+        }
+        
+        .btn-cancel {
+            background: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>学生管理</h1>
+        <div>
+            <button class="btn-back" onclick="location.href='/static/index.html'">返回首页</button>
+            <button class="btn-logout" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="toolbar">
+            <select id="classFilter">
+                <option value="">全部班级</option>
+            </select>
+            <input type="text" id="keywordInput" placeholder="搜索姓名或学号">
+            <button onclick="loadStudents()">搜索</button>
+            <button onclick="showAddModal()" style="margin-left: auto;">+ 添加学生</button>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>班级</th>
+                        <th>电话</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTable">
+                    <tr><td colspan="6" style="text-align:center;">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 添加/编辑学生模态框 -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">添加学生</h2>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label>学号：</label>
+                    <input type="number" id="学号" required>
+                </div>
+                <div class="form-group">
+                    <label>姓名：</label>
+                    <input type="text" id="姓名" required>
+                </div>
+                <div class="form-group">
+                    <label>性别：</label>
+                    <select id="性别">
+                        <option>男</option>
+                        <option>女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>所在班级：</label>
+                    <select id="所在班级"></select>
+                </div>
+                <div class="form-group">
+                    <label>联系电话：</label>
+                    <input type="text" id="联系电话">
+                </div>
+                <div class="form-group">
+                    <label>家庭住址：</label>
+                    <input type="text" id="家庭住址">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
+                    <button type="submit">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/static/login.html';
+        }
+        
+        let editingStudentId = null;
+        
+        async function loadStudents() {
+            const className = document.getElementById('classFilter').value;
+            const keyword = document.getElementById('keywordInput').value;
+            
+            let url = '/students/?';
+            if (className) url += `class_name=${className}&`;
+            if (keyword) url += `keyword=${keyword}`;
+            
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const students = await response.json();
+                    const tbody = document.getElementById('studentTable');
+                    
+                    if (students.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无数据</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = students.map(s => `
+                        <tr>
+                            <td>${s.学号}</td>
+                            <td>${s.姓名}</td>
+                            <td>${s.性别 || ''}</td>
+                            <td>${s.所在班级 || ''}</td>
+                            <td>${s.联系电话 || ''}</td>
+                            <td>
+                                <button class="action-btn btn-view" onclick="viewStudent(${s.学号})">查看</button>
+                                <button class="action-btn btn-edit" onclick="editStudent(${s.学号})">编辑</button>
+                                <button class="action-btn btn-transfer" onclick="transferStudent(${s.学号})">转学/退学</button>
+                                <button class="action-btn btn-delete" onclick="deleteStudent(${s.学号})">删除</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载学生列表失败:', error);
+            }
+        }
+        
+        function showAddModal() {
+            editingStudentId = null;
+            document.getElementById('modalTitle').textContent = '添加学生';
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('studentModal').style.display = 'none';
+        }
+        
+        document.getElementById('studentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                学号: parseInt(document.getElementById('学号').value),
+                姓名: document.getElementById('姓名').value,
+                性别: document.getElementById('性别').value,
+                所在班级: document.getElementById('所在班级').value,
+                联系电话: document.getElementById('联系电话').value,
+                家庭住址: document.getElementById('家庭住址').value
+            };
+            
+            try {
+                let url = '/students/';
+                let method = 'POST';
+                
+                if (editingStudentId) {
+                    url = `/students/${editingStudentId}`;
+                    method = 'PUT';
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert(editingStudentId ? '更新成功' : '添加成功');
+                    closeModal();
+                    loadStudents();
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || '操作失败');
+                }
+            } catch (error) {
+                console.error('保存失败:', error);
+            }
+        });
+        
+        async function deleteStudent(id) {
+            if (!confirm('确认永久删除该学生？此操作不可恢复！')) return;
+            
+            try {
+                const response = await fetch(`/students/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    alert('删除成功');
+                    loadStudents();
+                }
+            } catch (error) {
+                console.error('删除失败:', error);
+            }
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/static/login.html';
+        }
+        
+        // 页面加载时获取数据
+        loadStudents();
+    </script>
+</body>
+</html>
