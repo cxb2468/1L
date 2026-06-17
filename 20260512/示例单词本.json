@@ -1,0 +1,229 @@
+[
+  {
+    "text": "achievement",
+    "results": {
+      "BingDictWeb": {
+        "text": "achievement",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "əˈtʃiːvmənt",
+            "ttsURI": ""
+          },
+          {
+            "name": "英",
+            "value": "əˈtʃiːvmənt",
+            "ttsURI": ""
+          }
+        ],
+        "dict": [
+          {
+            "pos": "n.",
+            "terms": [
+              "成就",
+              "成绩",
+              "完成",
+              "达到"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=achievement&cc=cn"
+      },
+      "Bing": {
+        "text": "achievement",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=achievement",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "成就"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "collaborate",
+    "results": {
+      "BingDictWeb": {
+        "text": "collaborate",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "kəˈlæbəreɪt",
+            "ttsURI": ""
+          },
+          {
+            "name": "英",
+            "value": "kəˈlæbəreɪt",
+            "ttsURI": ""
+          }
+        ],
+        "dict": [
+          {
+            "pos": "v.",
+            "terms": [
+              "合作",
+              "协作",
+              "勾结"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=collaborate&cc=cn"
+      },
+      "Bing": {
+        "text": "collaborate",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=collaborate",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "合作"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "innovative",
+    "results": {
+      "BingDictWeb": {
+        "text": "innovative",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "ˈɪnəveɪtɪv",
+            "ttsURI": ""
+          },
+          {
+            "name": "英",
+            "value": "ˈɪnəveɪtɪv",
+            "ttsURI": ""
+          }
+        ],
+        "dict": [
+          {
+            "pos": "adj.",
+            "terms": [
+              "创新的",
+              "革新的",
+              "新颖的"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=innovative&cc=cn"
+      },
+      "Bing": {
+        "text": "innovative",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=innovative",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "创新的"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "perspective",
+    "results": {
+      "BingDictWeb": {
+        "text": "perspective",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "pərˈspektɪv",
+            "ttsURI": ""
+          },
+          {
+            "name": "英",
+            "value": "pəˈspektɪv",
+            "ttsURI": ""
+          }
+        ],
+        "dict": [
+          {
+            "pos": "n.",
+            "terms": [
+              "观点",
+              "视角",
+              "透视",
+              "远景"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=perspective&cc=cn"
+      },
+      "Bing": {
+        "text": "perspective",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=perspective",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "观点"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "sustainable",
+    "results": {
+      "BingDictWeb": {
+        "text": "sustainable",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "səˈsteɪnəbl",
+            "ttsURI": ""
+          },
+          {
+            "name": "英",
+            "value": "səˈsteɪnəbl",
+            "ttsURI": ""
+          }
+        ],
+        "dict": [
+          {
+            "pos": "adj.",
+            "terms": [
+              "可持续的",
+              "可维持的",
+              "能保持的"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=sustainable&cc=cn"
+      },
+      "Bing": {
+        "text": "sustainable",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=sustainable",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "可持续的"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  }
+]

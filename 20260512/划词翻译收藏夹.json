@@ -1,0 +1,175 @@
+[
+  {
+    "text": "problem",
+    "results": {
+      "BingDictWeb": {
+        "text": "problem",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "ˈprɑbləm",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Ftom%2F90%2F9b%2F909B5363FB8A8F2FE5B0FC719F502306.mp3"
+          },
+          {
+            "name": "英",
+            "value": "ˈprɒbləm",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Fgeorge%2F90%2F9b%2F909B5363FB8A8F2FE5B0FC719F502306.mp3"
+          }
+        ],
+        "dict": [
+          {
+            "pos": "n.",
+            "terms": [
+              "难题",
+              "困难",
+              "棘手的问题",
+              "逻辑题"
+            ]
+          },
+          {
+            "pos": "adj.",
+            "terms": [
+              "找麻烦的",
+              "成问题的",
+              "惹乱子的"
+            ]
+          },
+          {
+            "pos": "网络: ",
+            "terms": [
+              "一个问题",
+              "疑难问题",
+              "常见问题"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=problem&cc=cn"
+      },
+      "Bing": {
+        "text": "problem",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=problem",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "问题"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "sync",
+    "results": {
+      "BingDictWeb": {
+        "text": "sync",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "sɪŋk",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Ftom%2F00%2F3d%2F003DBE913627DEF74911522EFF844BEB.mp3"
+          },
+          {
+            "name": "英",
+            "value": "sɪŋk",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Fgeorge%2F00%2F3d%2F003DBE913627DEF74911522EFF844BEB.mp3"
+          }
+        ],
+        "dict": [
+          {
+            "pos": "n.",
+            "terms": [
+              "synchronization 的缩略词"
+            ]
+          },
+          {
+            "pos": "v.",
+            "terms": [
+              "synchronize 的缩略词"
+            ]
+          },
+          {
+            "pos": "网络: ",
+            "terms": [
+              "同步",
+              "同步信号",
+              "同步域"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=sync&cc=cn"
+      },
+      "Bing": {
+        "text": "sync",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=sync",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "同步"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  },
+  {
+    "text": "Languages",
+    "results": {
+      "BingDictWeb": {
+        "text": "Languages",
+        "from": "英语",
+        "phonetic": [
+          {
+            "name": "美",
+            "value": "ˈlæŋɡwɪdʒ",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Ftom%2F03%2Fd2%2F03D245D7AC64104F102E6F50C6B1961D.mp3"
+          },
+          {
+            "name": "英",
+            "value": "'læŋɡwɪdʒ",
+            "ttsURI": "/dict/mediamp3?blob=audio%2Fgeorge%2F03%2Fd2%2F03D245D7AC64104F102E6F50C6B1961D.mp3"
+          }
+        ],
+        "dict": [
+          {
+            "pos": "n.",
+            "terms": [
+              "语言",
+              "(某民族,某国的)国语",
+              "语调",
+              "(谈话者或作者所使用的)言语"
+            ]
+          },
+          {
+            "pos": "网络: ",
+            "terms": [
+              "语言能力",
+              "语言学",
+              "语文"
+            ]
+          }
+        ],
+        "link": "https://www.bing.com/dict/search?q=Languages&cc=cn"
+      },
+      "Bing": {
+        "text": "Languages",
+        "link": "https://www.bing.com/translator?from=en&to=zh-Hans&text=Languages",
+        "from": "英语",
+        "to": "中文(简体)",
+        "result": [
+          "语言"
+        ]
+      }
+    },
+    "dir": {
+      "from": "英语",
+      "to": "undefined"
+    }
+  }
+]
