@@ -22,8 +22,9 @@
       <sourceFolder url="file://$MODULE_DIR$/0804/MovieHeavens" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/0804/KindleHelper" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/20240813" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (1L)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="py123" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
