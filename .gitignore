@@ -10,3 +10,4 @@ __pycache__/
 */__pycache__/
 # 忽略测试文件
 test*.py
+.git/
