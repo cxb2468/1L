@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的自定义主页</title>
+    <style>
+        /* 保持原有的所有CSS样式不变 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 80px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .search-container {
+            margin: 20px 0 20px;
+        }
+        #search-input {
+            width: 80%;
+            max-width: 500px;
+            padding: 8px 15px;
+            font-size: 20px;
+            border: 1px solid #1565c0; /* 修改边框颜色为标题蓝 */
+            border-radius: 20px;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+                #search-input:focus {
+                        border-color: #1565c0;
+                        box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.2); /* 更明显的蓝色光晕效果 */
+                }
+        .sites-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .site-item {
+            background: rgba(220, 210, 220, 0.15); /* 雪青色带淡紫，30%透明度 */
+            border-radius: 18px;
+            padding: 16px 8px;
+            box-shadow: 0 6px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+            font-size: 16px;
+        }
+        .site-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .site-name {
+            white-space: pre-line;
+            word-break: break-word;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+        h1 {
+                        background: linear-gradient(
+                                90deg,
+                                #ff0000 0%,    /* 红 */
+                                #ff9900 20%,   /* 橙 */
+                                #33cc33 60%,   /* 绿 */
+                                #3399ff 80%,   /* 蓝 */
+                                #cc66ff 100%   /* 紫 */
+                        );
+                        -webkit-background-clip: text;  /* 关键：背景裁剪到文字 */
+                        background-clip: text;
+                        color: transparent;            /* 隐藏原文字颜色 */
+                        text-shadow: none;             /* 移除原阴影 */
+                        font-size: 40px;
+                        margin-bottom: 15px;
+                        display: inline-block;         /* 确保渐变背景正常渲染 */
+                }
+    </style>
+        <script src="sites_data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Myself_主页</h1>
+         
+        <div class="search-container">
+            <form action="https://www.bing.com/search" method="GET" target="_blank">
+                <input type="text" id="search-input" name="q" placeholder="使用Bing搜索...">
+            </form>
+        </div>
+         
+        <div class="sites-container" id="sites-container">
+            <!-- 网站将通过JavaScript动态添加 -->
+        </div>
+    </div>
+ 
+    <!-- 引入外部数据文件 -->
+    <script src="sites_data.js"></script>
+     
+    <script>
+        // 渲染网站列表
+        function renderSites() {
+            const container = document.getElementById('sites-container');
+            container.innerHTML = '';
+             
+            // 使用从sites_data.js中加载的sitesData变量
+            sitesData.forEach(site => {
+                const siteElement = document.createElement('div');
+                siteElement.className = 'site-item';
+                siteElement.innerHTML = `
+                    <div class="site-name">${site.name}</div>
+                `;
+                siteElement.addEventListener('click', () => {
+                    window.open(site.url, '_blank');
+                });
+                container.appendChild(siteElement);
+            });
+        }
+ 
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSites();
+            document.getElementById('search-input').focus();
+        });
+    </script>
+</body>
+</html>

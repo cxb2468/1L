@@ -1,184 +1,186 @@
 import pyautogui
-import cv2,time,random,os, datetime
+import cv2
+import time
+import random
+import os
+import datetime
 import numpy
 import mss
 
 pyautogui.FAILSAFE = True  # 如果出错，将鼠标移至屏幕左上角可停止程序
 
-with open('坐标信息.txt', 'r', encoding='utf-8') as t:
-    txt = t.readlines()
-    def zb(i):
-        x = txt[i].split("=")[-1].strip().split(",")[0]
-        y = txt[i].split("=")[-1].strip().split(",")[1]
-        a = (int(x), int(y))
-        return a
-app=zb(0)
-gongGao=zb(1)
-quFu=zb(2)
-touxiang=zb(3)
-miJing=zb(4)
-xiongGui=zb(5)
-anDong=zb(6)
-luoJi=zb(7)
-niMu=zb(8)
-xgQiu=zb(9)
-saoDang=zb(10)
-queRenX=zb(11)
-fanHuiX=zb(12)
-saoDangXG=zb(13)
-nvShen=zb(14)
-qiuX=zb(15)
-saoDangX=zb(16)
-jiBan=zb(17)
-shenDian=zb(18)
-qiuSD=zb(19)
-mo=zb(20)
-fu=zb(21)
-qiZhi=zb(22)
-qianDaoX=zb(23)
-mianBao=zb(24)
-lianBing =zb(25)
-zhuJiao = zb(26)
-weiTuo1 = zb(27)
-xiaoShi = zb(28)
-xuanZe = zb(29)
-yingXiong1=zb(30)
-queDing=zb(31)
-queRen = zb(32)
-weiTuo2 = zb(33)
-yingXiong2 = zb(34)
-weiTuo3 = zb(35)
-yingXiong3 = zb(36)
+# 读取坐标信息
+def read_coordinates():
+    with open('坐标信息.txt', 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    coordinates = {}
+    for i, line in enumerate(lines):
+        name = f'point_{i}'
+        x = int(line.split("=")[-1].strip().split(",")[0])
+        y = int(line.split("=")[-1].strip().split(",")[1])
+        coordinates[name] = (x, y)
+    return coordinates
 
-color_weiTuo1_red = (174,70,95)
-color_weiTuo1_blue = (86,195,230)
+# 初始化坐标常量
+COORDINATES = read_coordinates()
 
-#在背景查找目标图片，并返回查找到的结果坐标列表，target是背景，want是要找目标
-def locate(target,want, show=bool(0), msg=bool(0)):
-    loc_pos=[]
-    want,treshold,c_name=want[0],want[1],want[2]
-    result=cv2.matchTemplate(target,want,cv2.TM_CCOEFF_NORMED)
-    location=numpy.where(result>=treshold)
+# 常量定义
+app = COORDINATES['point_0']
+gongGao = COORDINATES['point_1']
+quFu = COORDINATES['point_2']
+touxiang = COORDINATES['point_3']
+miJing = COORDINATES['point_4']
+xiongGui = COORDINATES['point_5']
+anDong = COORDINATES['point_6']
+luoJi = COORDINATES['point_7']
+niMu = COORDINATES['point_8']
+xgQiu = COORDINATES['point_9']
+saoDang = COORDINATES['point_10']
+queRenX = COORDINATES['point_11']
+fanHuiX = COORDINATES['point_12']
+saoDangXG = COORDINATES['point_13']
+nvShen = COORDINATES['point_14']
+qiuX = COORDINATES['point_15']
+saoDangX = COORDINATES['point_16']
+jiBan = COORDINATES['point_17']
+shenDian = COORDINATES['point_18']
+qiuSD = COORDINATES['point_19']
+mo = COORDINATES['point_20']
+fu = COORDINATES['point_21']
+qiZhi = COORDINATES['point_22']
+qianDaoX = COORDINATES['point_23']
+mianBao = COORDINATES['point_24']
+lianBing = COORDINATES['point_25']
+zhuJiao = COORDINATES['point_26']
+weiTuo1 = COORDINATES['point_27']
+xiaoShi = COORDINATES['point_28']
+xuanZe = COORDINATES['point_29']
+yingXiong1 = COORDINATES['point_30']
+queDing = COORDINATES['point_31']
+queRen = COORDINATES['point_32']
+weiTuo2 = COORDINATES['point_33']
+yingXiong2 = COORDINATES['point_34']
+weiTuo3 = COORDINATES['point_35']
+yingXiong3 = COORDINATES['point_36']
 
-    if msg:  #显示正式寻找目标名称，调试时开启
-        print(c_name,'searching... ')
+color_weiTuo1_red = (174, 70, 95)
+color_weiTuo1_blue = (86, 195, 230)
 
-    h,w=want.shape[:-1] #want.shape[:-1]
+# 在背景查找目标图片，并返回查找到的结果坐标列表
+def locate(target, want, show=False, msg=False):
+    loc_pos = []
+    template, threshold, name = want
+    
+    result = cv2.matchTemplate(target, template, cv2.TM_CCOEFF_NORMED)
+    locations = numpy.where(result >= threshold)
 
-    n,ex,ey=1,0,0
-    for pt in zip(*location[::-1]):    #其实这里经常是空的
-        x,y=pt[0]+int(w/2),pt[1]+int(h/2)
-        if (x-ex)+(y-ey)<15:  #去掉邻近重复的点
+    if msg:
+        print(f'{name} searching...')
+
+    height, width = template.shape[:-1]
+    last_x, last_y = 0, 0
+    
+    for pt in zip(*locations[::-1]):
+        x, y = pt[0] + int(width/2), pt[1] + int(height/2)
+        
+        # 去掉邻近重复的点
+        if (x - last_x) + (y - last_y) < 15:
             continue
-        ex,ey=x,y
-
-        cv2.circle(target,(x,y),10,(0,0,255),3)
+            
+        last_x, last_y = x, y
+        cv2.circle(target, (x, y), 10, (0, 0, 255), 3)
 
         if msg:
-            print(c_name,'we find it !!! ,at',x,y)
-            x,y=int(x),int(y)
+            print(f'{name} found at {x}, {y}')
 
-        loc_pos.append([x,y])
+        loc_pos.append([int(x), int(y)])
 
-    if show:  #在图上显示寻找的结果，调试时开启
+    if show:
         print('Debug: show locate')
-        cv2.imshow('we get',target)
+        cv2.imshow('Detection Result', target)
         cv2.waitKey(2300)
         cv2.destroyAllWindows()
 
-
-    if len(loc_pos)==0:
-        print(c_name,'not find')
+    if not loc_pos:
+        print(f'{name} not found')
     else:
         print("Got it, guys!")
 
     return loc_pos
 
-
-#按【文件内容，匹配精度，名称】格式批量聚聚要查找的目标图片，精度统一为0.95，名称为文件名
-def load_imgs():
+# 按文件内容、匹配精度、名称格式批量加载目标图片
+def load_images():
     target = {}
-    path = os.getcwd() + '\png'
-    file_list = os.listdir(path)
-    for file in file_list:
-        name = file.split('.')[0]
-        file_path = path + '\\' + file
-        print(file_path)
-        a = [cv2.imread(file_path), 0.95, name]
-        target[name] = a
-    print(a)
+    path = os.path.join(os.getcwd(), 'png')
+    
+    for filename in os.listdir(path):
+        name = os.path.splitext(filename)[0]
+        file_path = os.path.join(path, filename)
+        print(f'Loading {file_path}')
+        target[name] = [cv2.imread(file_path), 0.95, name]
+    
     return target
 
-
-def readFile():
-    imgs = load_imgs()
-    # pyautogui.PAUSE = 0.05
+# 读取图片库并初始化设置
+def initialize():
+    imgs = load_images()
+    pyautogui.PAUSE = 0.05
     pyautogui.FAILSAFE = False
     return imgs
 
-
+# 屏幕截图捕获函数
 def capture(want):
     monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
     im = numpy.array(mss.mss().grab(monitor))
     screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-    pts = locate(screen, want, 1, 1)
-    while len(pts) == 0:
+    pts = locate(screen, want, True, True)
+    
+    while not pts:
         time.sleep(0.5)
-        monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
         im = numpy.array(mss.mss().grab(monitor))
         screen = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
-        pts = locate(screen, want, 1, 1)
-    if not len(pts) == 0:
+        pts = locate(screen, want, True, True)
+    
+    if pts:
         xy = pts[0]
         print(xy)
-    pyautogui.click(xy)
+        pyautogui.click(xy)
 
-
-def autoZhuJiao(x,y):
-    pyautogui.click(xiaoShi)
-    pyautogui.click(xuanZe)
-    pyautogui.click(x,y)
-    pyautogui.click(queDing)
-    pyautogui.click(queRen)
+# 自动执行战斗任务
+def auto_battle(position):
+    pyautogui.click(position)
+    pyautogui.click(COORDINATES['point_31'])  # 确定按钮
+    pyautogui.click(COORDINATES['point_32'])  # 确认按钮
     time.sleep(2)
 
+# 进入命运之斐并执行任务
+def fate_mission():
+    pyautogui.click(1760, 660)  # 主界面某个位置
 
-# 进入命运之斐  扫荡命运1至命运3
-def mingYun():
-    pyautogui.click(1760,660)
+    # 执行命运1-3
+    for _ in range(3):
+        pyautogui.click(1200, 540)
+        pyautogui.click(1200, 725)
+        pyautogui.click(1900, 540)
+        
+        pyautogui.moveTo(1200, 540)
+        pyautogui.dragTo(x=1200, y=155, duration=2, button='left')
 
-    pyautogui.click(1200,540)
-    pyautogui.click(1200,725)
-    pyautogui.click(1900,540)
-
-    pyautogui.moveTo(1200,540)
-    pyautogui.dragTo(x=1200, y=155, duration=2, button='left')
-    pyautogui.click(1200,540)
-    pyautogui.click(1200,725)
-    pyautogui.click(1900,540)
-
-    pyautogui.moveTo(1200,540)
-    pyautogui.dragTo(x=1200, y=155, duration=2, button='left')
-    pyautogui.click(1200,540)
-    pyautogui.click(1200,725)
-    pyautogui.click(1900,540)
-
-    pyautogui.click(85,50)
-    pyautogui.click(85,50)
+    pyautogui.click(85, 50)
+    pyautogui.click(85, 50)
     time.sleep(2)
-    pyautogui.click(85,50)
+    pyautogui.click(85, 50)
 
-
+# 主函数
 def main():
-
     starttime = datetime.datetime.now()
     time.sleep(2)
     pyautogui.PAUSE = 1.3
 
     # 读取png目录图片库
-    imgs = readFile()
+    imgs = initialize()
 
-    #开启程序 根据logo 定位 点击
+    # 开启程序 根据logo 定位 点击
     want = imgs['logo']
     monitor = {"top": 0, "left": 0, "width": 1920, "height": 1080}
     im = numpy.array(mss.mss().grab(monitor))
@@ -194,30 +196,26 @@ def main():
     want = imgs['x']
     capture(want)
 
-    #登录界面
+    # 登录界面
     want = imgs['mhmnz']
     capture(want)
 
-    #每日签到
+    # 每日签到
     time.sleep(4)
-    pyautogui.click(1830,75)
+    pyautogui.click(1830, 75)
     time.sleep(1)
-    pyautogui.click(1830,75)
+    pyautogui.click(1830, 75)
     time.sleep(1)
-    pyautogui.click(1830,75)
+    pyautogui.click(1830, 75)
 
-
-
-    #世界
+    # 世界
     want = imgs['shiJie']
     capture(want)
 
-
-
-    #秘境
+    # 秘境
     want = imgs['miJing']
     capture(want)
-    #兄贵健身房
+    # 兄贵健身房
     # 兄贵
     pyautogui.click(xiongGui)
     # 周1、4、7 andong  周2、5 luoji  周3、6 nimu
@@ -323,32 +321,31 @@ def main():
         pyautogui.click(fanHuiX)
     elif pyautogui.pixelMatchesColor(weiTuo1[0], weiTuo1[1], color_weiTuo1_blue):
         pyautogui.click(weiTuo1)
-        autoZhuJiao(yingXiong1[0], yingXiong1[1])
+        auto_battle(yingXiong1)
         pyautogui.click(weiTuo2)
-        autoZhuJiao(yingXiong2[0], yingXiong2[1])
+        auto_battle(yingXiong2)
         pyautogui.click(weiTuo3)
-        autoZhuJiao(yingXiong3[0], yingXiong3[1])
+        auto_battle(yingXiong3)
         pyautogui.click(fanHuiX)
     else:
         pyautogui.click(weiTuo1)
         time.sleep(1)
         pyautogui.click(zhuJiao)
         pyautogui.click(weiTuo1)
-        autoZhuJiao(yingXiong1[0], yingXiong1[1])
+        auto_battle(yingXiong1)
         pyautogui.click(weiTuo2)
         time.sleep(1)
         pyautogui.click(zhuJiao)
         pyautogui.click(weiTuo2)
-        autoZhuJiao(yingXiong2[0], yingXiong2[1])
+        auto_battle(yingXiong2)
         pyautogui.click(weiTuo3)
         time.sleep(1)
         pyautogui.click(zhuJiao)
         pyautogui.click(weiTuo3)
-        autoZhuJiao(yingXiong3[0], yingXiong3[1])
+        auto_battle(yingXiong3)
         pyautogui.click(fanHuiX)
 
     # 官方特权 版本更新 需变更
-
 
     # 邮件
     want = imgs['youJian']
@@ -379,7 +376,7 @@ def main():
         pyautogui.dragTo(x=1870, y=230, duration=2, button='left')
         pyautogui.click(x=1870, y=230, interval=0.0, duration=0.0)
     pyautogui.click(xy)
-    mingYun()
+    fate_mission()
 
     time.sleep(3)
     want = imgs['jiBan']
@@ -401,7 +398,7 @@ def main():
         pyautogui.dragTo(x=1870, y=230, duration=2, button='left')
         pyautogui.click(x=1870, y=230, interval=0.0, duration=0.0)
     pyautogui.click(xy)
-    mingYun()
+    fate_mission()
     print("第二次羁绊结束")
 
     time.sleep(3)
@@ -425,16 +422,13 @@ def main():
         pyautogui.dragTo(x=1870, y=230, duration=2, button='left')
         pyautogui.click(x=1870, y=230, interval=0.0, duration=0.0)
     pyautogui.click(xy)
-    mingYun()
+    fate_mission()
 
-    #程序结束时间
+    # 程序结束时间
     endtime = datetime.datetime.now()
-    time1 =str(endtime - starttime)
-    print(time1)
-    pyautogui.alert("程序总用时： "+time1+" s", title="Test")
-
+    duration = str(endtime - starttime)
+    print(duration)
+    pyautogui.alert(f"程序总用时：{duration} s", title="Test")
 
 if __name__ == "__main__":
     main()
-
-

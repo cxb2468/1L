@@ -1,0 +1,58 @@
+[
+    {
+        "id": 1,
+        "marketer": "张三",
+        "product": "公司贷款",
+        "amount": 4444.0,
+        "date": "2025-07-21",
+        "notes": "备注44444"
+    },
+    {
+        "id": 2,
+        "marketer": "张三",
+        "product": "信用卡",
+        "amount": 123123.0,
+        "date": "2025-07-18",
+        "notes": ""
+    },
+    {
+        "id": 3,
+        "marketer": "张三",
+        "product": "工会账户",
+        "amount": 21443545.01,
+        "date": "2025-07-25",
+        "notes": "12312414"
+    },
+    {
+        "id": 4,
+        "marketer": "张三",
+        "product": "对公账户",
+        "amount": 5654645.0,
+        "date": "2025-07-18",
+        "notes": ""
+    },
+    {
+        "id": 5,
+        "marketer": "张三",
+        "product": "个人养老金",
+        "amount": 7568768.0,
+        "date": "2025-07-18",
+        "notes": ""
+    },
+    {
+        "id": 6,
+        "marketer": "张三",
+        "product": "社保卡",
+        "amount": 980890.0,
+        "date": "2025-07-18",
+        "notes": ""
+    },
+    {
+        "id": 7,
+        "marketer": "张三",
+        "product": "个人消费贷款",
+        "amount": 8797800.0,
+        "date": "2025-07-18",
+        "notes": ""
+    }
+]

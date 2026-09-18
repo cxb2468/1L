@@ -1,0 +1,25 @@
+{
+    "marketers": [
+        "请选择营销人",
+        "张三",
+        "李四",
+        "王五"
+    ],
+    "products": [
+        "请选择产品名称",
+        "信用卡",
+        "工会账户",
+        "对公账户",
+        "个人养老金",
+        "社保卡",
+        "个人消费贷款",
+        "个人经营贷款",
+        "公司贷款",
+        "啊啊啊"
+    ],
+    "update_check": {
+        "latest_version_url": "https://wwvu.lanzouq.com/b0138zm9za",
+        "download_url": "https://wwvu.lanzouq.com/b0138zm9uf",
+        "password": "1234"
+    }
+}
